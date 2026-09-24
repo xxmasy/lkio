@@ -38,10 +38,14 @@
 
 ---
 
-## 3. 治理宪法与红线约束
+## 3. 治理宪法与核心冻结红线（后续任何 Agent 均严禁擅自变更）
 
-1. **源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对只读，禁止写回或修改。
-2. **唯一激活 MVP 纪律**：任何时候最多只有一个 ACTIVE MVP，必须对照验收门逐项通过方可流转。
-3. **真相与投影分离**：Git、DB、代码为真实事实（Source of Truth）；Wiki 与 LLM 推理仅为投影（Projection）。
-4. **置信度可解释性**：`Confidence ≠ Truth`，所有关系与决策标注 `source_type`, `extraction_method` 与 `confidence`。
-5. **禁用过早组件**：严禁在前期引入 Neo4j、Qdrant、Milvus、Kafka、Redis、LangChain、CrewAI 等多余框架。
+1. **三个源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对只读，禁止写回或修改任何文件。
+2. **MVP1 不引入 Tree-sitter**：代码 AST 解析保留给 MVP2，MVP1 严禁提前引入。
+3. **Git 一律通过 subprocess 调用 Git CLI**：统一使用标准 Git 命令行工具，保证跨平台一致性与透明度。
+4. **严禁解析 .git 内部结构**：禁止任何针对 `.git/objects`、`refs`、`index` 等内部二进制文件的直接读取和反序列化。
+5. **敏感文件永不进入 Knowledge Core**：`.env`, 密钥 (`*.pem`, `*.key`), Token, 私钥, 证书等敏感资产严禁扫描入库。
+6. **唯一激活 MVP 纪律**：任何时候最多只有一个 ACTIVE MVP，必须对照验收门逐项通过方可流转。
+7. **真相与投影分离**：Git、DB、代码为真实事实（Source of Truth）；Wiki 与 LLM 推理仅为投影（Projection）。
+8. **置信度可解释性**：`Confidence ≠ Truth`，所有关系与决策标注 `source_type`, `extraction_method` 与 `confidence`。
+9. **禁用过早组件**：严禁在前期引入 Neo4j、Qdrant、Milvus、Kafka、Redis、LangChain、CrewAI 等多余框架。

@@ -2,6 +2,13 @@
 
 > 当前版本：v0.1  
 > 基线文件：[LKIO_本地知识智能操作系统_MVP实施基线_v0.1.md](file:///C:/WorkSpace/lkio/LKIO_%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E6%99%BA%E8%83%BD%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F_MVP%E5%AE%9E%E6%96%BD%E5%9F%BA%E7%BA%BF_v0.1.md)
+>
+> ### 🛑 永久冻结架构红线（后续任何 Agent 均严禁擅自变更）：
+> 1. **三个源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对只读，禁止写回或修改任何文件。
+> 2. **MVP1 不引入 Tree-sitter**：代码 AST 解析保留给 MVP2，MVP1 严禁提前引入。
+> 3. **Git 一律通过 subprocess 调用 Git CLI**：统一使用标准 Git 命令行工具，保证跨平台一致性与透明度。
+> 4. **严禁解析 .git 内部结构**：禁止任何针对 `.git/objects`、`refs`、`index` 等内部二进制文件的直接读取和反序列化。
+> 5. **敏感文件永不进入 Knowledge Core**：`.env`, 密钥 (`*.pem`, `*.key`), Token, 私钥, 证书等敏感资产严禁扫描入库。
 
 ---
 
@@ -9,8 +16,8 @@
 
 | MVP 编号 | 阶段名称 | 当前状态 | 阻塞依赖 | 验收门状态 | 阶段结项报告 |
 |---|---|---|---|---|---|
-| **MVP0** | **Environment & Knowledge Core** | **COMPLETED** | 无 | **ALL PASSED** | [mvp0_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp/mvp0_acceptance_report.md) |
-| **MVP1** | **Project Ingestion (只读扫描/增量同步)** | **READY_TO_PLAN** | MVP0 (已就绪) | 待启动 | 待生成 |
+| **MVP0** | **Environment & Knowledge Core** | **COMPLETED / FROZEN** | 无 | **ALL PASSED** | [mvp0_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp/mvp0_acceptance_report.md) |
+| **MVP1** | **Project Ingestion (只读扫描/增量同步)** | **READY_TO_IMPLEMENT** | MVP0 (已冻结) | 待启动实施 | 待生成 |
 | **MVP2** | Code / AST / Cross-project Graph | **LOCKED** | MVP1 | 未开始 | - |
 | **MVP3** | Hybrid RAG (Keyword+pgvector+Graph) | **LOCKED** | MVP1, MVP2 | 未开始 | - |
 | **MVP4** | LLM Wiki (带证据投影) | **LOCKED** | MVP3 | 未开始 | - |

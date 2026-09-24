@@ -1,0 +1,26 @@
+{
+  "project_key": "L2C_FE",
+  "name": "L2C project",
+  "kind": "frontend",
+  "role": "future_frontend",
+  "local_path": "C:\\WorkSpace\\L2C project",
+  "git": {
+    "is_git": true,
+    "branch": "main"
+  },
+  "package_manager": "pnpm",
+  "expected_frameworks": [
+    "Vue",
+    "Vite",
+    "Pinia",
+    "Vue Router",
+    "Element Plus"
+  ],
+  "expected_languages": [
+    "TypeScript",
+    "Vue"
+  ],
+  "min_file_count": 2000,
+  "min_directory_count": 100,
+  "min_dependency_count": 20
+}

@@ -1,12 +1,17 @@
 # LKIO MVP 执行跟踪与状态总表
 
 > **当前基线**：LKIO_本地知识智能操作系统_MVP实施基线_v0.1.md
-> **当前唯一允许 ACTIVE 的阶段**：**MVP0**
-> **核心原则**：
-> 1. 源项目（`HELLO_FE`, `HELLO_BE`, `L2C_FE`）只读，严禁修改。
-> 2. 每个步骤做完必须留下归档文档，放在 `docs/mvp/`。
-> 3. 文档必须对照上一轮 Plan 检验，明确记录完成了哪一个 MVP 的哪个步骤。
-> 4. 下一个任务开始前，必须核验上一阶段的完成情况才能启动规划。
+> **当前正式锁定状态**：
+> - **MVP0 = COMPLETED / FROZEN**
+> - **MVP1 = COMPLETED / FROZEN**
+> - **MVP2 = READY_TO_PLAN**
+>
+> ### 🛑 永久冻结架构红线（后续任何 Agent 均严禁擅自变更）：
+> 1. **三个源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对只读，禁止写回或修改任何文件。
+> 2. **MVP1 不引入 Tree-sitter**：代码 AST 解析保留给 MVP2，MVP1 严禁提前引入。
+> 3. **Git 一律通过 subprocess 调用 Git CLI**：统一使用标准 Git 命令行工具，保证跨平台一致性与透明度。
+> 4. **严禁解析 .git 内部结构**：禁止任何针对 `.git/objects`、`refs`、`index` 等内部二进制文件的直接读取和反序列化。
+> 5. **敏感文件永不进入 Knowledge Core**：`.env`, 密钥 (`*.pem`, `*.key`), Token, 私钥, 证书等敏感资产严禁扫描入库。
 
 ---
 
@@ -14,9 +19,9 @@
 
 | MVP 代号 | 阶段名称 | 当前状态 | 依赖阶段 | 验收状态 | 归档文档 |
 |---|---|---|---|---|---|
-| **MVP0** | **Environment & Knowledge Core** | **COMPLETED** | 无（起始阶段） | **ALL PASSED** | `docs/mvp/mvp0_acceptance_report.md` |
-| MVP1 | Project Ingestion (只读扫描/增量) | **READY_TO_PLAN** | MVP0 (已验收) | 待启动 | - |
-| MVP2 | Code / AST / Cross-project Graph | **LOCKED** | MVP1 | 未开始 | - |
+| **MVP0** | **Environment & Knowledge Core** | **COMPLETED / FROZEN** | 无（起始阶段） | **ALL PASSED** | `docs/mvp/mvp0_acceptance_report.md` |
+| **MVP1** | **Project Ingestion (只读扫描/增量)** | **COMPLETED / FROZEN** | MVP0 (已冻结) | **ALL PASSED** | `docs/mvp1/mvp1_acceptance_report.md` |
+| **MVP2** | **Code / AST / Cross-project Graph** | **READY_TO_PLAN** | MVP1 (已冻结) | 待规划启动 | - |
 | MVP3 | Hybrid RAG (Keyword+pgvector+Graph) | **LOCKED** | MVP1, MVP2 | 未开始 | - |
 | MVP4 | LLM Wiki (带证据投影) | **LOCKED** | MVP3 | 未开始 | - |
 | MVP5 | Event & Change Intelligence | **LOCKED** | MVP1 | 未开始 | - |

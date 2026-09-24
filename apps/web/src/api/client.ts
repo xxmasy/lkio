@@ -82,6 +82,68 @@ export interface GraphData {
   edges: GraphEdge[]
 }
 
+export interface IngestionRunItem {
+  id: string
+  project_id: string
+  source_id?: string
+  status: string
+  started_at: string
+  finished_at?: string
+  head_before?: string
+  head_after?: string
+  files_seen: number
+  files_created: number
+  files_updated: number
+  files_deleted: number
+  entities_created: number
+  entities_updated: number
+  relations_created: number
+  errors: Array<Record<string, any>>
+  warnings: Array<Record<string, any>>
+  metadata: Record<string, any>
+}
+
+export interface ProjectSnapshotItem {
+  id: string
+  project_id: string
+  ingestion_run_id?: string
+  head?: string
+  branch?: string
+  file_count: number
+  directory_count: number
+  dependency_count: number
+  frameworks: Array<{
+    name: string
+    confidence: number
+    version?: string
+    evidence?: string
+  }>
+  languages: Array<{
+    name: string
+    file_count: number
+    percentage: number
+  }>
+  metadata: Record<string, any>
+  created_at: string
+}
+
+export interface DependencyItem {
+  name: string
+  ecosystem: string
+  version_spec: string
+  scope: string
+  is_direct: boolean
+  manifest_path: string
+}
+
+export interface FrameworkItem {
+  name: string
+  confidence: number
+  method: string
+  evidence: string
+  version?: string
+}
+
 export const api = {
   getHealth: () => apiClient.get('/health'),
   getOverview: (): Promise<OverviewMetrics> => apiClient.get('/overview'),
@@ -92,4 +154,15 @@ export const api = {
   getProjectGraph: (projectId: string): Promise<GraphData> => apiClient.get(`/graph/projects/${projectId}`),
   getEntityNeighbors: (entityId: string): Promise<GraphData> => apiClient.get(`/graph/entities/${entityId}/neighbors`),
   getOverviewGraph: (): Promise<GraphData> => apiClient.get('/graph/overview'),
+  // MVP1 Ingestion & Snapshot APIs
+  triggerScan: (projectId: string): Promise<IngestionRunItem> => apiClient.post(`/projects/${projectId}/scan`),
+  triggerScanAll: (): Promise<any> => apiClient.post('/projects/scan-all'),
+  getScanRuns: (projectId: string, limit: number = 20): Promise<IngestionRunItem[]> =>
+    apiClient.get(`/projects/${projectId}/scan-runs`, { params: { limit } }),
+  getSnapshot: (projectId: string): Promise<ProjectSnapshotItem | null> =>
+    apiClient.get(`/projects/${projectId}/snapshot`),
+  getDependencies: (projectId: string): Promise<DependencyItem[]> =>
+    apiClient.get(`/projects/${projectId}/dependencies`),
+  getFrameworks: (projectId: string): Promise<FrameworkItem[]> =>
+    apiClient.get(`/projects/${projectId}/frameworks`),
 }

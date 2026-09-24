@@ -1,0 +1,24 @@
+{
+  "project_key": "HELLO_BE",
+  "name": "hello-backend",
+  "kind": "backend",
+  "role": "paired_backend",
+  "local_path": "C:\\WorkSpace\\hello-backend",
+  "git": {
+    "is_git": true,
+    "branch": "feat/sales-dashboard-eu-menu"
+  },
+  "package_manager": "maven",
+  "expected_frameworks": [
+    "Spring Boot",
+    "MyBatis",
+    "MySQL Connector"
+  ],
+  "expected_languages": [
+    "Java",
+    "SQL"
+  ],
+  "min_file_count": 2000,
+  "min_directory_count": 100,
+  "min_dependency_count": 20
+}

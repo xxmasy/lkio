@@ -6,13 +6,46 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 from apps.api.schemas.common import success_response
+from apps.api.schemas.ingestion import (
+    BatchScanResult,
+    DependencyItem,
+    FrameworkItem,
+    IngestionRunRead,
+    ProjectSnapshotRead,
+)
 from apps.api.schemas.project import ProjectCreate, ProjectDetail, ProjectRead
 from core.db.session import get_db
 from core.models.entity import Entity
+from core.models.ingestion_run import IngestionRun
 from core.models.project import Project
+from core.models.project_snapshot import ProjectSnapshot
 from core.models.relation import Relation
+from ingestion.pipeline import run_all_projects_ingestion, run_project_ingestion
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
+
+
+def _resolve_project(project_id: str, db: Session) -> Project:
+    try:
+        u_id = uuid.UUID(project_id)
+        stmt = select(Project).where(Project.id == u_id)
+    except ValueError:
+        stmt = select(Project).where(Project.key == project_id)
+
+    project = db.scalars(stmt).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Project '{project_id}' not found",
+        )
+    return project
+
+
+@router.post("/scan-all", status_code=status.HTTP_200_OK)
+def scan_all_projects():
+    """Trigger ingestion scan for all registered active projects."""
+    summary = run_all_projects_ingestion()
+    return success_response(summary)
 
 
 @router.get("", status_code=status.HTTP_200_OK)
@@ -71,19 +104,7 @@ def get_project(
     db: Session = Depends(get_db),
 ):
     """Get project details including counts and related projects."""
-    # Allow querying by UUID or key
-    try:
-        u_id = uuid.UUID(project_id)
-        stmt = select(Project).where(Project.id == u_id)
-    except ValueError:
-        stmt = select(Project).where(Project.key == project_id)
-
-    project = db.scalars(stmt).first()
-    if not project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Project '{project_id}' not found",
-        )
+    project = _resolve_project(project_id, db)
 
     entity_count = db.scalar(
         select(func.count(Entity.id)).where(Entity.project_id == project.id)
@@ -137,3 +158,108 @@ def get_project(
         related_projects=list(related_project_keys),
     )
     return success_response(detail)
+
+
+@router.post("/{project_id}/scan", status_code=status.HTTP_200_OK)
+def trigger_project_scan(
+    project_id: str,
+    db: Session = Depends(get_db),
+):
+    """Trigger an ingestion scan for a single project."""
+    project = _resolve_project(project_id, db)
+    run = run_project_ingestion(project.key)
+    return success_response(IngestionRunRead.model_validate(run))
+
+
+@router.get("/{project_id}/scan-runs", status_code=status.HTTP_200_OK)
+def list_project_scan_runs(
+    project_id: str,
+    limit: int = Query(20, ge=1, le=100, description="Max runs to return"),
+    db: Session = Depends(get_db),
+):
+    """List recent ingestion runs for a project."""
+    project = _resolve_project(project_id, db)
+    runs = db.scalars(
+        select(IngestionRun)
+        .where(IngestionRun.project_id == project.id)
+        .order_by(IngestionRun.started_at.desc())
+        .limit(limit)
+    ).all()
+    results = [IngestionRunRead.model_validate(r) for r in runs]
+    return success_response(results)
+
+
+@router.get("/{project_id}/snapshot", status_code=status.HTTP_200_OK)
+def get_latest_project_snapshot(
+    project_id: str,
+    db: Session = Depends(get_db),
+):
+    """Get the latest milestone snapshot of a project."""
+    project = _resolve_project(project_id, db)
+    snapshot = db.scalars(
+        select(ProjectSnapshot)
+        .where(ProjectSnapshot.project_id == project.id)
+        .order_by(ProjectSnapshot.created_at.desc())
+    ).first()
+
+    if not snapshot:
+        return success_response(None)
+    return success_response(ProjectSnapshotRead.model_validate(snapshot))
+
+
+@router.get("/{project_id}/dependencies", status_code=status.HTTP_200_OK)
+def get_project_dependencies(
+    project_id: str,
+    db: Session = Depends(get_db),
+):
+    """Get detected dependencies for a project."""
+    project = _resolve_project(project_id, db)
+    entities = db.scalars(
+        select(Entity).where(
+            Entity.project_id == project.id,
+            Entity.entity_type == "DEPENDENCY",
+            Entity.status == "ACTIVE",
+        ).order_by(Entity.name)
+    ).all()
+
+    deps = [
+        DependencyItem(
+            name=e.name,
+            ecosystem=e.metadata_.get("ecosystem", "unknown"),
+            version_spec=e.metadata_.get("version_spec", "*"),
+            scope=e.metadata_.get("scope", "runtime"),
+            is_direct=e.metadata_.get("is_direct", True),
+            manifest_path=e.metadata_.get("manifest_path", ""),
+        )
+        for e in entities
+    ]
+    return success_response(deps)
+
+
+@router.get("/{project_id}/frameworks", status_code=status.HTTP_200_OK)
+def get_project_frameworks(
+    project_id: str,
+    db: Session = Depends(get_db),
+):
+    """Get detected frameworks for a project."""
+    project = _resolve_project(project_id, db)
+    entities = db.scalars(
+        select(Entity).where(
+            Entity.project_id == project.id,
+            Entity.entity_type == "FRAMEWORK",
+            Entity.status == "ACTIVE",
+        ).order_by(Entity.name)
+    ).all()
+
+    fws = [
+        FrameworkItem(
+            name=e.name,
+            confidence=float(e.metadata_.get("confidence", 1.0)),
+            method=e.metadata_.get("method", "manifest"),
+            evidence=e.metadata_.get("evidence", ""),
+            version=e.metadata_.get("version"),
+        )
+        for e in entities
+    ]
+    return success_response(fws)
+

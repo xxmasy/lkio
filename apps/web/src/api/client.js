@@ -26,4 +26,11 @@ export const api = {
     getProjectGraph: (projectId) => apiClient.get(`/graph/projects/${projectId}`),
     getEntityNeighbors: (entityId) => apiClient.get(`/graph/entities/${entityId}/neighbors`),
     getOverviewGraph: () => apiClient.get('/graph/overview'),
+    // MVP1 Ingestion & Snapshot APIs
+    triggerScan: (projectId) => apiClient.post(`/projects/${projectId}/scan`),
+    triggerScanAll: () => apiClient.post('/projects/scan-all'),
+    getScanRuns: (projectId, limit = 20) => apiClient.get(`/projects/${projectId}/scan-runs`, { params: { limit } }),
+    getSnapshot: (projectId) => apiClient.get(`/projects/${projectId}/snapshot`),
+    getDependencies: (projectId) => apiClient.get(`/projects/${projectId}/dependencies`),
+    getFrameworks: (projectId) => apiClient.get(`/projects/${projectId}/frameworks`),
 };

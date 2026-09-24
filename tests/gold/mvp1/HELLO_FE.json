@@ -1,0 +1,26 @@
+{
+  "project_key": "HELLO_FE",
+  "name": "hello",
+  "kind": "frontend",
+  "role": "primary_frontend",
+  "local_path": "C:\\WorkSpace\\hello",
+  "git": {
+    "is_git": true,
+    "branch": "prod"
+  },
+  "package_manager": "npm",
+  "expected_frameworks": [
+    "Vue",
+    "Element Plus",
+    "Pinia",
+    "Axios",
+    "Vue Router"
+  ],
+  "expected_languages": [
+    "Vue",
+    "JavaScript"
+  ],
+  "min_file_count": 2000,
+  "min_directory_count": 100,
+  "min_dependency_count": 30
+}

@@ -7,7 +7,18 @@
             <span class="title">第一批纳管项目 (Projects)</span>
             <span class="subtitle">受控项目列表，采用统一 Identity Key 与只读探测机制</span>
           </div>
-          <el-tag type="info">共 {{ projects.length }} 个项目</el-tag>
+          <div class="header-actions">
+            <el-tag type="info" style="margin-right: 12px">共 {{ projects.length }} 个项目</el-tag>
+            <el-button
+              type="warning"
+              size="small"
+              :icon="Refresh"
+              :loading="scanningAll"
+              @click="handleScanAll"
+            >
+              全量扫描 (Scan All)
+            </el-button>
+          </div>
         </div>
       </template>
 
@@ -52,7 +63,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180" fixed="right">
+        <el-table-column label="操作" width="240" fixed="right">
           <template #default="{ row }">
             <el-button
               type="primary"
@@ -61,6 +72,15 @@
               @click="$router.push(`/projects/${row.id}`)"
             >
               详情
+            </el-button>
+            <el-button
+              type="warning"
+              size="small"
+              plain
+              :loading="scanningKeys.has(row.key)"
+              @click="handleScanSingle(row.key)"
+            >
+              扫描
             </el-button>
             <el-button
               type="success"
@@ -79,20 +99,55 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { Refresh } from '@element-plus/icons-vue'
 import { api, type ProjectItem } from '@/api/client'
 import { ElMessage } from 'element-plus'
 
 const loading = ref(true)
+const scanningAll = ref(false)
+const scanningKeys = ref<Set<string>>(new Set())
 const projects = ref<ProjectItem[]>([])
 
-onMounted(async () => {
+const fetchProjects = async () => {
   try {
     projects.value = await api.getProjects()
   } catch (err: any) {
     ElMessage.error(`获取项目列表失败: ${err.message}`)
-  } finally {
-    loading.value = false
   }
+}
+
+const handleScanSingle = async (projectKey: string) => {
+  scanningKeys.value.add(projectKey)
+  try {
+    ElMessage.info(`正在触发 ${projectKey} 扫描...`)
+    await api.triggerScan(projectKey)
+    ElMessage.success(`${projectKey} 扫描完成！`)
+    await fetchProjects()
+  } catch (err: any) {
+    ElMessage.error(`扫描失败: ${err.message}`)
+  } finally {
+    scanningKeys.value.delete(projectKey)
+  }
+}
+
+const handleScanAll = async () => {
+  scanningAll.value = true
+  try {
+    ElMessage.info('正在触发全量项目批量扫描...')
+    const res = await api.triggerScanAll()
+    ElMessage.success(`全量扫描完成！成功 ${res.succeeded}/${res.total}`)
+    await fetchProjects()
+  } catch (err: any) {
+    ElMessage.error(`全量扫描失败: ${err.message}`)
+  } finally {
+    scanningAll.value = false
+  }
+}
+
+onMounted(async () => {
+  loading.value = true
+  await fetchProjects()
+  loading.value = false
 })
 </script>
 
@@ -109,6 +164,11 @@ onMounted(async () => {
 .card-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
   align-items: center;
 }
 
