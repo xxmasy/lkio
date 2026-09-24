@@ -23,6 +23,13 @@ from ingestion.pipeline import run_all_projects_ingestion, run_project_ingestion
 
 def get_git_status_porcelain(repo_path: str) -> str:
     """Invokes Git CLI to get exact working tree porcelain output."""
+    # Warm up / refresh stat cache in case of lazy index updates
+    subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=repo_path,
+        capture_output=True,
+        text=True,
+    )
     res = subprocess.run(
         ["git", "status", "--porcelain"],
         cwd=repo_path,

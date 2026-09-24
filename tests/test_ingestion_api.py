@@ -69,5 +69,10 @@ def test_trigger_single_scan():
     run_data = scan_resp.json()["data"]
     assert run_data["status"] == "COMPLETED"
     assert run_data["files_seen"] > 100
-    # Idempotency: entities created should be 0 on rescan
-    assert run_data["entities_created"] == 0
+
+    # Rescan immediately to verify strict idempotency (0 new entities created)
+    rescan_resp = client.post("/api/v1/projects/HELLO_FE/scan")
+    assert rescan_resp.status_code == 200
+    rescan_data = rescan_resp.json()["data"]
+    assert rescan_data["status"] == "COMPLETED"
+    assert rescan_data["entities_created"] == 0
