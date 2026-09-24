@@ -1,0 +1,25 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Node / Web
+node_modules/
+dist/
+.vite/
+
+# IDE
+.idea/
+.vscode/
+
+# Local data & logs
+logs/
+tmp/
+lkio-data/
+*.log

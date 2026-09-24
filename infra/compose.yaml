@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg18
+    container_name: lkio-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: lkio
+      POSTGRES_USER: lkio
+      POSTGRES_PASSWORD: change-me-local-only
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - lkio_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lkio -d lkio"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  lkio_pgdata:

@@ -1,0 +1,23 @@
+projects:
+  - key: HELLO_FE
+    name: hello
+    kind: frontend
+    role: primary_frontend
+    local_path: C:\WorkSpace\hello
+    enabled: true
+
+  - key: HELLO_BE
+    name: hello-backend
+    kind: backend
+    role: paired_backend
+    local_path: C:\WorkSpace\hello-backend
+    enabled: true
+    related_projects:
+      - HELLO_FE
+
+  - key: L2C_FE
+    name: L2C project
+    kind: frontend
+    role: future_frontend
+    local_path: C:\WorkSpace\L2C project
+    enabled: true
