@@ -45,10 +45,20 @@ def assert_symbol_semantic_equivalence(extractor_sym: SymbolCandidate, orch_sym:
     assert extractor_sym.signature_discriminator == orch_sym.signature_discriminator
     assert extractor_sym.language == orch_sym.language
     assert extractor_sym.modifiers == orch_sym.modifiers
+    assert extractor_sym.annotations == orch_sym.annotations
     assert extractor_sym.is_exported == orch_sym.is_exported
     assert extractor_sym.export_kind == orch_sym.export_kind
     assert extractor_sym.classification_method == orch_sym.classification_method
+    assert extractor_sym.docstring == orch_sym.docstring
+    assert extractor_sym.parser_version == orch_sym.parser_version
+    assert extractor_sym.extractor_version == orch_sym.extractor_version
     assert extractor_sym.metadata == orch_sym.metadata
+
+    # Explicit check for evidence and source provenance
+    assert extractor_sym.metadata.get("evidence") == orch_sym.metadata.get("evidence")
+    assert extractor_sym.metadata.get("source_kind") == orch_sym.metadata.get("source_kind")
+    assert extractor_sym.metadata.get("extraction_method") == orch_sym.metadata.get("extraction_method")
+
     # Only orchestration-owned context is allowed to be enriched
     assert orch_sym.project_key != ""
     assert orch_sym.file_rel_path != ""
@@ -318,24 +328,28 @@ def test_gate_l_zero_premature_graph(orchestrator: SymbolExtractionOrchestrator)
 # ==============================================================================
 
 def test_gate_m_zero_database_persistence():
-    """Gate M (LOCK-ORCH-05): Mechanically analyzes AST of orchestrator.py to ensure zero DB module imports."""
-    orch_file = Path(__file__).resolve().parents[3] / "core" / "extraction" / "orchestrator.py"
-    source = orch_file.read_text(encoding="utf-8")
-    tree = ast.parse(source)
-
+    """Gate M (LOCK-ORCH-05): Mechanically analyzes AST of all B-06 implementation files (orchestrator.py & dto.py) to ensure zero DB module imports."""
+    b06_files = [
+        Path(__file__).resolve().parents[3] / "core" / "extraction" / "orchestrator.py",
+        Path(__file__).resolve().parents[3] / "core" / "extraction" / "dto.py",
+    ]
     forbidden_modules = {"sqlalchemy", "psycopg", "sqlmodel", "peewee", "tortoise"}
     forbidden_names = {"Session", "sessionmaker", "create_engine", "engine", "transaction", "repository"}
 
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            for alias in node.names:
-                mod_root = alias.name.split(".")[0]
-                assert mod_root not in forbidden_modules, f"Forbidden DB module imported: {alias.name}"
-        elif isinstance(node, ast.ImportFrom):
-            mod_root = (node.module or "").split(".")[0]
-            assert mod_root not in forbidden_modules, f"Forbidden DB module imported: {node.module}"
-            for alias in node.names:
-                assert alias.name not in forbidden_names, f"Forbidden DB name imported: {alias.name}"
+    for target_file in b06_files:
+        source = target_file.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    mod_root = alias.name.split(".")[0]
+                    assert mod_root not in forbidden_modules, f"Forbidden DB module imported in {target_file.name}: {alias.name}"
+            elif isinstance(node, ast.ImportFrom):
+                mod_root = (node.module or "").split(".")[0]
+                assert mod_root not in forbidden_modules, f"Forbidden DB module imported in {target_file.name}: {node.module}"
+                for alias in node.names:
+                    assert alias.name not in forbidden_names, f"Forbidden DB name imported in {target_file.name}: {alias.name}"
 
 
 # ==============================================================================

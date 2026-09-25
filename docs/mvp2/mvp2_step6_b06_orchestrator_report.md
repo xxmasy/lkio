@@ -56,8 +56,9 @@ $$\text{scanned\_files} = \text{successful\_files} + \text{failed\_files}$$
 
 ### 1. Gate C 语义不可变机械证明 (`assert_symbol_semantic_equivalence`)
 - 对同一 TS 文件分别通过 Extractor 直调与 Orchestrator 包装调用；
-- 逐字段比对 `symbol_type`、`base_symbol_type`、`name`、`qualified_name`、`start_line`、`end_line`、`signature`、`canonical_signature`、`signature_discriminator`、`modifiers`、`classification_method`、`metadata`；
-- **证明结论**：原生语义字段 100% 完全等价，Orchestrator 仅丰富了 `project_key` 与 `symbol_key`。
+- 逐字段严格比对 `symbol_type`、`base_symbol_type`、`name`、`qualified_name`、`start_line`、`end_line`、`start_column`、`end_column`、`signature`、`canonical_signature`、`signature_discriminator`、`modifiers`、`annotations`、`is_exported`、`export_kind`、`classification_method`、`docstring`、`parser_version`、`extractor_version`、`metadata`；
+- 显式校验 `metadata["evidence"]`、`metadata["source_kind"]` 与 `metadata["extraction_method"]` 等全部 Provenance 字段；
+- **证明结论**：原生语义与溯源证据字段 100% 完全等价，Orchestrator 仅丰富了 `project_key` 与 `symbol_key`。
 
 ### 2. Gate L 零图谱关系机械扫描
 - 遍历 `FileExtractionResult` 与 `SymbolCandidate` 数据类的所有字段以及 `metadata` 字典；
@@ -65,10 +66,10 @@ $$\text{scanned\_files} = \text{successful\_files} + \text{failed\_files}$$
 - **证明结论**：0 图谱关系泄漏，数据结构纯洁。
 
 ### 3. Gate M 零数据库持久化静态代码分析
-- 使用 Python `ast` 模块深度解析 [`core/extraction/orchestrator.py`](file:///C:/WorkSpace/lkio/core/extraction/orchestrator.py) 源码语法树；
+- 使用 Python `ast` 模块深度解析 B-06 全部实现源码语法树（[`core/extraction/orchestrator.py`](file:///C:/WorkSpace/lkio/core/extraction/orchestrator.py) 与 [`core/extraction/dto.py`](file:///C:/WorkSpace/lkio/core/extraction/dto.py)）；
 - 检查所有 `Import` 与 `ImportFrom` 节点；
 - 校验绝对未引入 `sqlalchemy`、`psycopg`、`sqlmodel`、`Session`、`engine`、`transaction`、`repository` 等任何数据库相关模块或标识符；
-- **证明结论**：0 数据库依赖，纯内存编排。
+- **证明结论**：B-06 内部 0 数据库依赖，纯内存编排。
 
 ---
 
@@ -87,7 +88,7 @@ Processing Throughput: 7,053.1 files/sec
 Counter Integrity   : Verified (100 total == 100 successful + 0 failed + 0 unsupported)
 ```
 
-> **注记**：`< 10ms` 确立为性能基线记录（Performance Baseline Contract），在 CI 机器调度轻微抖动时不作为语义正确性阻断项。
+> **注记 (Benchmark Contract)**：在规定 Benchmark 合约下，固定 $N=100$ corpus 的 mean/p95 作为性能基线记录指标；运行环境或 CI 调度偶发抖动不得改变功能正确性结论。
 
 ---
 
@@ -97,7 +98,7 @@ Counter Integrity   : Verified (100 total == 100 successful + 0 failed + 0 unsup
 |---|---|---|---|
 | **Gate A** | **Complete File Type Routing** | `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.java`, `.vue` 均被路由到正确的提取器。 | **PASSED** |
 | **Gate B** | **Unsupported Extension Handling** | `.css`, `.json`, `.py`, `.md` 被标记为 `UNSUPPORTED_EXTENSION`，计入 `unsupported_files`，不发生异常。 | **PASSED** |
-| **Gate C** | **Extractor Contract Invariance** | `assert_symbol_semantic_equivalence` 机械化证明 Extractor 语义字段 100% 保持未变。 | **PASSED** |
+| **Gate C** | **Extractor Contract Invariance** | `assert_symbol_semantic_equivalence` 机械化证明 Extractor 语义与证据字段 100% 保持未变。 | **PASSED** |
 | **Gate D** | **Single-File Failure Isolation** | `valid -> bad -> valid -> bad -> valid` 交替序列，证明中间异常被安全隔离，有效文件正常产出。 | **PASSED** |
 | **Gate E** | **Controlled Failure Taxonomy** | 错误条件严格映射到预定义 6 大枚举；Extractor 内部错误基于可观测行为分类，禁止 UNKNOWN 漫灌。 | **PASSED** |
 | **Gate F** | **Malformed Source Tolerance** | 语法残缺源文件完全继承 Extractor 的 AST 容错恢复行为；B-06 仅负责隔离与记录，绝不实现第二套 AST 算法。 | **PASSED** |
@@ -107,17 +108,17 @@ Counter Integrity   : Verified (100 total == 100 successful + 0 failed + 0 unsup
 | **Gate J** | **Project Key Propagation** | 调用方传入的 `project_key` 准确注入到下属每一个 `SymbolCandidate` 中。 | **PASSED** |
 | **Gate K** | **Batch API & Counter Integrity** | `extract_batch` 正常工作，且严格满足 `successful + failed + unsupported == total`。 | **PASSED** |
 | **Gate L** | **Zero Premature Graph** | 机械化扫描输出对象结构，断言无任何 `calls`, `imports`, `extends`, `implements`, `edges`, `relations`, `graph` 字段。 | **PASSED** |
-| **Gate M** | **Zero Database Persistence** | 代码静态 AST 扫描证明 B-06 模块内绝对未 import `sqlalchemy`, `Session`, `engine`, `transaction`, `repository`。 | **PASSED** |
-| **Gate N** | **Source Project Strict Read-Only** | 针对 `HELLO_FE`, `HELLO_BE`, `L2C_FE` 真实工程扫描前后 Git 状态完全一致，0 改动。 | **PASSED** |
-| **Gate O** | **Benchmark Contract (< 10ms)** | 固定 4 语言平衡语料（$N=100$），实测均摊耗时 0.14ms（吞吐量 7053 files/sec）。 | **PASSED** |
+| **Gate M** | **Zero Database Persistence** | 代码静态 AST 扫描证明 B-06 全部实现模块内绝对未 import `sqlalchemy`, `Session`, `engine`, `transaction`, `repository`。 | **PASSED** |
+| **Gate N** | **Source Project Strict Read-Only** | 跨工程集成环境证据：针对 `HELLO_FE`, `HELLO_BE`, `L2C_FE` 真实工程扫描前后 Git 状态完全一致，0 改动。 | **PASSED** |
+| **Gate O** | **Benchmark Contract (< 10ms Baseline)** | 固定 4 语言平衡语料（$N=100$），实测均摊耗时 0.14ms（吞吐量 7053 files/sec）。 | **PASSED** |
 | **Gate P** | **Deterministic Ordering & Gold Suite** | 包含 5 组金标准夹具（含 `deterministic_order` 验证乱序文件名输入产出字典序等价结果），100% 通过。 | **PASSED** |
 
 ---
 
-## 六、测试证据隔离呈现 (严格执行测试汇报纪律)
+## 六、测试证据分层呈现 (严格执行测试汇报纪律)
 
-### 1. 本阶段核心准入证据 (B-06 Primary Acceptance)
-严格执行阶段隔离，绝不以混合测试数伪造本阶段验收结论：
+### 1. B-06 单元语义准入证据 (B-06 Unit Semantic Acceptance)
+14 个专属测试用例覆盖 16 项 Acceptance Gates（部分用例采用一测多 Gate 的组合验证，如 Gate E/F、Gate I/J、Gate P/Gold）：
 
 ```powershell
 $ uv run pytest tests/unit/b06 -q
