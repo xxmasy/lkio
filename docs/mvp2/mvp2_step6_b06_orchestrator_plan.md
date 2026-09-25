@@ -1,7 +1,7 @@
-# LKIO MVP2-B B-06 实施规划 — Symbol Extraction Orchestrator & Fallback Handling (Approved Baseline with 8 Architecture Locks)
+# LKIO MVP2-B B-06 实施规划 — Symbol Extraction Orchestrator & Fallback Handling (Approved Baseline with 10 Architecture Locks)
 
 > **阶段**：**MVP2-B (Step 2.2 — B-06: Symbol Extraction Orchestrator & Fallback Handling)**  
-> **当前状态**：**READY_TO_EXECUTE (8 大架构锁已全部固化，实施前审查完全闭环)**  
+> **当前状态**：**READY_TO_EXECUTE (10 大架构锁已全部固化，实施前审查完全闭环，正式准入编码实施)**  
 > **前置阶段状态终审核查**：  
 > - **MVP0 = COMPLETED / FROZEN**  
 > - **MVP1 = COMPLETED / FROZEN**  
@@ -186,10 +186,41 @@ B-06 仅可从以下 4 个受控源头归类失败：
 ---
 
 ### 8. LOCK-ORCH-08: 批处理确定性排序 (Deterministic Batch Ordering)
-- **文件排序确定性**：`extract_batch(files)` 在分发前，**必须显式按 `file_rel_path` 的字典序（lexical sort）标准化排序**。消除操作系统文件系统枚举差异（Windows NTFS vs Linux ext4），确保相同输入在任何平台产出字节级等价的批处理结果；
+- **文件排序确定性**：`extract_batch(files)` 在分发前，**必须显式按 `file_rel_path` 的字典序（lexical sort）标准化排序**。消除操作系统文件系统枚举差异（Windows NTFS vs Linux ext4），确保相同逻辑输入在任何平台产出排序完全一致的批处理结果；
 - **文件内符号排序**：每个 `FileExtractionResult` 内部：
   - `symbols` 的顺序严格保持底层 Extractor 定义的 AST 确定性行号顺序；
   - `symbol_keys` 的顺序严格与 `symbols` 一一对应保持一致。
+
+---
+
+### 9. LOCK-ORCH-09: MALFORMED_SOURCE 成立规则与纯粹可观测性 (Malformed Source Observability Rule)
+> **`MALFORMED_SOURCE` 仅在 Frozen Extractor 显式暴露该失败信号，或通过冻结契约明确约定的 parser failure signal 时成立；B-06 绝不根据源码内容、AST ERROR 节点或自身启发式规则自行推导 `MALFORMED_SOURCE`。**
+
+- 若底层 Parser / Extractor 具备容错能力并能从包含语法残缺的源码中恢复出合法 AST 并正常返回 symbols，B-06 严格保留成功结果（`success=True`），绝不主观判定为 `MALFORMED_SOURCE`；
+- 只有当底层 Extractor 明确抛出语法阻断异常或显式返回不可解析失败信号时，B-06 才将其归类为 `MALFORMED_SOURCE`；
+- 此锁彻底杜绝 Orchestrator 演化为“第二套语法解析器”的架构坏味道。
+
+---
+
+### 10. LOCK-ORCH-10: 确定性逻辑等价域 (Deterministic Logical Equivalence Domain)
+> **相同逻辑输入在不同平台必须产生确定的逻辑等价输出（Deterministic Logical Equivalence）。**
+
+为避免将运行时耗时和操作系统路径混入确定性判定，明确界定比较域：
+- **纳入确定性比较域 (Deterministic Equivalence Domain)**：
+  - `project_key`
+  - `file_rel_path` (严格统一使用正斜杠 `/`)
+  - `language`
+  - `success`
+  - `symbols` 原生语义字段（按行号顺序）
+  - `symbol_keys`（与 `symbols` 一一对应）
+  - `error_reason` (受控枚举)
+  - `error_detail` (归一化错误信息)
+  - 统计计数器（`total_files`, `scanned_files`, `successful_files`, `failed_files`, `unsupported_files`, `total_symbols`, `symbols_by_type`, `failures_by_reason`）
+  - 批处理文件输出顺序（严格按 `file_rel_path` 字典序）
+- **排除出确定性比较域 (Runtime & Host Specific - Excluded)**：
+  - `file_path`（操作系统本地绝对路径，Windows 反斜杠 vs Linux 正斜杠）
+  - `duration_ms`（受 CPU 负载与 GC 抖动影响的运行时计时）
+  - 宿主机专属的临时运行时元数据
 
 ---
 
@@ -256,7 +287,7 @@ $$\text{scanned\_files} = \text{successful\_files} + \text{failed\_files}$$
 | **Gate L** | **Zero Premature Graph** | 机械化扫描输出对象结构，断言无任何 `calls`, `imports`, `extends`, `implements`, `edges`, `relations`, `graph` 字段。 |
 | **Gate M** | **Zero Database Persistence** | 代码静态扫描证明 B-06 模块内绝对未 import `sqlalchemy`, `Session`, `engine`, `transaction`, `repository`。 |
 | **Gate N** | **Source Project Strict Read-Only** | 针对 `HELLO_FE`, `HELLO_BE`, `L2C_FE` 真实工程扫描前后 Git 状态完全一致，0 改动。 |
-| **Gate O** | **Benchmark Contract (< 10ms)** | 固定硬件、温启动 Parser、固定 4 语言样本集（N=100：TS 25, JS 25, Java 25, Vue 25），验证均摊耗时 < 10ms，产出 mean/median/p95/throughput。 |
+| **Gate O** | **Benchmark Contract (< 10ms Baseline)** | 固定硬件、温启动 Parser、固定 4 语言样本集（N=100：TS 25, JS 25, Java 25, Vue 25），均摊耗时目标 < 10ms 作为性能基线记录（产出 mean/median/p95/throughput，CI 机器抖动不作为语义正确性阻断项）。 |
 | **Gate P** | **Deterministic Ordering & Gold Suite** | 包含 5 组金标准夹具（含 `deterministic_order` 验证乱序文件名输入产出字典序等价结果），100% 通过。 |
 
 ---
