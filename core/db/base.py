@@ -4,8 +4,20 @@
 import uuid
 from datetime import datetime, timezone
 from sqlalchemy import DateTime, MetaData
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# Enable SQLite dialect compatibility for zero-dependency in-memory unit tests
+@compiles(JSONB, "sqlite")
+def compile_jsonb_sqlite(type_, compiler, **kw):
+    return "JSON"
+
+
+@compiles(UUID, "sqlite")
+def compile_uuid_sqlite(type_, compiler, **kw):
+    return "CHAR(36)"
+
 
 # Standard naming convention for constraints
 POSTGRES_NAMING_CONVENTION = {
