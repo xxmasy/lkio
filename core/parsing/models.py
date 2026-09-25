@@ -17,6 +17,41 @@ class LanguageType(str, Enum):
     UNKNOWN = "unknown"
 
 
+class SymbolType(str, Enum):
+    # Native AST facts (9 types)
+    CLASS = "CLASS"
+    INTERFACE = "INTERFACE"
+    FUNCTION = "FUNCTION"
+    METHOD = "METHOD"
+    VARIABLE = "VARIABLE"
+    FIELD = "FIELD"
+    ENUM = "ENUM"
+    TYPE = "TYPE"
+    ANNOTATION = "ANNOTATION"  # Only for @interface Foo definitions
+
+    # Rule-based classifications
+    COMPONENT = "COMPONENT"
+    HOOK = "HOOK"
+
+
+NATIVE_SYMBOL_TYPES = {
+    SymbolType.CLASS.value,
+    SymbolType.INTERFACE.value,
+    SymbolType.FUNCTION.value,
+    SymbolType.METHOD.value,
+    SymbolType.VARIABLE.value,
+    SymbolType.FIELD.value,
+    SymbolType.ENUM.value,
+    SymbolType.TYPE.value,
+    SymbolType.ANNOTATION.value,
+}
+
+CLASSIFICATION_TYPES = {
+    SymbolType.COMPONENT.value,
+    SymbolType.HOOK.value,
+}
+
+
 @dataclass
 class SfcBlock:
     """A structural block extracted from a Vue Single File Component."""

@@ -25,6 +25,10 @@ class SfcBlockSlicer:
     def __init__(self, preserve_physical_lines: bool = True):
         self.preserve_physical_lines = preserve_physical_lines
 
+    def slice_text(self, content: str, file_path: str | Path = "anonymous.vue") -> SfcParseResult:
+        """Convenience method to slice SFC string directly."""
+        return self.slice_file(file_path=file_path, content=content)
+
     def slice_file(self, file_path: str | Path, content: str | None = None) -> SfcParseResult:
         path_obj = Path(file_path)
         if content is None:

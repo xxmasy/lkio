@@ -27,8 +27,8 @@
 |---|---|---|---|---|
 | **Step 2.0** | 规划、架构基线固化与前置审查 | 冻结 MVP2 实施基线、登记架构债务、确立 6 大红线与步骤规划 | **COMPLETED** | `docs/mvp2/mvp2_step0_planning_and_baseline.md` |
 | **Step 2.1 (MVP2-A)** | Tree-sitter 基础设施与 Vue SFC 解析 | 现代化 Tree-sitter 依赖引入、ParserFactory、Vue SFC 坐标金标准、Preflight 验收 | **COMPLETED / FROZEN** | `docs/mvp2/mvp2_a_preflight_report.md` |
-| **Step 2.2 (MVP2-B)** | 代码符号提取 (Symbol Extraction) | 符号提取器（类、接口、函数、方法、变量、组件、Hook）、确定性 Key 生成、符号实体增量入库 | **READY_TO_PLAN** | `docs/mvp2/mvp2_step2_symbol_extraction.md` |
-| **Step 2.3 (MVP2-C)** | 代码结构图谱 (Code Structural Graph) | 单工程结构关系提取（defines, imports, exports, calls, extends）、静态(1.0)与推断(<1.0)置信度分离 | TODO | `docs/mvp2/mvp2_step3_structural_graph.md` |
+| **Step 2.2 (MVP2-B)** | 代码符号提取 (Symbol Extraction) | 符号提取器（类、接口、函数、方法、变量、组件、Hook）、确定性 Key 生成、符号实体增量入库 | **COMPLETED / FROZEN** | `docs/mvp2/mvp2_b_symbol_extraction_report.md` |
+| **Step 2.3 (MVP2-C)** | 代码结构图谱 (Code Structural Graph) | 单工程结构关系提取（defines, imports, exports, calls, extends）、静态(1.0)与推断(<1.0)置信度分离 | **READY_TO_PLAN** | `docs/mvp2/mvp2_step3_structural_graph.md` |
 | **Step 2.4 (MVP2-D)** | 跨工程代码图谱 (Cross-project Graph) | 跨项目公共模块、共享组件与公共依赖静态关联推导 | TODO | `docs/mvp2/mvp2_step4_cross_project_graph.md` |
 | **Step 2.5 (MVP2-E)** | 契约端到端追溯 (API to Backend Traceability) | 前端 API Client 路由 ➔ HTTP Endpoint ➔ 后端 Controller ➔ Service ➔ DB 契约追溯链 | TODO | `docs/mvp2/mvp2_step5_api_traceability.md` |
 | **Step 2.6** | 全量扫描、Gold Set 回归与 MVP2 终审结项 | 三大工程全量代码图谱入库、只读双重核验、Gold Set 回归测试、终审验收报告与数据库冷备份 | TODO | `docs/mvp2/mvp2_acceptance_report.md` |

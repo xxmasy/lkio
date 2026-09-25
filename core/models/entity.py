@@ -25,11 +25,11 @@ class Entity(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         nullable=False,
     )  # PROJECT, REPOSITORY, FRONTEND, BACKEND, DIRECTORY, FILE, MODULE, PAGE, COMPONENT, SERVICE, API, etc.
     entity_key: Mapped[str] = mapped_column(
-        String(255),
+        String(512),
         unique=True,
         index=True,
         nullable=False,
-    )  # Logical idempotent identity: e.g. PROJECT:HELLO_FE
+    )  # Logical idempotent identity: e.g. PROJECT:HELLO_FE or SYMBOL:...
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     canonical_name: Mapped[str] = mapped_column(String(255), nullable=False)
     path: Mapped[str | None] = mapped_column(Text, nullable=True)
