@@ -1,7 +1,7 @@
-# LKIO MVP2-B B-06 实施规划 — Symbol Extraction Orchestrator & Fallback Handling
+# LKIO MVP2-B B-06 实施规划 — Symbol Extraction Orchestrator & Fallback Handling (Approved Baseline with 8 Architecture Locks)
 
 > **阶段**：**MVP2-B (Step 2.2 — B-06: Symbol Extraction Orchestrator & Fallback Handling)**  
-> **当前状态**：**READY_TO_PLAN (规划、契约审查与门禁设计阶段，严禁直接编写生产代码)**  
+> **当前状态**：**READY_TO_EXECUTE (8 大架构锁已全部固化，实施前审查完全闭环)**  
 > **前置阶段状态终审核查**：  
 > - **MVP0 = COMPLETED / FROZEN**  
 > - **MVP1 = COMPLETED / FROZEN**  
@@ -12,14 +12,14 @@
 > - **B-03 (TypeScript/JavaScript Extractor) = COMPLETED / FROZEN**  
 > - **B-04 (Java Extractor) = COMPLETED / FROZEN**  
 > - **B-05 (Vue Extractor) = COMPLETED / FROZEN**  
-> - **B-06 (Orchestrator & Fallback) = READY_TO_PLAN (本方案)**  
+> - **B-06 (Orchestrator & Fallback) = READY_TO_EXECUTE (本方案)**  
 > - **B-07..B-10 = LOCKED (物理冻结)**  
 
 ---
 
 ## 📌 关键审计注记 (Auditing Lock)
 
-> **B-05 的“6 大专项锁”与 16 Gates 已完整闭环。B-06 开始将首次把多个单语言 Extractor 接入统一 Orchestrator，因此在此正式锁定核心架构契约：**  
+> **B-05 的“6 大专项锁”与 16 Gates 已完整闭环。B-06 开始将首次把多个单语言 Extractor 接入统一 Orchestrator，在此正式锁定核心架构契约：**  
 > **B-03/B-04/B-05 的单语言 Extractor 契约（`extract(code_bytes, file_path, file_rel_path, language) -> list[SymbolCandidate]`）不得因 B-06 的调度需求反向修改！**  
 > **B-06 是纯粹的上层编排适配层（Upper Orchestration & Adaptation Layer），负责“选择谁来解析、如何容错隔离、如何汇总结果与修饰确定性 Key”，绝对不重新解释底层 Symbol 语义，绝对不倒逼下层 Extractor 变形。**
 
@@ -51,9 +51,46 @@
 
 ---
 
-## 一、B-06 必须锁死的 5 大架构问题 (The 5 Orchestrator Locks)
+## 一、B-06 职责边界护栏 (Owns vs Does Not Own)
 
-为确保工程纯洁性与架构健壮性，B-06 方案严格锁死以下 5 大问题：
+```text
+┌──────────────────────────────────────────────┐
+│                 B-06 OWNS                    │
+├──────────────────────────────────────────────┤
+│ File extension routing                       │
+│ Language dispatch                            │
+│ Empty source detection                       │
+│ Encoding preflight                           │
+│ Parser availability handling                 │
+│ Per-file exception isolation                 │
+│ Failure normalization                        │
+│ Project context propagation                  │
+│ Symbol key generation invocation             │
+│ Batch aggregation                            │
+│ Statistics & Counter Integrity               │
+│ Deterministic result ordering                │
+└──────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────┐
+│              B-06 DOES NOT OWN               │
+├──────────────────────────────────────────────┤
+│ AST traversal semantics                      │
+│ Symbol classification                        │
+│ Signature construction                       │
+│ Vue semantic interpretation                  │
+│ Java semantic interpretation                 │
+│ JS/TS type inference                         │
+│ Graph relation extraction (CALLS/IMPORTS...) │
+│ Cross-file resolution                        │
+│ Business semantics                           │
+│ LLM inference                                │
+│ Database persistence                         │
+└──────────────────────────────────────────────┘
+```
+
+---
+
+## 二、8 大架构锁 (The 8 Orchestrator Locks)
 
 ### 1. LOCK-ORCH-01: 确定性文件类型路由矩阵 (Deterministic File Routing)
 Orchestrator 建立显式、受控的文件扩展名到语言提取器的映射，杜绝模糊推断：
@@ -92,8 +129,8 @@ File B (Corrupted) ──► Route ──► Exception ──► Catch   ──�
 File C (Normal)    ──► Route ──► Extractor ──► Success ──► Results C
 ```
 
-- **隔离单元**：文件级 `try-except` 沙箱；
-- **错误捕获**：不仅捕获通用异常，更捕获 Tree-sitter 特殊异常；
+- **隔离单元**：文件级独立沙箱；
+- **错误捕获**：捕获所有文件级解析异常与内部错误；
 - **流水线保活**：捕获后输出结构化错误诊断记录，流水线无缝处理下一个文件。
 
 ---
@@ -105,7 +142,7 @@ File C (Normal)    ──► Route ──► Extractor ──► Success ──�
 class ExtractionFailureReason(str, Enum):
     UNSUPPORTED_EXTENSION = "unsupported_extension"  # 不受支持的文件后缀（如 .css, .json, .py）
     PARSER_UNAVAILABLE    = "parser_unavailable"     # 目标语言 Tree-sitter Parser/Grammar 未能加载
-    ENCODING_FAILURE      = "encoding_failure"       # 文件二进制乱码或无法按 UTF-8/指定编码安全解码
+    ENCODING_FAILURE      = "encoding_failure"       # 文件二进制乱码或无法按 UTF-8 安全解码
     MALFORMED_SOURCE      = "malformed_source"       # 源码严重残缺，AST 根节点或关键骨架解析失败
     EXTRACTOR_EXCEPTION   = "extractor_exception"    # 抽取器在遍历 AST 过程中抛出未预期的内部异常
     EMPTY_SOURCE          = "empty_source"           # 文件内容为 0 字节或纯空白
@@ -124,9 +161,39 @@ B-06 依然处于 **MVP2-B (Symbol Extraction)** 阶段，严格禁止跨越至�
 
 ---
 
-## 二、B-06 数据结构契约设计 (DTOs)
+### 6. LOCK-ORCH-06: 失败分类可观测性边界 (Failure Classification Observability Boundary)
+> **B-06 绝对禁止为了重新解释 Extractor 语义而自行独立解析源码或检查 AST 结构。**
 
-为实现结果汇总与失败隔离，定义两个无状态结构化 DTO：
+B-06 仅可从以下 4 个受控源头归类失败：
+1. **Orchestrator 自身拥有的确定性文件级前置条件**：扩展名不支持 (`UNSUPPORTED_EXTENSION`)、文件纯空 (`EMPTY_SOURCE`)、编码无法解码 (`ENCODING_FAILURE`)；
+2. **在分发/启动边界可观测的解析器可用性故障**：目标语言 Parser 实例化失败 (`PARSER_UNAVAILABLE`)；
+3. **被冻结的 Extractor 显式抛出的异常**：(`EXTRACTOR_EXCEPTION`)；
+4. **在不改变 B-03/B-04/B-05 公共返回契约的前提下，Extractor 已经提供的失败信号**。
+
+**B-06 绝不能仅仅为了归类 `MALFORMED_SOURCE` 就引入第二套 AST 解析路径。如果无法通过冻结的 Extractor 契约确定性观测到，实现严禁在 Orchestrator 层凭空捏造该分类。**
+
+---
+
+### 7. LOCK-ORCH-07: 符号语义不可变性与相对路径身份 (Candidate Semantic Immutability)
+- **语义不可变**：Orchestrator 仅可为 `SymbolCandidate` 注入其拥有的编排上下文（`project_key` 与派生的 `symbol_key`）。Orchestrator **绝对禁止改写**以下 Extractor 拥有的语义字段：
+  ```text
+  symbol_type, base_symbol_type, name, qualified_name, signature,
+  classification_method, evidence, coordinates (start/end line/col),
+  metadata, source provenance
+  ```
+- **相对路径身份**：确定性主键 `compute_key()` 计算时，**必须且仅能使用 `file_rel_path`，绝对不能使用绝对路径 `file_path`**。确保同一仓库在 Windows、Linux、Docker、CI 环境下生成的 Key 严格位阶一致。
+
+---
+
+### 8. LOCK-ORCH-08: 批处理确定性排序 (Deterministic Batch Ordering)
+- **文件排序确定性**：`extract_batch(files)` 在分发前，**必须显式按 `file_rel_path` 的字典序（lexical sort）标准化排序**。消除操作系统文件系统枚举差异（Windows NTFS vs Linux ext4），确保相同输入在任何平台产出字节级等价的批处理结果；
+- **文件内符号排序**：每个 `FileExtractionResult` 内部：
+  - `symbols` 的顺序严格保持底层 Extractor 定义的 AST 确定性行号顺序；
+  - `symbol_keys` 的顺序严格与 `symbols` 一一对应保持一致。
+
+---
+
+## 三、B-06 数据结构与统计完整性契约 (DTOs & Integrity)
 
 ### 1. `FileExtractionResult` (单文件结果与诊断)
 ```python
@@ -144,7 +211,7 @@ class FileExtractionResult:
     metadata: dict[str, Any] = field(default_factory=dict)
 ```
 
-### 2. `BatchExtractionSummary` (批处理扫描摘要)
+### 2. `BatchExtractionSummary` (批处理扫描摘要与统计完整性)
 ```python
 @dataclass
 class BatchExtractionSummary:
@@ -161,57 +228,66 @@ class BatchExtractionSummary:
     results: list[FileExtractionResult] = field(default_factory=list)
 ```
 
+### 3. 统计计数完整性硬约束 (Counter Integrity Rule)
+> **`unsupported_files` 是一种“不参与 Extractor 处理”的独立终态，绝不计入 `failed_files`！**
+
+在任何批处理结果中，必须无条件满足恒等式：
+$$\text{total\_files} = \text{successful\_files} + \text{failed\_files} + \text{unsupported\_files}$$
+并且：
+$$\text{scanned\_files} = \text{successful\_files} + \text{failed\_files}$$
+
 ---
 
-## 三、16 项 Acceptance Gates (Gate A ~ P) 设计
+## 四、16 项 Acceptance Gates (Gate A ~ P) 细目设计
 
 | Gate 代号 | 准入要求与设计规格 | 验证方式与测试目标 |
 |---|---|---|
 | **Gate A** | **Complete File Type Routing** | 验证 `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.java`, `.vue` 均被路由到正确的提取器。 |
-| **Gate B** | **Unsupported Extension Handling** | 验证 `.css`, `.json`, `.py`, `.md` 被标记为 `UNSUPPORTED_EXTENSION`，不发生崩溃。 |
-| **Gate C** | **Extractor Contract Invariance** | 验证 B-03, B-04, B-05 的入参与出参契约 100% 保持不变，未被 Orchestrator 篡改。 |
-| **Gate D** | **Single-File Failure Isolation** | 构造一个故意抛出异常的文件，批处理时该文件记录失败，其余 N 个有效文件 100% 正常产出。 |
-| **Gate E** | **Controlled Failure Taxonomy** | 针对不同异常场景，准确产出 6 种预定义 `ExtractionFailureReason`，拒绝模糊 `UNKNOWN`。 |
-| **Gate F** | **Malformed Source Tolerance** | 面对语法碎裂或不完整的源文件，在记录诊断的同时尽最大努力提取合法 AST 片段。 |
-| **Gate G** | **Encoding Robustness** | 面对包含畸形字节、BOM 或非标准 UTF-8 编码的文件，能够平稳容错降级或明确报告。 |
-| **Gate H** | **Empty File Handling** | 面对 0 字节文件，明确报告 `EMPTY_SOURCE`，耗时接近 0，不触发 AST 解析。 |
-| **Gate I** | **Deterministic Key Generation** | 验证 Orchestrator 输出的每个 Symbol 均携带全局唯一、符合 5 大不变量的确定性 Key。 |
+| **Gate B** | **Unsupported Extension Handling** | 验证 `.css`, `.json`, `.py`, `.md` 被标记为 `UNSUPPORTED_EXTENSION`，计入 `unsupported_files`，不发生异常。 |
+| **Gate C** | **Extractor Contract Invariance** | 编写 `assert_symbol_semantic_equivalence(...)`，机械化证明被 Orchestrator 包装后的 Extractor 语义字段 100% 保持未变。 |
+| **Gate D** | **Single-File Failure Isolation** | 构造 `valid -> bad (RuntimeError) -> valid -> bad -> valid` 交替序列，证明第 1、3、5 个文件提取完全不受异常影响。 |
+| **Gate E** | **Controlled Failure Taxonomy** | 验证 Orchestrator 拥有的错误条件严格映射到预定义 6 大枚举；Extractor 内部错误基于可观测行为分类，禁止 UNKNOWN 漫灌，禁止二次 AST 解析。 |
+| **Gate F** | **Malformed Source Tolerance** | 面对语法残缺源文件，完全继承冻结 Extractor 的 AST 容错恢复行为；B-06 仅负责隔离与记录，绝不实现第二套 AST 算法。 |
+| **Gate G** | **Encoding Robustness** | 面对畸形字节或无法解码的二进制文件，平稳记录为 `ENCODING_FAILURE`，不抛出未捕获异常。 |
+| **Gate H** | **Empty File Handling** | 面对 0 字节或纯空白文件，明确记录为 `EMPTY_SOURCE`，耗时接近 0，不触发 AST 解析。 |
+| **Gate I** | **Deterministic Key Generation** | 验证 Orchestrator 输出的每个 Symbol 均携带基于 `file_rel_path` 计算的全局唯一确定性 Key。 |
 | **Gate J** | **Project Key Propagation** | 验证调用方传入的 `project_key` 准确注入到下属每一个 `SymbolCandidate` 中。 |
-| **Gate K** | **Batch Extraction API** | 提供统一的 `extract_batch(files: list[...], project_key: str)` 方法，返回结构化摘要。 |
-| **Gate L** | **Zero Premature Graph** | 严格审查输出，断言无任何关系边（CALLS/IMPORTS/EXTENDS）渗入。 |
-| **Gate M** | **Zero Database Persistence** | B-06 内部绝对无 SQLAlchemy、Session、INSERT 或 UPDATE 调用，纯内存计算。 |
+| **Gate K** | **Batch API & Counter Integrity** | 验证 `extract_batch` 正常工作，且严格满足 `successful + failed + unsupported == total`。 |
+| **Gate L** | **Zero Premature Graph** | 机械化扫描输出对象结构，断言无任何 `calls`, `imports`, `extends`, `implements`, `edges`, `relations`, `graph` 字段。 |
+| **Gate M** | **Zero Database Persistence** | 代码静态扫描证明 B-06 模块内绝对未 import `sqlalchemy`, `Session`, `engine`, `transaction`, `repository`。 |
 | **Gate N** | **Source Project Strict Read-Only** | 针对 `HELLO_FE`, `HELLO_BE`, `L2C_FE` 真实工程扫描前后 Git 状态完全一致，0 改动。 |
-| **Gate O** | **High Throughput Performance** | 单核单文件抽取调度均摊耗时小于 10ms，满足大规模代码仓库高吞吐需求。 |
-| **Gate P** | **All Gold Suites Integration** | 覆盖 TS/JS/Java/Vue 黄金样本文件，验证 100% 正确抽取且分类准确。 |
+| **Gate O** | **Benchmark Contract (< 10ms)** | 固定硬件、温启动 Parser、固定 4 语言样本集（N=100：TS 25, JS 25, Java 25, Vue 25），验证均摊耗时 < 10ms，产出 mean/median/p95/throughput。 |
+| **Gate P** | **Deterministic Ordering & Gold Suite** | 包含 5 组金标准夹具（含 `deterministic_order` 验证乱序文件名输入产出字典序等价结果），100% 通过。 |
 
 ---
 
-## 四、金标准夹具与测试规划 (Gold Fixtures & Test Plan)
+## 五、金标准夹具规划 (5 类 Gold Fixtures)
 
-为验证 B-06 的跨语言统合与容错隔离，将在 `tests/gold/mvp2/symbols/orchestrator/` 建立 4 类专属夹具：
+在 `tests/gold/mvp2/symbols/orchestrator/` 建立 5 类专属夹具：
 
-1. **`valid_multi_lang/`**：跨语言混编包，包含 TypeScript、JavaScript、Java、Vue 各 1 个标准文件，验证统一路由与确定性 Key；
-2. **`malformed_syntax/`**：包含残缺代码片段的文件（如缺少闭合大括号、非法标记），验证 AST 容错与 `MALFORMED_SOURCE` 报告；
+1. **`valid_multi_lang/`**：跨语言混编包，包含 TS、JS、Java、Vue 各 1 个标准文件，验证统一路由与确定性 Key；
+2. **`malformed_syntax/`**：包含语法残缺代码文件，验证 AST 容错与优雅恢复；
 3. **`unsupported_files/`**：包含 `.css`、`.json`、`.yaml` 等非代码文件，验证 `UNSUPPORTED_EXTENSION` 快速过滤；
-4. **`corrupted_binary/`**：伪造的非法二进制文件，验证 `ENCODING_FAILURE` 隔离保护。
+4. **`corrupted_binary/`**：包含非法字节序列的文件，验证 `ENCODING_FAILURE` 隔离保护；
+5. **`deterministic_order/`**：人为命名乱序文件（如 `z.ts`, `a.java`, `m.vue`, `b.js`），验证批处理字典序归一化与多次运行幂等性。
 
 ### 阶段专属测试目录
 ```text
 tests/unit/b06/
-└── test_orchestrator_b06.py  # B-06 专属单元测试（路由、多语言统合、失败隔离、错误分类、批处理摘要）
+└── test_orchestrator_b06.py  # B-06 专属单元测试（路由、多语言统合、失败隔离、错误分类、批处理摘要、排序与基准合约）
 ```
 
 ---
 
-## 五、实施纪律与测试报告准则
+## 六、实施步骤规划 (Execution Steps B-06-01 ~ B-06-08)
 
-1. **测试隔离报告纪律**：
-   在 B-06 结项报告中，核心准入依据必须为且仅为：
-   ```bash
-   uv run pytest tests/unit/b06 -q
-   ```
-   历史阶段回归（B-00~B-05）继续作为独立的独立表格分层陈述，严禁混合计数。
-2. **物理只读保证**：
-   继续通过 `tests/integration/test_real_projects_symbols_smoke.py` 严格保持三大真实仓库 0 修改。
-3. **分阶段结项红线**：
-   B-06 仅交付内存级 Orchestration 与 Failure Isolation。通过验收后，方可解锁 **B-07 (Database Persistence & Idempotency Pipeline)**。
+```text
+B-06-01: 确定性文件路由矩阵与前置检查 (Routing Matrix, Empty Source, Unsupported Extension, Encoding)
+B-06-02: 数据传输对象 (FileExtractionResult, BatchExtractionSummary, ExtractionFailureReason)
+B-06-03: 单文件独立沙箱与失败隔离实现 (File Sandbox, Exception Catching, Provenance Protection)
+B-06-04: 批处理编排器与字典序排序归一化 (Batch Pipeline, Lexical Sort, Counter Integrity)
+B-06-05: 5 大金标准测试夹具构建 (valid_multi_lang, malformed, unsupported, binary, order)
+B-06-06: 16 项 Acceptance Gates 自动化验证 (test_orchestrator_b06.py 100% 闭环)
+B-06-07: 全阶段回归隔离测试 (B-00~B-05 独立全绿验证)
+B-06-08: 三大源工程只读 Smoke 核验、编写结项报告并冻结
+```
