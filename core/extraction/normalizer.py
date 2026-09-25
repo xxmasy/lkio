@@ -162,6 +162,10 @@ def canonicalize_java_signature(params_text: str | None) -> str:
         p_clean = re.sub(r"\bfinal\b", "", p_clean)
         p_clean = _WHITESPACE_RE.sub(" ", p_clean).strip()
 
+        # Filter out Java receiver parameter (LOCK-JAVA-02): e.g. 'MyClass this' or 'this'
+        if p_clean.endswith(" this") or p_clean == "this":
+            continue
+
         # In Java: Type paramName or Type... paramName
         words = p_clean.split(" ")
         if len(words) >= 2:

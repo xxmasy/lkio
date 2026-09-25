@@ -117,19 +117,19 @@ def test_java_extractor_gold():
     assert "RequestMapping" in ann_names
 
     # 4. Field with Annotation
-    assert "LeadController.leadService" in qname_map
-    fld = qname_map["LeadController.leadService"]
+    assert "LeadController::leadService" in qname_map
+    fld = qname_map["LeadController::leadService"]
     assert fld.symbol_type == SymbolType.FIELD.value
     assert any(a["name"] == "Autowired" for a in fld.annotations)
 
     # 5. Methods and Overloading
-    assert "LeadController.getLeadById" in qname_map
-    m1 = qname_map["LeadController.getLeadById"]
+    assert "LeadController::getLeadById" in qname_map
+    m1 = qname_map["LeadController::getLeadById"]
     assert m1.symbol_type == SymbolType.METHOD.value
     assert any(a["name"] == "GetMapping" for a in m1.annotations)
 
-    assert "LeadController.getLeadByCode" in qname_map
-    m2 = qname_map["LeadController.getLeadByCode"]
+    assert "LeadController::getLeadByCode" in qname_map
+    m2 = qname_map["LeadController::getLeadByCode"]
     assert m2.symbol_type == SymbolType.METHOD.value
 
     # Method signatures and discriminators must distinguish overloads
