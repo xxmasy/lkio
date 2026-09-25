@@ -75,3 +75,58 @@ class SymbolCandidate:
             signature_discriminator=self.signature_discriminator,
             canonical_signature=self.canonical_signature,
         )
+
+
+class ExtractionFailureReason(str, Enum):
+    """Discrete, controlled taxonomy of extraction failure causes (LOCK-ORCH-04)."""
+    UNSUPPORTED_EXTENSION = "unsupported_extension"  # 不受支持的文件后缀（如 .css, .json, .py）
+    PARSER_UNAVAILABLE = "parser_unavailable"        # 目标语言 Tree-sitter Parser/Grammar 未能加载
+    ENCODING_FAILURE = "encoding_failure"            # 文件二进制乱码或无法按 UTF-8 安全解码
+    MALFORMED_SOURCE = "malformed_source"            # 源码严重残缺，AST 根节点或关键骨架解析失败
+    EXTRACTOR_EXCEPTION = "extractor_exception"       # 抽取器在遍历 AST 过程中抛出未预期的内部异常
+    EMPTY_SOURCE = "empty_source"                    # 文件内容为 0 字节或纯空白
+
+
+@dataclass
+class FileExtractionResult:
+    """Diagnostic and extracted symbol result for a single file (LOCK-ORCH-03)."""
+    file_rel_path: str
+    file_path: str
+    language: str
+    success: bool
+    symbols: list[SymbolCandidate] = field(default_factory=list)
+    symbol_keys: list[str] = field(default_factory=list)
+    error_reason: str | None = None  # From ExtractionFailureReason
+    error_detail: str | None = None
+    duration_ms: float = 0.0
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self):
+        if self.file_rel_path:
+            self.file_rel_path = self.file_rel_path.replace("\\", "/")
+
+
+@dataclass
+class BatchExtractionSummary:
+    """Summary of a batch symbol extraction scan across multiple files with counter integrity (LOCK-ORCH-08)."""
+    project_key: str
+    total_files: int
+    scanned_files: int
+    successful_files: int
+    failed_files: int
+    unsupported_files: int
+    total_symbols: int
+    symbols_by_type: dict[str, int] = field(default_factory=dict)
+    failures_by_reason: dict[str, int] = field(default_factory=dict)
+    duration_ms: float = 0.0
+    results: list[FileExtractionResult] = field(default_factory=list)
+
+    def verify_counter_integrity(self) -> bool:
+        """Verifies the counter integrity invariants:
+        total_files == successful_files + failed_files + unsupported_files
+        scanned_files == successful_files + failed_files
+        """
+        scanned_valid = self.scanned_files == (self.successful_files + self.failed_files)
+        total_valid = self.total_files == (self.successful_files + self.failed_files + self.unsupported_files)
+        return scanned_valid and total_valid
+

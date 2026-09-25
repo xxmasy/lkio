@@ -1,0 +1,5 @@
+name: LeadSchema
+version: 1.0
+fields:
+  - id
+  - title
