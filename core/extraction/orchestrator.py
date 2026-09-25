@@ -88,14 +88,8 @@ class SymbolExtractionOrchestrator:
         # Generate canonical deterministic keys for each candidate
         results: list[tuple[str, SymbolCandidate]] = []
         for candidate in candidates:
-            key = build_symbol_key(
-                project_key=project_key,
-                file_rel_path=candidate.file_rel_path,
-                base_symbol_type=candidate.base_symbol_type,
-                qualified_name=candidate.qualified_name,
-                signature=candidate.signature,
-                signature_discriminator=candidate.signature_discriminator,
-            )
+            candidate.project_key = project_key
+            key = candidate.compute_key()
             results.append((key, candidate))
 
         return results

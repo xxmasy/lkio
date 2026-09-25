@@ -9,6 +9,7 @@ Validates:
 from pathlib import Path
 import pytest
 from core.extraction.java import JavaExtractor
+from core.extraction.normalizer import parse_symbol_key
 from core.extraction.orchestrator import SymbolExtractionOrchestrator
 from core.extraction.typescript import TypeScriptExtractor
 from core.extraction.vue import VueExtractor
@@ -40,31 +41,32 @@ def test_typescript_extractor_gold():
     assert sym_map["StatusEnum"].symbol_type == SymbolType.ENUM.value
     assert sym_map["StatusEnum"].base_symbol_type == SymbolType.ENUM.value
 
-    # 4. Hook (Lock 2: base_symbol_type = FUNCTION, classification = name_prefix_rule)
+    # 4. Hook (Lock 2: base_symbol_type = FUNCTION, classification = name_prefix_rule_v1)
     assert "useUserProfile" in sym_map
     hook = sym_map["useUserProfile"]
     assert hook.symbol_type == SymbolType.HOOK.value
     assert hook.base_symbol_type == SymbolType.FUNCTION.value
-    assert hook.classification_method == "name_prefix_rule"
+    assert hook.classification_method == "name_prefix_rule_v1"
     assert hook.is_exported is True
 
-    # 5. Function in variable
+    # 5. Arrow function in variable (Lock 2 & Section 9: base_symbol_type = VARIABLE)
     assert "fetchUsers" in sym_map
     fn = sym_map["fetchUsers"]
-    assert fn.symbol_type == SymbolType.FUNCTION.value
-    assert fn.base_symbol_type == SymbolType.FUNCTION.value
+    assert fn.symbol_type == SymbolType.VARIABLE.value
+    assert fn.base_symbol_type == SymbolType.VARIABLE.value
+    assert fn.metadata["function_kind"] == "arrow"
 
-    # 6. Class and Members
+    # 6. Class and Members (Lock 5: :: delimiter)
     assert "UserService" in sym_map
     cls_sym = sym_map["UserService"]
     assert cls_sym.symbol_type == SymbolType.CLASS.value
 
     qname_map = {s.qualified_name: s for s in symbols}
-    assert "UserService.endpoint" in qname_map
-    assert qname_map["UserService.endpoint"].symbol_type == SymbolType.FIELD.value
+    assert "UserService::endpoint" in qname_map
+    assert qname_map["UserService::endpoint"].symbol_type == SymbolType.FIELD.value
 
-    assert "UserService.getUser" in qname_map
-    assert qname_map["UserService.getUser"].symbol_type == SymbolType.METHOD.value
+    assert "UserService::getUser" in qname_map
+    assert qname_map["UserService::getUser"].symbol_type == SymbolType.METHOD.value
 
 
 def test_tsx_extractor_gold():
@@ -79,13 +81,14 @@ def test_tsx_extractor_gold():
     assert "useCardCounter" in sym_map
     assert sym_map["useCardCounter"].symbol_type == SymbolType.HOOK.value
     assert sym_map["useCardCounter"].base_symbol_type == SymbolType.FUNCTION.value
+    assert sym_map["useCardCounter"].classification_method == "name_prefix_rule_v1"
 
-    # React Component (Lock 2: base_symbol_type = FUNCTION, classification = jsx_return_rule)
+    # React Component (Lock 2 & Section 9: arrow function -> base_symbol_type = VARIABLE, classification = jsx_function_component_v1)
     assert "StatsCard" in sym_map
     comp = sym_map["StatsCard"]
     assert comp.symbol_type == SymbolType.COMPONENT.value
-    assert comp.base_symbol_type == SymbolType.FUNCTION.value
-    assert comp.classification_method == "jsx_return_rule"
+    assert comp.base_symbol_type == SymbolType.VARIABLE.value
+    assert comp.classification_method == "jsx_function_component_v1"
 
 
 def test_java_extractor_gold():
@@ -186,10 +189,9 @@ def test_orchestrator_gold_suite():
         assert len(results) > 0
 
         for key, candidate in results:
-            # Validate Key Format: SYMBOL:<proj>:<rel_path>:<base_type>:<qname>:<discriminator>
-            parts = key.split(":")
-            assert parts[0] == "SYMBOL"
-            assert parts[1] == proj_key
-            assert parts[2] == rel_path
-            assert parts[3] == candidate.base_symbol_type
-            assert len(parts[5]) == 16
+            parsed = parse_symbol_key(key)
+            assert parsed["project_key"] == proj_key
+            assert parsed["file_rel_path"] == rel_path
+            assert parsed["base_symbol_type"] == candidate.base_symbol_type
+            assert parsed["qualified_name"] == candidate.qualified_name
+            assert len(parsed["signature_discriminator"]) == 16

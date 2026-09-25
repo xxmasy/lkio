@@ -40,6 +40,7 @@ class SymbolCandidate:
     annotations: list[dict[str, Any]] = field(default_factory=list)
 
     is_exported: bool = False
+    export_kind: str = "none"  # "named", "default", "none"
 
     classification_method: str | None = None  # None, name_prefix_rule_v1, vue_sfc_rule_v1, jsx_function_component_v1
 
