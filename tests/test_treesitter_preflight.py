@@ -192,8 +192,19 @@ def test_readonly_integrity_preflight():
         path_obj = Path(p)
         if not path_obj.exists():
             continue
-        # Scan a few files
-        for f in list(path_obj.rglob("*.vue"))[:3] + list(path_obj.rglob("*.java"))[:3]:
+        import os
+        sample_files = []
+        for root_dir, dirs, files in os.walk(path_obj):
+            dirs[:] = [d for d in dirs if d not in {".git", "node_modules", ".pnpm", "dist", "target", "build", ".venv"}]
+            for f in files:
+                if f.endswith((".vue", ".java", ".ts")):
+                    sample_files.append(Path(root_dir) / f)
+                    if len(sample_files) >= 5:
+                        break
+            if len(sample_files) >= 5:
+                break
+
+        for f in sample_files:
             try:
                 content = f.read_text(encoding="utf-8", errors="replace")
                 l_type = factory.detect_language(f)

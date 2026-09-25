@@ -104,12 +104,25 @@ def test_source_repos_strict_readonly():
     factory = ParserFactory()
     slicer = SfcBlockSlicer(preserve_physical_lines=True)
 
+    import os
+
+    def safe_walk_files(base_path: Path, extensions: tuple[str, ...], limit: int = 10) -> list[Path]:
+        found = []
+        for root_dir, dirs, files in os.walk(base_path):
+            dirs[:] = [d for d in dirs if d not in {".git", "node_modules", ".pnpm", "dist", "target", "build", ".venv"}]
+            for f in files:
+                if f.endswith(extensions):
+                    found.append(Path(root_dir) / f)
+                    if len(found) >= limit:
+                        return found
+        return found
+
     for p in paths:
         root = Path(p)
         if not root.exists():
             continue
-        # Scan 10 vue files and 10 java/ts files
-        for f in list(root.rglob("*.vue"))[:10]:
+        # Scan 10 vue files and 10 java/ts files without walking node_modules
+        for f in safe_walk_files(root, (".vue",), limit=10):
             try:
                 sfc = slicer.slice_file(f)
                 for sc in sfc.script_blocks:
@@ -118,7 +131,7 @@ def test_source_repos_strict_readonly():
             except Exception:
                 pass
 
-        for f in list(root.rglob("*.java"))[:10] + list(root.rglob("*.ts"))[:10]:
+        for f in safe_walk_files(root, (".java", ".ts"), limit=10):
             try:
                 l_key = factory.detect_language(f)
                 if l_key in ["typescript", "tsx", "javascript", "jsx", "java"]:
