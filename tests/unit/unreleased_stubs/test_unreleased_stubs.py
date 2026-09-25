@@ -150,17 +150,17 @@ def test_vue_extractor_gold():
     comp = qname_map["sample_vue"]
     assert comp.symbol_type == SymbolType.COMPONENT.value
     assert comp.base_symbol_type == SymbolType.VARIABLE.value
-    assert comp.classification_method == "vue_sfc_rule"
+    assert comp.classification_method == "vue_sfc_rule_v1"
 
     # 2. Inner script Hook
-    assert "sample_vue.useLeadViewHook" in qname_map
-    hook = qname_map["sample_vue.useLeadViewHook"]
+    assert "script_setup::useLeadViewHook" in qname_map
+    hook = qname_map["script_setup::useLeadViewHook"]
     assert hook.symbol_type == SymbolType.HOOK.value
     assert hook.base_symbol_type == SymbolType.FUNCTION.value
 
     # 3. Inner function with exact physical coordinates
-    assert "sample_vue.handleRefresh" in qname_map
-    fn = qname_map["sample_vue.handleRefresh"]
+    assert "script_setup::handleRefresh" in qname_map
+    fn = qname_map["script_setup::handleRefresh"]
     assert fn.symbol_type == SymbolType.FUNCTION.value
     # In sample_vue.vue, handleRefresh is on line 19!
     assert fn.start_line == 19, f"Expected physical line 19, got {fn.start_line}"

@@ -36,10 +36,18 @@ class SfcBlockSlicer:
 
         result = SfcParseResult(file_path=str(path_obj).replace("\\", "/"))
 
-        for match in TAG_REGEX.finditer(content):
+        # Mask HTML comments for block detection while preserving exact offsets and newlines
+        masked_content = re.sub(
+            r"<!--.*?-->",
+            lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+            content,
+            flags=re.DOTALL,
+        )
+
+        for match in TAG_REGEX.finditer(masked_content):
             tag = match.group("tag").lower()
-            attrs_str = match.group("attrs") or ""
-            inner_content = match.group("content")
+            attrs_str = content[match.start("attrs") : match.end("attrs")]
+            inner_content = content[match.start("content") : match.end("content")]
 
             # 1-based tag start line and end line
             tag_start_line = content[:match.start()].count("\n") + 1
