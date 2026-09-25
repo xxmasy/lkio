@@ -62,3 +62,15 @@ class SymbolCandidate:
             self.file_rel_path = self.file_rel_path.replace("\\", "/")
         if not self.file_path and self.file_rel_path:
             self.file_path = self.file_rel_path
+
+    def compute_key(self) -> str:
+        """Computes the deterministic entity key for this symbol candidate."""
+        from core.extraction.normalizer import build_symbol_key
+        return build_symbol_key(
+            project_key=self.project_key,
+            file_rel_path=self.file_rel_path,
+            base_symbol_type=self.base_symbol_type,
+            qualified_name=self.qualified_name,
+            signature_discriminator=self.signature_discriminator,
+            canonical_signature=self.canonical_signature,
+        )

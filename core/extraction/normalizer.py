@@ -199,6 +199,40 @@ def normalize_rel_path(rel_path: str) -> str:
     return p
 
 
+def build_qualified_name(
+    symbol_name: str,
+    scope_chain: list[str] | tuple[str, ...] | str | None = None,
+    block_scope: str | None = None,
+) -> str:
+    """Builds a deterministic qualified name incorporating lexical scope path and block scope (Lock 5).
+
+    Guarantees:
+    1. Lexical scope isolation: top-level 'loadData' vs nested 'outer::loadData' are distinct.
+    2. Multi-block isolation: Vue '<script>' ('script::foo') vs '<script setup>' ('script_setup::foo') are distinct.
+    3. Standardized '::' delimiter.
+    """
+    clean_sym = symbol_name.strip()
+    scopes: list[str] = []
+
+    if block_scope:
+        b_clean = block_scope.strip()
+        if b_clean:
+            scopes.append(b_clean)
+
+    if scope_chain:
+        if isinstance(scope_chain, str):
+            parts = [s.strip() for s in re.split(r"::|\.", scope_chain) if s.strip()]
+            scopes.extend(parts)
+        else:
+            for s in scope_chain:
+                parts = [p.strip() for p in re.split(r"::|\.", s) if p.strip()]
+                scopes.extend(parts)
+
+    if scopes:
+        return f"{'::'.join(scopes)}::{clean_sym}"
+    return clean_sym
+
+
 def build_symbol_key(
     project_key: str,
     file_rel_path: str,
@@ -233,3 +267,31 @@ def build_symbol_key(
         discriminator = signature_discriminator.strip()
 
     return f"SYMBOL:{project_key.strip()}:{norm_path}:{base_symbol_type}:{clean_qname}:{discriminator}"
+
+
+def parse_symbol_key(symbol_key: str) -> dict[str, str]:
+    """Parses a canonical Symbol Key into its constituent parts.
+
+    Handles qualified names that contain lexical scope delimiters ('::').
+
+    Returns:
+        dict with keys: 'project_key', 'file_rel_path', 'base_symbol_type',
+        'qualified_name', 'signature_discriminator'.
+    """
+    if not symbol_key or not symbol_key.startswith("SYMBOL:"):
+        raise ValueError(f"Invalid symbol key prefix: '{symbol_key}'")
+
+    body, discriminator = symbol_key.rsplit(":", 1)
+    parts = body.split(":", 4)
+    if len(parts) != 5:
+        raise ValueError(f"Malformed symbol key structure: '{symbol_key}'")
+
+    _, project_key, file_rel_path, base_symbol_type, qualified_name = parts
+
+    return {
+        "project_key": project_key,
+        "file_rel_path": file_rel_path,
+        "base_symbol_type": base_symbol_type,
+        "qualified_name": qualified_name,
+        "signature_discriminator": discriminator,
+    }
