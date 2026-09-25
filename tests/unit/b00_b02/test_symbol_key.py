@@ -342,9 +342,9 @@ def test_ts_signature_canonicalization_matrix():
     sig_generics = "(map: Map<string, number>, list: Array<string>)"
     assert canonicalize_ts_signature(sig_generics) == "(Map<string,number>,Array<string>)"
 
-    # 4. Untyped JS params treated as 'any'
+    # 4. Untyped JS params treated as '?' (B-03-AUDIT-02: faithful structural fact, zero fake 'any')
     sig_untyped = "(a, b)"
-    assert canonicalize_ts_signature(sig_untyped) == "(any,any)"
+    assert canonicalize_ts_signature(sig_untyped) == "(?,?)"
 
     # 5. Empty parameters
     assert canonicalize_ts_signature("()") == "()"

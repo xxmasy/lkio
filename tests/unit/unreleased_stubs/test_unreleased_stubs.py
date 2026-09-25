@@ -1,9 +1,7 @@
-"""Unit Tests for Symbol Extractors against Gold Standard Fixtures
-Validates:
-1. TypeScript & TSX extraction (Classes, Interfaces, Types, Enums, Hooks, Components).
-2. Java extraction (Classes, Enums, Annotations as symbols, Annotation usages as metadata, Overloading).
-3. Vue SFC extraction (Component symbol + exact physical coordinates for script symbols).
-4. Deterministic key generation across all extracted symbols.
+"""[UNRELEASED / NOT ACCEPTED DRAFT STUBS]
+Quarantined early prototype tests for Java, Vue SFC, and multi-language Orchestration.
+STRICTLY EXCLUDED from B-03 Acceptance Gate (B-03-AUDIT-01).
+B-04 (Java) and B-05 (Vue) will be planned, implemented, and accepted in their respective milestones.
 """
 
 from pathlib import Path
@@ -15,7 +13,7 @@ from core.extraction.typescript import TypeScriptExtractor
 from core.extraction.vue import VueExtractor
 from core.parsing.models import SymbolType
 
-GOLD_DIR = Path(__file__).resolve().parent.parent / "gold" / "mvp2" / "symbols"
+GOLD_DIR = Path(__file__).resolve().parent.parent.parent / "gold" / "mvp2" / "symbols"
 
 
 def test_typescript_extractor_gold():

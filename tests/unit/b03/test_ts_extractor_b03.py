@@ -26,7 +26,7 @@ from core.extraction.normalizer import EMPTY_SIGNATURE_DISCRIMINATOR, parse_symb
 from core.extraction.typescript import TypeScriptExtractor
 from core.parsing.models import SymbolType
 
-GOLD_BASE = Path(__file__).resolve().parent.parent / "gold" / "mvp2" / "symbols"
+GOLD_BASE = Path(__file__).resolve().parent.parent.parent / "gold" / "mvp2" / "symbols"
 
 
 @pytest.fixture
@@ -237,26 +237,33 @@ def test_gold_javascript_basic(extractor: TypeScriptExtractor):
 
     sym_by_qname = {s.qualified_name: s for s in symbols}
 
-    # Gate E: Plain JS function
+    # Gate E: Plain JS function with untyped parameters (B-03-AUDIT-02)
     assert "calculateTotal" in sym_by_qname
     s_calc = sym_by_qname["calculateTotal"]
     assert s_calc.symbol_type == SymbolType.FUNCTION.value
     assert s_calc.base_symbol_type == SymbolType.FUNCTION.value
-    assert s_calc.canonical_signature == "(any,any)"
+    assert s_calc.canonical_signature == "(?,?)"
+    assert s_calc.metadata["parameters"][0]["name"] == "price"
+    assert s_calc.metadata["parameters"][0]["type_source"] == "absent"
+    assert s_calc.metadata["parameters"][1]["name"] == "taxRate"
+    assert s_calc.metadata["parameters"][1]["type_source"] == "absent"
 
-    # Gate C: Plain JS class & Gate F: Method
+    # Gate C: Plain JS class & Gate F: Method with untyped parameter
     assert "Logger" in sym_by_qname
     assert "Logger::log" in sym_by_qname
     s_log = sym_by_qname["Logger::log"]
     assert s_log.symbol_type == SymbolType.METHOD.value
-    assert s_log.canonical_signature == "(any)"
+    assert s_log.canonical_signature == "(?)"
+    assert s_log.metadata["parameters"][0]["name"] == "message"
+    assert s_log.metadata["parameters"][0]["type_source"] == "absent"
 
-    # Gate G: Arrow function
+    # Gate G: Arrow function with untyped parameter
     assert "formatCurrency" in sym_by_qname
     s_curr = sym_by_qname["formatCurrency"]
     assert s_curr.symbol_type == SymbolType.VARIABLE.value
     assert s_curr.base_symbol_type == SymbolType.VARIABLE.value
     assert s_curr.metadata["function_kind"] == "arrow"
+    assert s_curr.canonical_signature == "(?)"
 
     # Plain variables
     assert "globalCounter" in sym_by_qname

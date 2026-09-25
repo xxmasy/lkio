@@ -115,9 +115,12 @@ def canonicalize_ts_signature(params_text: str | None) -> str:
 
             canonical_params.append(type_clean)
         else:
-            # Untyped JS or plain identifier
+            # Untyped JS or plain untyped identifier (B-03-AUDIT-02):
+            # AST structural fact: parameter has NO explicit type annotation.
+            # Do NOT infer 'any' (preventing pseudo-confidence / false typing).
+            # Represent untyped as '?' to faithfully preserve absence of explicit type.
             is_optional = p_clean.endswith("?")
-            base_type = "any"
+            base_type = "?"
             if is_optional:
                 base_type = f"{base_type}?"
             if is_rest:

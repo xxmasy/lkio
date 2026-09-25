@@ -263,6 +263,7 @@ class TypeScriptExtractor:
             "export_kind": export_kind,
             "is_async": "async" in modifiers,
             "is_generator": any(c.type == "*" for c in node.children),
+            "parameters": self._extract_parameters_metadata(params_node),
         }
 
         candidate = SymbolCandidate(
@@ -450,6 +451,7 @@ class TypeScriptExtractor:
                     "confidence": 1.0,
                     "is_static": "static" in m_mods,
                     "is_async": "async" in m_mods,
+                    "parameters": self._extract_parameters_metadata(params_node),
                 }
 
                 out.append(
@@ -836,6 +838,7 @@ class TypeScriptExtractor:
                         "is_callable": True,
                         "declaration_kind": declaration_kind,
                         "is_async": any(c.type == "async" for c in val_node.children),
+                        "parameters": self._extract_parameters_metadata(params_node),
                     }
 
                     candidate = SymbolCandidate(
@@ -942,6 +945,50 @@ class TypeScriptExtractor:
                 if c.type not in ("{", "}", "[", "]", ","):
                     res.extend(self._extract_pattern_identifiers(c))
         return res
+
+    def _extract_parameters_metadata(self, params_node: Node | None) -> list[dict[str, Any]]:
+        """Extracts structured parameter metadata with explicit/absent type source facts (B-03-AUDIT-02)."""
+        if not params_node:
+            return []
+        params: list[dict[str, Any]] = []
+        for child in params_node.children:
+            if child.type in ("(", ")", ","):
+                continue
+            name = ""
+            type_source = "absent"
+
+            if child.type == "identifier":
+                name = child.text.decode("utf-8", errors="replace")
+                type_source = "absent"
+            elif child.type in ("required_parameter", "optional_parameter"):
+                p_pattern = child.child_by_field_name("pattern")
+                name = (
+                    p_pattern.text.decode("utf-8", errors="replace")
+                    if p_pattern
+                    else child.children[0].text.decode("utf-8", errors="replace")
+                )
+                type_node = child.child_by_field_name("type")
+                type_source = "explicit" if type_node is not None else "absent"
+            elif child.type == "assignment_pattern":
+                left = child.child_by_field_name("left")
+                name = (
+                    left.text.decode("utf-8", errors="replace")
+                    if left
+                    else child.children[0].text.decode("utf-8", errors="replace")
+                )
+                type_source = "absent"
+            elif child.type == "rest_pattern":
+                raw_text = child.text.decode("utf-8", errors="replace")
+                name = raw_text
+                type_source = "explicit" if ":" in raw_text else "absent"
+            else:
+                raw_text = child.text.decode("utf-8", errors="replace")
+                name = raw_text
+                type_source = "explicit" if ":" in raw_text else "absent"
+
+            if name:
+                params.append({"name": name, "type_source": type_source})
+        return params
 
     def _classify_callable(
         self,
