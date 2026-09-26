@@ -45,19 +45,26 @@ class ChangeImpactEvaluator:
         has_db_change = any(
             "model" in str(e.get("path", "")).lower()
             or "entity" in str(e.get("path", "")).lower()
-            or e.get("entity_type") in ("DATABASE", "TABLE", "SCHEMA")
+            or "table" in str(e.get("name", "")).lower()
+            or e.get("entity_type") in ("DATABASE", "TABLE", "SCHEMA", "DATABASE_TABLE")
+            or e.get("type") in ("DATABASE", "TABLE", "SCHEMA", "DATABASE_TABLE")
             for e in changed_entities
         )
 
         has_api_or_controller_change = any(
             "controller" in str(e.get("path", "")).lower()
+            or "controller" in str(e.get("name", "")).lower()
             or "api" in str(e.get("path", "")).lower()
+            or "api" in str(e.get("name", "")).lower()
             or e.get("entity_type") in ("API", "CONTROLLER", "ENDPOINT")
+            or e.get("type") in ("API", "CONTROLLER", "ENDPOINT")
             for e in changed_entities
         )
 
         has_cross_project_relation = any(
-            r.get("relation_type") == "API_CALLS" or r.get("cross_project") is True
+            r.get("relation_type") in ("API_CALLS", "HTTP_CALL")
+            or r.get("type") in ("API_CALLS", "HTTP_CALL")
+            or r.get("cross_project") is True
             for r in relations
         )
 
@@ -65,13 +72,13 @@ class ChangeImpactEvaluator:
         total_relations_count = len(relations)
 
         # Classify impact level
-        if (has_db_change and has_api_or_controller_change) or (has_cross_project_relation and affected_rules_count > 0):
+        if has_db_change or (has_cross_project_relation and affected_rules_count > 0):
             decision = ChangeImpactLevel.CRITICAL.value
             prob = 0.92
         elif has_api_or_controller_change or has_cross_project_relation or affected_rules_count > 0:
             decision = ChangeImpactLevel.HIGH.value
             prob = 0.88
-        elif total_relations_count > 3 or len(changed_entities) > 3:
+        elif total_relations_count > 0 or len(changed_entities) > 1:
             decision = ChangeImpactLevel.MEDIUM.value
             prob = 0.85
         else:

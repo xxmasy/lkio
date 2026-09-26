@@ -60,7 +60,8 @@ class ActionGatePolicy:
     MUTATIVE_ACTION_KEYWORDS = {
         "write", "modify", "delete", "create", "overwrite",
         "update", "commit", "push", "checkout", "patch",
-        "fix", "repair", "refactor", "apply", "replace", "save"
+        "fix", "repair", "refactor", "apply", "replace", "save",
+        "rm", "remove", "drop", "truncate", "destroy", "revert"
     }
 
     def __init__(self, confidence_policy: ConfidencePolicy | None = None):
