@@ -9,7 +9,8 @@
 > - **MVP4 = COMPLETED / FROZEN** (LLM Wiki 13大标准章节与增量失效流水线已固化冻结)
 > - **MVP5 = COMPLETED / FROZEN** (Event & Change Intelligence 变更时空智能与时间线已固化冻结)
 > - **MVP6 = COMPLETED / FROZEN** (Laya Decision Engine 4大结构化决策任务与只读门禁已固化冻结)
-> - **MVP7 = READY_TO_PLAN** (Impact Analysis Engine 待启动规划)
+> - **MVP7 = COMPLETED / FROZEN** (Impact Analysis Engine 全栈多跳穿透与证据链已固化冻结)
+> - **MVP8 = READY_TO_PLAN** (Evaluation / Calibration / Learning Loop 待启动规划)
 >
 > ### 🛑 永久冻结架构红线（后续任何 Agent 均严禁擅自变更）：
 > 1. **三个源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对物理只读，禁止写回或修改任何文件。
@@ -39,8 +40,8 @@
 | **MVP4** | **LLM Wiki (带证据投影)** | **COMPLETED / FROZEN** | MVP3 (已冻结) | **ALL PASSED** | `docs/mvp4/mvp4_acceptance_report.md` |
 | **MVP5** | **Event & Change Intelligence** | **COMPLETED / FROZEN** | MVP1, MVP2 | **ALL PASSED** | `docs/mvp5/mvp5_acceptance_report.md` |
 | **MVP6** | **Laya Decision Engine (4大决策任务)** | **COMPLETED / FROZEN** | MVP4, MVP5 | **ALL PASSED** | `docs/mvp6/mvp6_acceptance_report.md` |
-| **MVP7** | **Impact Analysis Engine (影响链分析)** | **READY_TO_PLAN** | MVP2, MVP5, MVP6 | 待启动规划 | - |
-| MVP8 | Evaluation / Calibration / Learning Loop | **LOCKED** | MVP6, MVP7 | 未开始 | - |
+| **MVP7** | **Impact Analysis Engine (影响链分析)** | **COMPLETED / FROZEN** | MVP2, MVP5, MVP6 | **ALL PASSED** | `docs/mvp7/mvp7_acceptance_report.md` |
+| **MVP8** | **Evaluation / Calibration / Learning Loop** | **READY_TO_PLAN** | MVP6, MVP7 | 待启动规划 | - |
 
 ---
 
