@@ -42,3 +42,8 @@ class Project(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         back_populates="project",
         cascade="all, delete-orphan",
     )
+    events: Mapped[list["Event"]] = relationship(  # type: ignore[name-defined]
+        "Event",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )

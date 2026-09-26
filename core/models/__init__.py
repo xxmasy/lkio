@@ -8,6 +8,7 @@ from core.models.project import Project
 from core.models.project_snapshot import ProjectSnapshot
 from core.models.relation import Relation
 from core.models.source import Source
+from core.models.event import ActorType, Event, EventType, SourceType
 from core.models.wiki import StandardWikiSection, WikiSection, WikiSectionStatus
 
 __all__ = [
@@ -21,4 +22,8 @@ __all__ = [
     "WikiSection",
     "StandardWikiSection",
     "WikiSectionStatus",
+    "Event",
+    "EventType",
+    "ActorType",
+    "SourceType",
 ]
