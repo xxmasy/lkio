@@ -8,12 +8,15 @@ from core.config.settings import get_settings
 
 settings = get_settings()
 
+connect_args = {"connect_timeout": 3} if "postgresql" in settings.database_url else {}
+
 engine = create_engine(
     settings.database_url,
     echo=(settings.LKIO_ENV == "development"),
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,
+    connect_args=connect_args,
 )
 
 SessionLocal = sessionmaker(

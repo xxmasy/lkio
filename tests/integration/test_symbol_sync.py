@@ -18,11 +18,15 @@ from ingestion.symbols import SymbolSyncService
 
 
 def test_file_symbol_sync_and_idempotency():
-    db = SessionLocal()
     try:
-        # 1. Setup synthetic project & file entity
+        db = SessionLocal()
         proj = db.scalars(select(Project).where(Project.status == "ACTIVE")).first()
-        assert proj is not None
+    except Exception as e:
+        pytest.skip(f"PostgreSQL database not available: {e}")
+    if not proj:
+        pytest.skip("No ACTIVE project found in database")
+    try:
+
 
         file_entity = Entity(
             id=uuid.uuid4(),
@@ -131,11 +135,14 @@ export interface Config { timeout: number; }
 
 def test_real_project_symbols_smoke():
     """Runs symbol extraction on HELLO_BE (Spring Boot Java project)."""
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         proj = db.scalars(select(Project).where(Project.key == "HELLO_BE")).first()
-        if not proj:
-            pytest.skip("HELLO_BE not registered")
+    except Exception as e:
+        pytest.skip(f"PostgreSQL database not available: {e}")
+    if not proj:
+        pytest.skip("HELLO_BE not registered")
+    try:
 
         sync_service = SymbolSyncService()
         stats = sync_service.sync_project_symbols("HELLO_BE", db=db, limit=10)
