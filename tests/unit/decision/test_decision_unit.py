@@ -9,6 +9,7 @@ from core.decision import (
     DecisionEngineFactory,
     DecisionQuestion,
     DecisionRequest,
+    DecisionResult,
     DecisionState,
     DecisionTask,
     EvidenceSufficiencyLevel,
@@ -159,5 +160,35 @@ def test_factory_creation():
     engine = DecisionEngineFactory.create("laya")
     assert isinstance(engine, LayaDecisionEngine)
 
+    # Test LLM backend creation
+    llm_engine = DecisionEngineFactory.create("llm", model_name="gpt-4o")
+    assert llm_engine is not None
+
+    # Test LocalClassifier backend creation
+    local_engine = DecisionEngineFactory.create("local_classifier")
+    assert local_engine is not None
+
+    # Test Custom backend
+    def my_handler(req):
+        return DecisionResult(
+            decision="CUSTOM_APPROVED",
+            probability=0.99,
+            model_confidence=0.99,
+            evidence_confidence=0.95,
+            graph_confidence=0.95,
+            historical_accuracy=0.90,
+            final_confidence=0.99,
+            requires_human_review=False,
+        )
+
+    custom_engine = DecisionEngineFactory.create("custom", handler=my_handler)
+    test_req = DecisionRequest(
+        task=DecisionTask.ACTION_GATE,
+        state=DecisionState(action_name="QUERY"),
+        question=DecisionQuestion(options=["EXECUTE", "DENY"]),
+    )
+    assert custom_engine.decide(test_req).decision == "CUSTOM_APPROVED"
+
     with pytest.raises(ValueError):
         DecisionEngineFactory.create("unsupported_engine")
+

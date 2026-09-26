@@ -1,25 +1,47 @@
-# Environment files
+# Environment files & Secrets
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+credentials.json
 
-# Python
+# Python runtime & caches
 .venv/
 __pycache__/
 .pytest_cache/
 *.pyc
+*.pyo
+*.pyd
 
 # Node / Web
 node_modules/
 dist/
 .vite/
 
-# IDE
+# IDE & OS
 .idea/
 .vscode/
+.DS_Store
+Thumbs.db
 
-# Local data & logs
+# Local Knowledge Base & Raw Repositories (Pure Open-Source Protection)
+.lkio/
+lkio-data/
+*.db
+*.sqlite
+*.sqlite3
+*.faiss
+*.index
+chroma/
+storage/
+local_data/
+local_repos/
+
+# Logs & Temporary files
 logs/
 tmp/
-lkio-data/
+temp/
+scratch/
+build/
 *.log
