@@ -37,7 +37,7 @@ B-03 ~ B-05: 证明“能正确理解单语言客观语法结构” (TS/JS, Java
 |---|---|---|
 | **LOCK-VERIFY-01** | **全链路端到端闭环** | B-08 必须完整串联：真实文件发现 ➔ 多语言路由 ➔ AST 符号抽取 ➔ Key 计算 ➔ 批量持久化 ➔ defines 关系建立 ➔ 软删除/复活，严禁使用虚假 Mock 旁路替代真实链路。 |
 | **LOCK-VERIFY-02** | **三大源工程绝对只读红线** | 扫描与验证过程严禁写回、修改、添加任何文件到 `HELLO_FE`, `HELLO_BE`, `L2C_FE`。验证前后 `git status --porcelain` 差异严格为 0。针对增删状态机测试，必须在临时工作区（`Temporary Verification Workspace`）执行真实源码快照副本演练，严禁碰触原始仓库。 |
-| **LOCK-VERIFY-03** | **双 Pass 全量幂等恒等证明** | 对真实工程样本进行完整 Pass 1 扫描入库后，执行完全相同的 Pass 2 扫描：<br>1. 计数恒等：`created_pass2 == 0`，`deleted_pass2 == 0`，`updated_pass2 == N`（**`N` 严格定义为 Pass 1 ACTIVE 实体总数**）；<br>2. 三集合严格恒等：<br>   - `entity_id_set(pass1) == entity_id_set(pass2)`<br>   - `entity_key_set(pass1) == entity_key_set(pass2)`<br>   - `defines_edge_set(pass1) == defines_edge_set(pass2)`。 |
+| **LOCK-VERIFY-03** | **真实工程代表性双 Pass 幂等恒等证明** | 对真实工程样本进行完整 Pass 1 扫描入库后，执行完全相同的 Pass 2 扫描：<br>1. 计数恒等：`created_pass2 == 0`，`deleted_pass2 == 0`，`updated_pass2 == N`（**`N` 严格定义为 Pass 1 ACTIVE 实体总数**）；<br>2. 三集合严格恒等：<br>   - `entity_id_set(pass1) == entity_id_set(pass2)`<br>   - `entity_key_set(pass1) == entity_key_set(pass2)`<br>   - `defines_edge_set(pass1) == defines_edge_set(pass2)`。 |
 | **LOCK-VERIFY-04** | **多项目物理隔离防串扰** | 三大工程混合扫描入库时，必须证明以 `(project_key, file_rel_path)` 为作用域的完全物理隔离，跨工程同名路径实体绝不产生 Key 碰撞、关系覆盖或软删除误伤。 |
 | **LOCK-VERIFY-05** | **三段式计数审计与失败可追溯** | 必须严格满足三段式计数公式：<br>1. 发现层：`discovered == successful + failed + unsupported`<br>2. 抽取层：`successful_extracted == successful_persisted + failed_persisted`<br>3. 持久层：`active_symbols == created + updated`。<br>任何失败文件必须具备精确的 6 元追溯上下文：`(project, file_rel_path, language, failure_stage, failure_reason, error_detail)`。 |
 | **LOCK-VERIFY-06** | **资源稳定性契约 (Resource Stability Contract)** | 真实工程批量扫描建立吞吐量基准（files/sec, symbols/sec, P50, P95）。在 Pass 1/2/3 连续执行后，文件描述符 (FD)、数据库连接 (DB Connections)、临时文件与内存 (RSS) 不发生单调持续增长，执行完毕后句柄与连接安全释放回基线。 |
@@ -49,8 +49,8 @@ B-03 ~ B-05: 证明“能正确理解单语言客观语法结构” (TS/JS, Java
 为了保证证据链条清晰，18 项门禁按四层证据模型组织：
 
 ### Layer 1 — 文件发现与路由层 (Discovery & Routing)
-- **Gate A (真实文件安全发现)**：`DirectoryScanner` 准确排除 `node_modules`, `target`, `dist`, `.git` 等，准确发现三大工程共 4,603 个受支持源文件。
-- **Gate B (真实多语言路由准确率)**：4,603 个源文件按后缀 100% 正确路由至对应语言处理器（TS/JS/Java/Vue）。
+- **Gate A (真实文件安全发现)**：`DirectoryScanner` 准确排除 `node_modules`, `target`, `dist`, `.git` 等，准确发现三大工程共 4,618 个受支持源文件（包含 15 个合规 `.mjs` 模块）。
+- **Gate B (真实多语言路由准确率)**：4,618 个源文件按后缀与语言路由 100% 正确路由至对应语言处理器（Java: 1,972, Vue: 1,333, TS: 840, JS-family: 433, TSX: 40）。
 
 ### Layer 2 — 真实代码抽取与身份层 (Extraction & Identity)
 - **Gate C (HELLO_FE 真实 Vue/TS 抽取)**：真实抽取 HELLO_FE 中的 Vue SFC、`<script setup>`、路由与组件符号。
@@ -60,7 +60,7 @@ B-03 ~ B-05: 证明“能正确理解单语言客观语法结构” (TS/JS, Java
 
 ### Layer 3 — 持久化与生命周期层 (Persistence & Lifecycle)
 - **Gate G (真实代码端到端持久化)**：真实代码提取的符号与 `defines` 关系成功写入 Knowledge Core，元数据深度完整。
-- **Gate H (双 Pass 全量幂等恒等证明)**：真实代码执行 Pass 2 时：`created=0, updated=N, deleted=0`（N 严格为 Pass 1 ACTIVE 数），ID、Key、defines 三集合 100% 恒等。
+- **Gate H (真实工程代表性双 Pass 幂等恒等证明)**：真实代码执行 Pass 2 时：`created=0, updated=N, deleted=0`（N 严格为 Pass 1 ACTIVE 数），ID、Key、defines 三集合 100% 恒等。
 - **Gate I (真实代码软删除与复活状态机)**：在隔离快照目录中模拟真实文件符号增删，验证 `ACTIVE ➔ DELETED ➔ ACTIVE` 状态自愈与计数正确性。
 - **Gate J (三大工程混合入库物理隔离)**：同时入库三大工程，证明符号与关系按 `project_id` 物理隔离，0 跨工程污染。
 - **Gate K (三段式计数硬约束审计)**：批次汇总报告中的三段式计数公式 100% 成立。
@@ -69,9 +69,9 @@ B-03 ~ B-05: 证明“能正确理解单语言客观语法结构” (TS/JS, Java
 
 ### Layer 4 — 系统级安全与性能层 (System, Safety & Performance)
 - **Gate N (三大外部工程绝对只读核验)**：整个验证过程前后，`HELLO_FE`, `HELLO_BE`, `L2C_FE` 的 `git status --porcelain` 新增变动严格为 0。
-- **Gate O (真实工程性能与吞吐基准)**：建立三大工程的真实吞吐量基线（解析 + 抽取 + 入库），平均单文件耗时可接受。
-- **Gate P (绝对零早熟图谱关系证明)**：数据库中仅包含 `predicate="defines"` 关系，绝对不存在 `calls`, `imports`, `extends` 等早熟关系。
-- **Gate Q (资源稳定性契约 Resource Stability)**：批量处理千级符号后，文件句柄与数据库连接恢复基准，内存无单调泄漏。
+- **Gate O (真实工程采样端到端性能基准 B-08 Real-project Sampled E2E Baseline)**：建立 75 个真实文件（525 符号）的基准（解析 + 抽取 + 入库），平均单文件耗时 1.75ms。
+- **Gate P (绝对零早熟图谱关系证明)**：数据库中仅包含 `predicate="defines"` 关系，绝对不存在 `calls`, `imports`, `extends` 等早熟关系，作为 MVP2-C 冻结输入契约。
+- **Gate Q (资源稳定性契约 Resource Stability Contract)**：连续 3 次 Pass 循环执行，Traced 内存增量保持在稳定容差内，句柄与连接安全释放回基线。
 - **Gate R (历史全量单测无回退)**：B-00 ~ B-07 全量单测（63 项）全部保持 100% 绿色通过。
 
 ---

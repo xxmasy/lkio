@@ -49,9 +49,11 @@ def test_gate_b_real_language_routing_accuracy():
             assert lang in {"typescript", "tsx", "javascript", "jsx", "java", "vue"}, f"Unexpected language '{lang}' for {f}"
             language_census[lang] = language_census.get(lang, 0) + 1
 
-    # Check that all expected languages have healthy representation
-    assert language_census["java"] >= 1970
-    assert language_census["vue"] >= 1300
-    assert language_census["typescript"] >= 800
-    assert language_census["javascript"] >= 400
-    assert language_census["tsx"] >= 40
+    # Check exact counts summing to 4,618
+    assert language_census["java"] == 1972
+    assert language_census["vue"] == 1333
+    assert language_census["typescript"] == 840
+    assert language_census["javascript"] == 433  # 418 .js + 15 .mjs
+    assert language_census["tsx"] == 40
+    assert sum(language_census.values()) == 4618
+
