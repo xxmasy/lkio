@@ -4,7 +4,8 @@
 > **前置阶段状态**：  
 > - **MVP0 = COMPLETED / FROZEN**  
 > - **MVP1 = COMPLETED / FROZEN**  
-> **当前状态**：**READY_TO_IMPLEMENT (BASELINE FROZEN)**  
+> **当前状态**：**MVP2 = 100% COMPLETED / FROZEN** ✅  
+> **后续阶段状态**：**MVP3 = READY_TO_PLAN**  
 > **基线规范**：`docs/mvp/MVP2实施基线LKIO — Code Intelligence & Structural Graph.md`  
 > **核心原则**：只读、确定性身份、静态事实优于推断、严格隔离业务推理
 
@@ -31,4 +32,4 @@
 | **Step 2.3 (MVP2-C)** | 代码结构图谱 (Code Structural Graph) | 单工程结构关系提取（defines, imports, exports, calls, extends, implements）、静态(1.0)与推断(<1.0)置信度分离、工程内解析、软删除状态机与三大工程全量验证 | **COMPLETED / FROZEN** | `docs/mvp2/mvp2_step3_structural_graph_report.md` |
 | **Step 2.4 (MVP2-D)** | 跨工程代码图谱 (Cross-project Graph) | 跨项目公共模块、共享组件与公共依赖静态关联推导、工作区包网络与只读验证 | **COMPLETED / FROZEN** | `docs/mvp2/mvp2_step4_cross_project_graph_report.md` |
 | **Step 2.5 (MVP2-E)** | 契约端到端追溯 (API to Backend Traceability) | 前端 API Client 路由 ➔ HTTP Endpoint ➔ 后端 Controller ➔ Service ➔ DB 契约追溯链 | **COMPLETED / FROZEN** | `docs/mvp2/mvp2_step5_api_traceability_report.md` |
-| **Step 2.6** | 全量扫描、Gold Set 回归与 MVP2 终审结项 | 三大工程全量代码图谱入库、只读双重核验、Gold Set 回归测试、终审验收报告与数据库冷备份 | **READY_TO_EXECUTE** | `docs/mvp2/mvp2_acceptance_report.md` |
+| **Step 2.6** | 全量扫描、Gold Set 回归与 MVP2 终审结项 | 三大工程全量代码图谱入库、只读双重核验、Gold Set 回归测试、终审验收报告与数据库冷备份 | **COMPLETED / FROZEN** ✅ | `docs/mvp2/mvp2_acceptance_report.md` |

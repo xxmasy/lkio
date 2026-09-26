@@ -33,8 +33,8 @@ class CrossProjectDependencyResolver:
     def __init__(self, registry: CrossProjectManifestRegistry):
         self.registry = registry
 
-    def resolve_manifest_dependencies(self) -> list[CrossProjectCandidate]:
-        """Resolves declared dependencies between registered projects (depends_on)."""
+    def resolve_manifest_dependencies(self, include_monorepo_workspaces: bool = True) -> list[CrossProjectCandidate]:
+        """Resolves declared dependencies between registered projects and monorepo packages (depends_on)."""
         cross_candidates: list[CrossProjectCandidate] = []
 
         for src_proj_key, manifests in self.registry.manifests_by_project.items():
@@ -43,7 +43,12 @@ class CrossProjectDependencyResolver:
 
                 for dep in m.dependencies:
                     provider = self.registry.find_provider(dep.name)
-                    if provider and provider.project_key != src_proj_key:
+                    if not provider:
+                        continue
+                    is_cross_proj = provider.project_key != src_proj_key
+                    is_workspace_dep = include_monorepo_workspaces and (provider.manifest_rel_path != m.manifest_rel_path)
+
+                    if is_cross_proj or is_workspace_dep:
                         tgt_proj_key = provider.project_key
                         tgt_object = f"FILE:{tgt_proj_key}:{provider.manifest_rel_path}"
 
