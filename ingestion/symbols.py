@@ -28,8 +28,31 @@ from core.models.relation import Relation
 from core.models.source import Source
 
 
+def compute_semantic_fingerprint(cand: SymbolCandidate) -> tuple:
+    """Computes an immutable tuple representing the semantic facts of a symbol candidate (LOCK-PERSIST-08)."""
+    return (
+        cand.symbol_type,
+        cand.base_symbol_type,
+        cand.name,
+        cand.qualified_name,
+        cand.start_line,
+        cand.end_line,
+        cand.start_column,
+        cand.end_column,
+        cand.canonical_signature,
+        cand.signature_discriminator,
+        cand.language,
+        tuple(cand.modifiers),
+        cand.is_exported,
+        cand.export_kind,
+        cand.classification_method,
+    )
+
+
 def _truncate_string(val: str, max_len: int = 255) -> str:
-    """Defensively truncates strings exceeding max column length while preserving uniqueness (Gate M)."""
+    """Defensively truncates strings exceeding max column length while preserving uniqueness (Gate M).
+    NOTE: Storage length normalization MUST NEVER influence entity_key computation.
+    """
     if len(val) <= max_len:
         return val
     hash_suffix = "_" + hashlib.sha256(val.encode("utf-8")).hexdigest()[:10]
@@ -99,13 +122,15 @@ class SymbolPersistenceService:
     ) -> FilePersistenceResult:
         """Persists symbols from a FileExtractionResult into the database within an isolated savepoint.
 
-        Adheres strictly to:
+        Adheres strictly to the 8 Persistence Architecture Locks:
         - LOCK-PERSIST-01: Pure DTO consumer (zero AST parsing).
         - LOCK-PERSIST-02: Idempotent upsert keyed by entity_key.
         - LOCK-PERSIST-03: Soft deletion of vanished symbols (status='DELETED').
         - LOCK-PERSIST-04: Reactivation of resurrected symbols (status='ACTIVE').
         - LOCK-PERSIST-05: Strict 'defines' relation boundary.
-        - LOCK-PERSIST-06: Atomic transaction savepoint per file.
+        - LOCK-PERSIST-06: Per-file savepoint rollback isolation (savepoint != independent tx).
+        - LOCK-PERSIST-07: Soft-delete scope strictly (project_key, file_rel_path).
+        - LOCK-PERSIST-08: Same entity_key collision handling (identical -> dedupe, divergent -> fail).
         """
         start_time = time.perf_counter()
         rel_path = normalize_rel_path(file_entity.path or extraction_result.file_rel_path or "")
@@ -129,10 +154,24 @@ class SymbolPersistenceService:
             if len(symbol_keys) != len(symbols):
                 symbol_keys = [cand.compute_key() for cand in symbols]
 
-            # De-duplicate candidates with identical keys in the same file
+            # LOCK-PERSIST-08: Deduplicate identical candidates or fail on divergent collision
             unique_candidates: dict[str, SymbolCandidate] = {}
+            candidate_fingerprints: dict[str, tuple] = {}
             for k, cand in zip(symbol_keys, symbols):
+                fp = compute_semantic_fingerprint(cand)
+                if k in unique_candidates:
+                    existing_fp = candidate_fingerprints[k]
+                    if existing_fp == fp:
+                        # Genuine identical candidate: deterministic deduplication
+                        continue
+                    else:
+                        # Divergent payload collision: Identity conflict error (LOCK-PERSIST-08)
+                        raise ValueError(
+                            f"Identity Conflict (LOCK-PERSIST-08): entity_key '{k}' collided with divergent "
+                            f"semantic payload in file '{rel_path}'."
+                        )
                 unique_candidates[k] = cand
+                candidate_fingerprints[k] = fp
 
             # 1. Query existing symbols attached to this file via 'defines' relation
             existing_relations = db.scalars(
@@ -154,11 +193,14 @@ class SymbolPersistenceService:
 
             existing_sym_by_key: dict[str, Entity] = {s.entity_key: s for s in existing_symbols}
 
-            # Batch fetch any entities already existing by key that aren't yet linked
+            # Batch fetch any entities already existing by key in this project that aren't yet linked (LOCK-PERSIST-07)
             keys_to_fetch = [k for k in unique_candidates if k not in existing_sym_by_key]
             if keys_to_fetch:
                 extra_entities = db.scalars(
-                    select(Entity).where(Entity.entity_key.in_(keys_to_fetch))
+                    select(Entity).where(
+                        Entity.project_id == project_id,
+                        Entity.entity_key.in_(keys_to_fetch),
+                    )
                 ).all()
                 for e in extra_entities:
                     existing_sym_by_key[e.entity_key] = e
@@ -249,11 +291,11 @@ class SymbolPersistenceService:
                     db.add(rel)
                     existing_rel_by_obj_id[sym_entity.id] = rel
 
-            # 4. Soft-delete vanished symbols previously defined by this file (LOCK-PERSIST-03)
+            # 4. Soft-delete vanished symbols previously defined by this file (LOCK-PERSIST-03, LOCK-PERSIST-07)
             deleted_count = 0
             for sym_key, sym_entity in existing_sym_by_key.items():
                 if sym_entity.id in existing_rel_by_obj_id and sym_key not in seen_keys:
-                    if sym_entity.status not in ["DELETED", "deleted"]:
+                    if sym_entity.project_id == project_id and sym_entity.status not in ["DELETED", "deleted"]:
                         sym_entity.status = "DELETED"
                         deleted_count += 1
 

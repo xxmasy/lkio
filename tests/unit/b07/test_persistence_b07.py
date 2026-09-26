@@ -697,16 +697,16 @@ def test_gate_o_performance_benchmark(db_session: Session, project: Project, ser
 
 
 # ==============================================================================
-# Gate P: Key Collision Handling in Same File
+# Gate P: Key Collision Handling in Same File (LOCK-PERSIST-08)
 # ==============================================================================
 
 def test_gate_p_key_collision_handling(db_session: Session, project: Project, service: SymbolPersistenceService):
-    """Gate P: Verifies that multiple candidates with identical keys in the same file are gracefully handled."""
+    """Gate P (LOCK-PERSIST-08 Situation A): Verifies that identical duplicate candidates in the same file are deduplicated."""
     file_entity = create_file_entity(project, "src/Duplicate.ts")
     db_session.add(file_entity)
     db_session.commit()
 
-    # Two identical candidates
+    # Two genuinely identical candidates (same semantic fingerprint)
     c1 = SymbolCandidate(
         symbol_type="FUNCTION",
         base_symbol_type="FUNCTION",
@@ -724,8 +724,8 @@ def test_gate_p_key_collision_handling(db_session: Session, project: Project, se
         base_symbol_type="FUNCTION",
         name="doSomething",
         qualified_name="doSomething",
-        start_line=3,
-        end_line=4,
+        start_line=1,
+        end_line=2,
         start_column=0,
         end_column=10,
         project_key=project.key,
@@ -754,3 +754,183 @@ def test_gate_p_key_collision_handling(db_session: Session, project: Project, se
     assert res.success is True
     assert res.created == 1
     assert res.extracted == 1
+
+
+def test_gate_p_divergent_key_collision_fails_cleanly(db_session: Session, project: Project, service: SymbolPersistenceService):
+    """Gate P (LOCK-PERSIST-08 Situation B): Same entity_key with divergent semantic payload triggers file failure."""
+    file_entity = create_file_entity(project, "src/Divergent.ts")
+    db_session.add(file_entity)
+    db_session.commit()
+
+    # Two divergent candidates forced with the exact same key
+    c1 = SymbolCandidate(
+        symbol_type="FUNCTION",
+        base_symbol_type="FUNCTION",
+        name="conflictFunc",
+        qualified_name="conflictFunc",
+        start_line=1,
+        end_line=2,
+        start_column=0,
+        end_column=10,
+        signature="() => void",
+        canonical_signature="() => void",
+        project_key=project.key,
+        file_rel_path="src/Divergent.ts",
+    )
+    c2 = SymbolCandidate(
+        symbol_type="VARIABLE",
+        base_symbol_type="VARIABLE",
+        name="conflictFunc",
+        qualified_name="conflictFunc",
+        start_line=10,
+        end_line=11,
+        start_column=0,
+        end_column=20,
+        signature="number",
+        canonical_signature="number",
+        project_key=project.key,
+        file_rel_path="src/Divergent.ts",
+    )
+    key = "SYMBOL:TEST_PROJ:src/Divergent.ts:FUNCTION:conflictFunc#forced_collision"
+
+    ext_res = FileExtractionResult(
+        file_rel_path="src/Divergent.ts",
+        file_path="src/Divergent.ts",
+        language="typescript",
+        success=True,
+        symbols=[c1, c2],
+        symbol_keys=[key, key],
+    )
+
+    res = service.persist_file_symbols(
+        db=db_session,
+        project_id=project.id,
+        project_key=project.key,
+        file_entity=file_entity,
+        extraction_result=ext_res,
+    )
+    db_session.commit()
+
+    # Must fail cleanly without corrupting the session or silently overwriting
+    assert res.success is False
+    assert "Identity Conflict (LOCK-PERSIST-08)" in (res.error or "")
+
+    # Zero entities created
+    stored = db_session.scalars(select(Entity).where(Entity.path == "src/Divergent.ts", Entity.entity_type != "FILE")).all()
+    assert len(stored) == 0
+
+
+# ==============================================================================
+# LOCK-PERSIST-07 & Gate M Deep Tests
+# ==============================================================================
+
+def test_lock_persist_07_cross_project_soft_delete_isolation(db_session: Session, service: SymbolPersistenceService):
+    """LOCK-PERSIST-07: Proves soft-delete is strictly (project_key, file_rel_path); cross-project symbols never leak."""
+    proj_a = Project(id=uuid.uuid4(), key="PROJ_A", name="A", kind="test", role="frontend", local_path="C:/a", status="ACTIVE")
+    proj_b = Project(id=uuid.uuid4(), key="PROJ_B", name="B", kind="test", role="frontend", local_path="C:/b", status="ACTIVE")
+    db_session.add_all([proj_a, proj_b])
+    db_session.commit()
+
+    fa = create_file_entity(proj_a, "src/common/util.ts")
+    fb = create_file_entity(proj_b, "src/common/util.ts")
+    db_session.add_all([fa, fb])
+    db_session.commit()
+
+    code = b"export function sharedHelper(): void {}"
+    service.sync_file_symbols(db=db_session, project_id=proj_a.id, project_key=proj_a.key, file_entity=fa, code_bytes=code)
+    service.sync_file_symbols(db=db_session, project_id=proj_b.id, project_key=proj_b.key, file_entity=fb, code_bytes=code)
+    db_session.commit()
+
+    # Both projects have active sharedHelper
+    sym_a = db_session.scalars(select(Entity).where(Entity.project_id == proj_a.id, Entity.name == "sharedHelper")).first()
+    sym_b = db_session.scalars(select(Entity).where(Entity.project_id == proj_b.id, Entity.name == "sharedHelper")).first()
+    assert sym_a.status == "ACTIVE"
+    assert sym_b.status == "ACTIVE"
+
+    # Project A updates code, removing sharedHelper
+    code_empty = b"// empty\nconst a = 1;"
+    service.sync_file_symbols(db=db_session, project_id=proj_a.id, project_key=proj_a.key, file_entity=fa, code_bytes=code_empty)
+    db_session.commit()
+
+    db_session.refresh(sym_a)
+    db_session.refresh(sym_b)
+
+    # Project A's symbol is soft-deleted
+    assert sym_a.status == "DELETED"
+    # Project B's symbol MUST strictly remain ACTIVE! (Zero cross-project interference)
+    assert sym_b.status == "ACTIVE"
+
+
+def test_gate_m_overlong_identity_semantics_invariance(db_session: Session, project: Project, service: SymbolPersistenceService):
+    """Gate M: Overlong symbols with identical prefixes maintain distinct stored values and unmodified entity_keys."""
+    file_entity = create_file_entity(project, "src/LongIdent.ts")
+    db_session.add(file_entity)
+    db_session.commit()
+
+    prefix = "a" * 270
+    name_1 = prefix + "_SUFFIX_ONE"
+    name_2 = prefix + "_SUFFIX_TWO"
+
+    cand_1 = SymbolCandidate(
+        symbol_type="FUNCTION",
+        base_symbol_type="FUNCTION",
+        name=name_1,
+        qualified_name=name_1,
+        start_line=1,
+        end_line=2,
+        start_column=0,
+        end_column=10,
+        project_key=project.key,
+        file_rel_path="src/LongIdent.ts",
+    )
+    cand_2 = SymbolCandidate(
+        symbol_type="FUNCTION",
+        base_symbol_type="FUNCTION",
+        name=name_2,
+        qualified_name=name_2,
+        start_line=3,
+        end_line=4,
+        start_column=0,
+        end_column=10,
+        project_key=project.key,
+        file_rel_path="src/LongIdent.ts",
+    )
+
+    key_1 = cand_1.compute_key()
+    key_2 = cand_2.compute_key()
+    # entity_key uses full untruncated qualified_name
+    assert key_1 != key_2
+    assert name_1 in key_1
+    assert name_2 in key_2
+
+    ext_res = FileExtractionResult(
+        file_rel_path="src/LongIdent.ts",
+        file_path="src/LongIdent.ts",
+        language="typescript",
+        success=True,
+        symbols=[cand_1, cand_2],
+        symbol_keys=[key_1, key_2],
+    )
+
+    persist_res = service.persist_file_symbols(
+        db=db_session,
+        project_id=project.id,
+        project_key=project.key,
+        file_entity=file_entity,
+        extraction_result=ext_res,
+    )
+    db_session.commit()
+
+    assert persist_res.success is True
+    assert persist_res.created == 2
+
+    stored_1 = db_session.scalars(select(Entity).where(Entity.entity_key == key_1)).first()
+    stored_2 = db_session.scalars(select(Entity).where(Entity.entity_key == key_2)).first()
+    assert stored_1 is not None and stored_2 is not None
+
+    # Stored values are safely truncated to <= 255 chars
+    assert len(stored_1.canonical_name) <= 255
+    assert len(stored_2.canonical_name) <= 255
+    # Distinctness preserved via sha256 hash suffix
+    assert stored_1.canonical_name != stored_2.canonical_name
+

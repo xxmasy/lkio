@@ -39,16 +39,18 @@ B-07 (Symbol Persistence & Idempotency Pipeline)  <-- 本阶段
 Knowledge Core (PostgreSQL / SQLite Compatible: entities & relations)
 ```
 
-### 2. 六大持久化架构锁 (LOCK-PERSIST-01 ~ LOCK-PERSIST-06)
+### 2. 八大持久化架构锁 (LOCK-PERSIST-01 ~ LOCK-PERSIST-08)
 
 | 锁编号 | 架构锁名称 | 严格定义与不可突破边界 |
 |---|---|---|
 | **LOCK-PERSIST-01** | **纯 DTO 消费隔离** | B-07 仅消费 B-06 输出的 `FileExtractionResult` / `SymbolCandidate`，绝对禁止调用 Tree-sitter Parser 或重新解释 AST 语义。 |
 | **LOCK-PERSIST-02** | **基于 Key 的逻辑幂等 Upsert** | 符号入库必须以 `entity_key`（B-00/B-01 迁移为 TEXT UNIQUE）为逻辑唯一凭据。重复对同一文件执行入库，新增实体数必须恒等于 0，更新实体数恒等于有效符号数，主键 ID 保持不变。 |
-| **LOCK-PERSIST-03** | **文件作用域软删除同步** | 当文件在增量同步中发现某些符号消失时，仅对该文件历史上定义的符号标记 `status = 'DELETED'`，绝对禁止物理调用 `db.delete()` 删除实体记录。 |
+| **LOCK-PERSIST-03** | **消失符号软删除同步** | 当文件在增量同步中发现某些符号消失时，仅对该文件历史上定义的符号标记 `status = 'DELETED'`，绝对禁止物理调用 `db.delete()` 删除实体记录。 |
 | **LOCK-PERSIST-04** | **复活符号无损激活** | 曾被标记为 `DELETED` 的符号若在后续扫描中重新出现，状态必须原子恢复为 `status = 'ACTIVE'`，并更新最新的行号、签名与元数据。 |
 | **LOCK-PERSIST-05** | **严格只建 defines 事实边** | B-07 仅允许建立 `FILE ── defines ──► SYMBOL` 事实关系（置信度恒为 `Decimal("1.00000")`）。严禁引入 `calls`, `imports`, `extends`, `implements` 等跨符号结构关系（留待 MVP2-C）。 |
-| **LOCK-PERSIST-06** | **单文件事务隔离与容错** | 批量入库时以单个文件为事务隔离单元（Savepoint / Per-file Transaction）。单个文件入库发生异常必须独立回滚，不得污染数据库 Session，不得中断其他有效文件的入库。 |
+| **LOCK-PERSIST-06** | **单文件 Savepoint 局部回滚隔离** | 明确 **Savepoint 不是独立事务边界**，而是外层批次会话下的单文件局部错误隔离单元。单文件入库异常触发 Savepoint 回滚，保证 Session 可继续处理后续文件。 |
+| **LOCK-PERSIST-07** | **软删除作用域锁定为 (project_key, file_rel_path)** | 软删除实体扫描与未关联 Key 预取必须显式绑定 `Entity.project_id == project_id`，跨工程相同相对路径符号绝对物理隔离，严禁误伤。 |
+| **LOCK-PERSIST-08** | **同 Key 冲突防静默吞噬机制** | 同文件出现重复 `entity_key` 时进行语义指纹比对：相同语义指纹视为良性重复予以确定性去重；相异语义指纹视为严重身份冲突，触发单文件持久化失败，严禁静默覆盖。 |
 
 ---
 
