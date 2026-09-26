@@ -187,8 +187,11 @@ def test_metrics_calculator_all_nine_metrics():
 
     # 1. Accuracy (2/4 = 0.50)
     assert metrics.accuracy == 0.50
-    # 2. Macro-F1
+    # 2. Macro-F1 (class-level)
     assert 0.0 <= metrics.macro_f1 <= 1.0
+    assert metrics.class_level_macro_f1 == metrics.macro_f1
+    assert "AUTO" in metrics.per_class_precision
+    assert "AUTO" in metrics.per_class_recall
     # 3. Brier Score
     assert metrics.brier_score > 0.0
     # 4. ECE
@@ -198,12 +201,37 @@ def test_metrics_calculator_all_nine_metrics():
     # 6. Confusion Matrix
     assert "AUTO" in metrics.confusion_matrix
     assert metrics.confusion_matrix["AUTO"]["AUTO"] == 1
-    # 7. Abstain Rate (predictions that are REJECT/REVIEW or requires_human_review: c2, c3 -> 2/4 = 0.50)
+    # 7. Abstain Rate & Cases
     assert metrics.abstain_rate == 0.50
-    # 8. False Positive Rate (Expected REJECT, predicted AUTO: c4 -> 1/2 = 0.50)
-    assert metrics.false_positive_rate == 0.50
-    # 9. False Negative Rate (Expected AUTO, predicted REVIEW: c3 -> 1/2 = 0.50)
-    assert metrics.false_negative_rate == 0.50
+    assert metrics.abstain_cases == 2
+    assert metrics.non_abstain_cases == 2
+    # 8. Actionable False Positive Rate & False Negative Rate
+    assert metrics.actionable_fpr == 1.0
+    assert metrics.actionable_fnr == 0.0
+
+    # Test 100% Abstain scenario: Actionable metrics must be None
+    all_abstain_preds = [
+        CasePrediction(
+            case_id="ab1",
+            task=DecisionTask.ACTION_GATE,
+            expected="REJECT",
+            predicted="REJECT",
+            confidence=0.95,
+            probability=0.95,
+            is_correct=True,
+            requires_human_review=True,
+            case_type=EvaluationCaseType.ABSTAIN,
+            split=DatasetSplit.TEST,
+        )
+    ]
+    all_ab_metrics = calc.calculate(all_abstain_preds, classes=["AUTO", "REJECT"])
+    assert all_ab_metrics.abstain_rate == 1.0
+    assert all_ab_metrics.abstain_cases == 1
+    assert all_ab_metrics.non_abstain_cases == 0
+    assert all_ab_metrics.actionable_accuracy is None
+    assert all_ab_metrics.actionable_fpr is None
+    assert all_ab_metrics.actionable_fnr is None
+    assert "Actionable decision coverage is 0" in all_ab_metrics.safety_metric_note
 
 
 def test_confidence_calibration_ece_minimization():

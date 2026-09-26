@@ -72,13 +72,17 @@ class EvaluationRunner:
         for task in DecisionTask:
             task_preds = [p for p in predictions if p.task == task]
             if task_preds:
-                task_classes = TASK_ALLOWED_OPTIONS.get(task, [])
-                task_summary = self.metrics_calculator.calculate(task_preds, classes=task_classes)
+                task_summary = self.metrics_calculator.calculate(task_preds)
                 per_task_results[task.value] = TaskEvaluationResult(
                     task=task,
                     metrics=task_summary,
                     predictions=task_preds,
                 )
+
+        # Compute task-level macro F1 (unweighted average across evaluated tasks)
+        task_f1s = [res.metrics.macro_f1 for res in per_task_results.values()]
+        if task_f1s:
+            overall_metrics.task_level_macro_f1 = round(sum(task_f1s) / len(task_f1s), 4)
 
         # Optional Calibration
         calibration_report = None
