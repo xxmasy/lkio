@@ -179,3 +179,96 @@ def test_end_to_end_impact_analysis(sample_graph):
     assert checklist["status"] == "REQUIRES_HUMAN_REVIEW"
     assert len(checklist["recommended_actions"]) >= 2
     assert "HELLO_FE" in checklist["scope"]["affected_projects"]
+
+
+def test_complex_dag_with_loop_and_bypass():
+    """Topology 1:
+            ┌───────┐
+            ↓       │
+    A → B → C → D ──┘
+        │       │
+        ↓       ↓
+        E ←──── F
+    Verifies that:
+    - Inner cycle C <-> D terminates cleanly.
+    - E is reached via shortest 2-hop path (A->B->E), not long 5-hop path.
+    - F is not traversed (depth 4 > max_depth 3).
+    """
+    entities = {k: {"name": k, "entity_type": "CLASS", "project_key": "P"} for k in ["A", "B", "C", "D", "E", "F"]}
+    relations = [
+        {"subject_key": "A", "object_key": "B", "relation_type": "CALLS"},
+        {"subject_key": "B", "object_key": "C", "relation_type": "CALLS"},
+        {"subject_key": "C", "object_key": "D", "relation_type": "CALLS"},
+        {"subject_key": "D", "object_key": "C", "relation_type": "CALLS"},  # loop C <-> D
+        {"subject_key": "B", "object_key": "E", "relation_type": "CALLS"},
+        {"subject_key": "D", "object_key": "F", "relation_type": "CALLS"},
+        {"subject_key": "F", "object_key": "E", "relation_type": "CALLS"},
+    ]
+
+    traversal = ImpactGraphTraversal(max_depth=3)
+    nodes, paths = traversal.traverse(seed_keys=["A"], entities_by_key=entities, relations=relations, direction="upstream")
+
+    node_map = {n.entity_key: n for n in nodes}
+    assert set(node_map.keys()) == {"B", "C", "E", "D"}
+    assert "F" not in node_map  # F would be depth 4, properly cut off
+
+    assert node_map["B"].hop == 1
+    assert node_map["B"].level == ImpactHopLevel.DIRECT
+
+    assert node_map["C"].hop == 2
+    assert node_map["C"].level == ImpactHopLevel.INDIRECT
+
+    assert node_map["E"].hop == 2  # Shortest 2-hop path, NOT 5-hop
+    assert node_map["E"].level == ImpactHopLevel.INDIRECT
+
+    assert node_map["D"].hop == 3
+    assert node_map["D"].level == ImpactHopLevel.POTENTIAL
+
+
+def test_inner_cycle_reentry():
+    """Topology 2:
+    A → B → C
+        ↑   ↓
+        D ←─┘
+    Verifies that inner cycle B -> C -> D -> B terminates cleanly without infinite loop.
+    """
+    entities = {k: {"name": k, "entity_type": "CLASS", "project_key": "P"} for k in ["A", "B", "C", "D"]}
+    relations = [
+        {"subject_key": "A", "object_key": "B", "relation_type": "CALLS"},
+        {"subject_key": "B", "object_key": "C", "relation_type": "CALLS"},
+        {"subject_key": "C", "object_key": "D", "relation_type": "CALLS"},
+        {"subject_key": "D", "object_key": "B", "relation_type": "CALLS"},  # cycle back to B
+    ]
+
+    traversal = ImpactGraphTraversal(max_depth=3)
+    nodes, paths = traversal.traverse(seed_keys=["A"], entities_by_key=entities, relations=relations, direction="upstream")
+
+    node_map = {n.entity_key: n for n in nodes}
+    assert set(node_map.keys()) == {"B", "C", "D"}
+    assert node_map["B"].hop == 1
+    assert node_map["C"].hop == 2
+    assert node_map["D"].hop == 3
+
+
+def test_multi_path_shortest_hop_preservation():
+    """Topology 3:
+    A → B → C → D (3 hops)
+    A → X → D     (2 hops)
+    Verifies that D strictly preserves shortest depth = 2, and is not overwritten by depth = 3.
+    """
+    entities = {k: {"name": k, "entity_type": "CLASS", "project_key": "P"} for k in ["A", "B", "C", "D", "X"]}
+    relations = [
+        {"subject_key": "A", "object_key": "B", "relation_type": "CALLS"},
+        {"subject_key": "B", "object_key": "C", "relation_type": "CALLS"},
+        {"subject_key": "C", "object_key": "D", "relation_type": "CALLS"},
+        {"subject_key": "A", "object_key": "X", "relation_type": "CALLS"},
+        {"subject_key": "X", "object_key": "D", "relation_type": "CALLS"},
+    ]
+
+    traversal = ImpactGraphTraversal(max_depth=3)
+    nodes, paths = traversal.traverse(seed_keys=["A"], entities_by_key=entities, relations=relations, direction="upstream")
+
+    node_map = {n.entity_key: n for n in nodes}
+    assert node_map["D"].hop == 2
+    assert node_map["D"].level == ImpactHopLevel.INDIRECT
+

@@ -132,6 +132,14 @@ class ImpactGraphTraversal:
                         evidence_sources=[rel_type],
                     )
                     affected_nodes_map[neighbor_key] = node
+                elif neighbor_key in affected_nodes_map:
+                    # Invariant defense: strictly preserve shortest hop depth and accumulate multi-path evidence
+                    existing_node = affected_nodes_map[neighbor_key]
+                    if next_depth < existing_node.hop:
+                        existing_node.hop = next_depth
+                        existing_node.level = hop_level
+                    if rel_type not in existing_node.evidence_sources:
+                        existing_node.evidence_sources.append(rel_type)
 
                 if neighbor_key not in visited:
                     visited.add(neighbor_key)
