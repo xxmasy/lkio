@@ -37,3 +37,8 @@ class Project(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         back_populates="project",
         cascade="all, delete-orphan",
     )
+    wiki_sections: Mapped[list["WikiSection"]] = relationship(  # type: ignore[name-defined]
+        "WikiSection",
+        back_populates="project",
+        cascade="all, delete-orphan",
+    )
