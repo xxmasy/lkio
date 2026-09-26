@@ -22,8 +22,8 @@
 | **MVP3** | **Hybrid RAG (Keyword+pgvector+Graph)** | **COMPLETED / FROZEN** | MVP1, MVP2 | **ALL PASSED** | [mvp3_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp3/mvp3_acceptance_report.md) |
 | **MVP4** | **LLM Wiki (带证据投影)** | **COMPLETED / FROZEN** | MVP3 (已冻结) | **ALL PASSED** | [mvp4_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp4/mvp4_acceptance_report.md) |
 | **MVP5** | **Event & Change Intelligence** | **COMPLETED / FROZEN** | MVP1, MVP2 | **ALL PASSED** | [mvp5_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp5/mvp5_acceptance_report.md) |
-| **MVP6** | **Laya Decision Engine (4大决策任务)** | **READY_TO_PLAN** | MVP4, MVP5 | 待启动规划 | - |
-| **MVP7** | Impact Analysis Engine (影响链分析) | **LOCKED** | MVP2, MVP5, MVP6 | 未开始 | - |
+| **MVP6** | **Laya Decision Engine (4大决策任务)** | **COMPLETED / FROZEN** | MVP4, MVP5 | **ALL PASSED** | [mvp6_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp6/mvp6_acceptance_report.md) |
+| **MVP7** | **Impact Analysis Engine (影响链分析)** | **READY_TO_PLAN** | MVP2, MVP5, MVP6 | 待启动规划 | - |
 | **MVP8** | Evaluation / Calibration / Learning Loop | **LOCKED** | MVP6, MVP7 | 未开始 | - |
 
 ---
