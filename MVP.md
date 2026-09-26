@@ -17,10 +17,10 @@
 | MVP 编号 | 阶段名称 | 当前状态 | 阻塞依赖 | 验收门状态 | 阶段结项报告 |
 |---|---|---|---|---|---|
 | **MVP0** | **Environment & Knowledge Core** | **COMPLETED / FROZEN** | 无 | **ALL PASSED** | [mvp0_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp/mvp0_acceptance_report.md) |
-| **MVP1** | **Project Ingestion (只读扫描/增量同步)** | **READY_TO_IMPLEMENT** | MVP0 (已冻结) | 待启动实施 | 待生成 |
-| **MVP2** | Code / AST / Cross-project Graph | **LOCKED** | MVP1 | 未开始 | - |
-| **MVP3** | Hybrid RAG (Keyword+pgvector+Graph) | **LOCKED** | MVP1, MVP2 | 未开始 | - |
-| **MVP4** | LLM Wiki (带证据投影) | **LOCKED** | MVP3 | 未开始 | - |
+| **MVP1** | **Project Ingestion (只读扫描/增量同步)** | **COMPLETED / FROZEN** | MVP0 (已冻结) | **ALL PASSED** | [mvp1_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp1/mvp1_acceptance_report.md) |
+| **MVP2** | **Code Intelligence & Structural Graph** | **COMPLETED / FROZEN** | MVP1 (已冻结) | **ALL PASSED** | [mvp2_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp2/mvp2_acceptance_report.md) |
+| **MVP3** | **Hybrid RAG (Keyword+pgvector+Graph)** | **COMPLETED / FROZEN** | MVP1, MVP2 | **ALL PASSED** | [mvp3_acceptance_report.md](file:///C:/WorkSpace/lkio/docs/mvp3/mvp3_acceptance_report.md) |
+| **MVP4** | **LLM Wiki (带证据投影)** | **READY_TO_PLAN** | MVP3 (已冻结) | 待启动规划 | - |
 | **MVP5** | Event & Change Intelligence | **LOCKED** | MVP1 | 未开始 | - |
 | **MVP6** | Laya Decision Engine (4大决策任务) | **LOCKED** | MVP4, MVP5 | 未开始 | - |
 | **MVP7** | Impact Analysis Engine (影响链分析) | **LOCKED** | MVP2, MVP5, MVP6 | 未开始 | - |
