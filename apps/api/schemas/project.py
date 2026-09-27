@@ -8,11 +8,11 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class ProjectBase(BaseModel):
-    key: str = Field(..., max_length=64, examples=["HELLO_FE"])
-    name: str = Field(..., max_length=255, examples=["hello"])
+    key: str = Field(..., max_length=64, examples=["DEMO_FE"])
+    name: str = Field(..., max_length=255, examples=["demo-frontend"])
     kind: str = Field(..., max_length=32, examples=["frontend"])
     role: str = Field(..., max_length=64, examples=["primary_frontend"])
-    local_path: str = Field(..., examples=["C:\\WorkSpace\\hello"])
+    local_path: str = Field(..., examples=["/workspace/demo-frontend"])
     description: str | None = None
     status: str = Field(default="ACTIVE", max_length=32)
     metadata: dict[str, Any] = Field(
