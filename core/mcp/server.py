@@ -114,3 +114,21 @@ class LKIO_MCPServer:
     @property
     def logs(self) -> List[McpInvocationLog]:
         return self.registry.observability_logs
+
+    def run_stdio(self):
+        """Standard IO JSON-RPC loop for MCP clients."""
+        import sys
+
+        for line in sys.stdin:
+            line = line.strip()
+            if not line:
+                continue
+            res = self.process_json_rpc(line)
+            sys.stdout.write(res + "\n")
+            sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    server = LKIO_MCPServer()
+    server.run_stdio()
+

@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Python
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+*.egg-info
+dist
+build
+
+# Node / Frontend
+apps/web/node_modules
+apps/web/dist
+apps/web/.vscode
+
+# Local environment & secrets
+.env
+.env.local
+*.log
+
+# Temp data
+data/cache
+tmp

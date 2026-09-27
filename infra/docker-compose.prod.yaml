@@ -1,0 +1,53 @@
+# Production Docker Compose specification for LKIO
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg18
+    container_name: lkio-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lkio}
+      POSTGRES_USER: ${POSTGRES_USER:-lkio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-production-secret}
+    volumes:
+      - lkio_prod_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lkio} -d ${POSTGRES_DB:-lkio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: lkio-api-prod
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-lkio}:${POSTGRES_PASSWORD:-change-me-production-secret}@postgres:5432/${POSTGRES_DB:-lkio}
+      APP_ENV: production
+      LOG_LEVEL: WARNING
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    container_name: lkio-web-prod
+    restart: always
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+
+volumes:
+  lkio_prod_pgdata:

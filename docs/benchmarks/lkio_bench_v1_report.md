@@ -1,9 +1,9 @@
 # LKIO-Bench v1.0: 权威性能与消融评测总报告
 
 > **评测套件**：**LKIO-Bench v1.0**  
-> **评测时间**：`2026-09-27T11:48:05.930079`  
+> **评测时间**：`2026-09-27T12:12:03.256040`  
 > **评测代码库**：`HELLO_FE (Vue) + HELLO_BE (Spring Boot) + L2C_FE`  
-> **核心准则**：将‘系统能不能跑’与‘系统到底比什么强’彻底解耦，覆盖 15 层纵深指标，如实呈现优势与缺陷。
+> **核心准则**：将‘系统能不能跑’与‘系统到底比什么强’彻底解耦，覆盖 20 层纵深指标，如实呈现优势与缺陷。
 
 ---
 
@@ -27,7 +27,7 @@
 
 ---
 
-## 二、15 层基准评测详细结果统计 (Layers 1 ~ 15)
+## 二、20 层基准评测详细结果统计 (Layers 1 ~ 20)
 
 ### Layer 1: Semantic Retrieval
 - **测试样本量**：4
@@ -326,11 +326,57 @@
 - **验证状态**：`PASSED`
 ```json
 {
-  "one_file_p95_ms": 2.38,
-  "five_files_p95_ms": 2.26,
-  "twenty_files_p95_ms": 2.02,
-  "hundred_files_p95_ms": 7.07,
-  "full_rebuild_ms": 1.0,
-  "average_speedup": 0.42
+  "one_file_p95_ms": 2.24,
+  "five_files_p95_ms": 2.21,
+  "twenty_files_p95_ms": 1.92,
+  "hundred_files_p95_ms": 6.72,
+  "full_rebuild_ms": 1.14,
+  "average_speedup": 0.51
+}
+```
+
+### Layer 18: Cross-Repo Retrieval
+- **测试样本量**：20
+- **验证状态**：`PASSED`
+```json
+{
+  "api_endpoint_discovery_rate": 1.0,
+  "client_to_server_match_rate": 1.0,
+  "dto_field_lineage_recall": 1.0,
+  "dto_field_precision": 1.0,
+  "cross_repo_symbol_discovery_rate": 1.0,
+  "total_cross_repo_edges_discovered": 4
+}
+```
+
+### Layer 19: Cross-Repo Impact
+- **测试样本量**：15
+- **验证状态**：`PASSED`
+```json
+{
+  "one_hop_impact_recall": 1.0,
+  "two_hop_impact_recall": 1.0,
+  "three_hop_impact_recall": 1.0,
+  "frontend_backend_blast_radius": 1.0,
+  "service_a_to_service_b_impact": 1.0,
+  "shared_sdk_to_consumers_impact": 1.0,
+  "cross_repo_cycle_safe": true,
+  "shortest_hop_preservation_rate": 1.0,
+  "depth_violation_count": 0
+}
+```
+
+### Layer 20: Cross-Repo False Positive
+- **测试样本量**：16
+- **验证状态**：`PASSED`
+```json
+{
+  "same_endpoint_diff_service_fp": 0,
+  "same_route_diff_service_fp": 0,
+  "same_dto_diff_schema_fp": 0,
+  "total_negative_samples": 16,
+  "false_positive_rate": 0.0,
+  "false_positive_threshold": 0.05,
+  "isolation_boundary_respected": true
 }
 ```
