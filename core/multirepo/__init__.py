@@ -3,9 +3,11 @@
 from core.multirepo.models import (
     ApiContract,
     ApiEndpoint,
+    CandidateMatch,
     CrossRepoEdge,
     DtoFieldLineage,
     EvidenceLevel,
+    RankedApiContract,
     ScopedEntityKey,
 )
 from core.multirepo.api_matcher import ApiContractMatcher
@@ -19,9 +21,11 @@ from core.multirepo.impact import (
 __all__ = [
     "ApiContract",
     "ApiEndpoint",
+    "CandidateMatch",
     "CrossRepoEdge",
     "DtoFieldLineage",
     "EvidenceLevel",
+    "RankedApiContract",
     "ScopedEntityKey",
     "ApiContractMatcher",
     "DtoContractMatcher",

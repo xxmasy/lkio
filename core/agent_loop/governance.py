@@ -29,8 +29,71 @@ class DecisionGovernanceEngine:
         post_validation: PostChangeValidation,
         calibrated_confidence: float = 0.90,
     ) -> DecisionGovernanceResult:
+        import math
         reasons: List[str] = []
         evidence: List[Dict[str, Any]] = []
+
+        # 0.1 Model Output Anomaly Check
+        if math.isnan(calibrated_confidence) or calibrated_confidence < 0.0 or calibrated_confidence > 1.0:
+            reasons.append(f"Model output anomaly detected: invalid confidence value {calibrated_confidence}")
+            evidence.append({"rule": "MODEL_ANOMALY_GATE", "confidence": calibrated_confidence})
+            return DecisionGovernanceResult(
+                choice=GovernanceChoice.BLOCK,
+                score=0.0,
+                confidence=0.0,
+                evidence=evidence,
+                reasons=reasons,
+                risk=GovernanceRisk.HIGH,
+                policy="ANOMALOUS_MODEL_OUTPUT_BLOCK",
+                requires_human_signoff=True,
+            )
+
+        # 0.2 Evidence Completeness Check
+        if pre_evidence is None or (
+            not pre_evidence.references and not pre_evidence.dependencies and not pre_evidence.direct_impact
+        ):
+            reasons.append("Evidence missing: foundational repository graph paths and impact data are absent.")
+            evidence.append({"rule": "EVIDENCE_COMPLETENESS", "status": "MISSING"})
+            return DecisionGovernanceResult(
+                choice=GovernanceChoice.BLOCK,
+                score=0.15,
+                confidence=calibrated_confidence,
+                evidence=evidence,
+                reasons=reasons,
+                risk=GovernanceRisk.HIGH,
+                policy="INSUFFICIENT_EVIDENCE_BLOCK",
+                requires_human_signoff=True,
+            )
+
+        # 0.3 Incomplete Topology / Orphan Entity Check
+        if task.target_entity.startswith("unknown://") or task.target_entity in ("ORPHAN", "UNKNOWN"):
+            reasons.append("Incomplete topology: target entity is not indexed in canonical repository graph.")
+            evidence.append({"rule": "TOPOLOGY_COMPLETENESS", "target": task.target_entity})
+            return DecisionGovernanceResult(
+                choice=GovernanceChoice.BLOCK,
+                score=0.20,
+                confidence=calibrated_confidence,
+                evidence=evidence,
+                reasons=reasons,
+                risk=GovernanceRisk.HIGH,
+                policy="INCOMPLETE_TOPOLOGY_BLOCK",
+                requires_human_signoff=True,
+            )
+
+        # 0.4 Out-of-Distribution (OOD) Domain Shift Check
+        if task.business_criticality == "UNKNOWN_OOD" or "OOD" in task.task_id:
+            reasons.append("Out-of-distribution scenario detected; automated reasoning deferred to human triage.")
+            evidence.append({"rule": "OOD_GATE", "task_id": task.task_id})
+            return DecisionGovernanceResult(
+                choice=GovernanceChoice.REVIEW,
+                score=0.50,
+                confidence=calibrated_confidence,
+                evidence=evidence,
+                reasons=reasons,
+                risk=GovernanceRisk.MEDIUM,
+                policy="OUT_OF_DISTRIBUTION_HUMAN_TRIAGE",
+                requires_human_signoff=True,
+            )
 
         # 1. Hard Invariant: Regression Gate
         if not post_validation.test_passed or post_validation.regression_detected:

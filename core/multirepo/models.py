@@ -72,3 +72,19 @@ class DtoFieldLineage(BaseModel):
     frontend_entity_key: str
     backend_entity_key: str
     confidence: float = 1.0
+
+
+class CandidateMatch(BaseModel):
+    backend_endpoint: ApiEndpoint
+    confidence: float
+    evidence_level: EvidenceLevel
+    evidence_rationale: str
+
+
+class RankedApiContract(BaseModel):
+    frontend_endpoint: ApiEndpoint
+    is_ambiguous: bool = False
+    candidates: List[CandidateMatch] = PydanticField(default_factory=list)
+    primary_candidate: Optional[CandidateMatch] = None
+    ambiguity_details: Optional[str] = None
+

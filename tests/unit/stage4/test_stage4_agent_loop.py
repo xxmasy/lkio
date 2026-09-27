@@ -144,6 +144,7 @@ def test_stage4_scope_deviation_on_critical_component_blocks():
 
     pre_evidence = PreChangeEvidence(
         target_entity="src/DBDriver.java",
+        references=[{"source": "ConnectionPool"}],
         risk_level="MEDIUM",
     )
 

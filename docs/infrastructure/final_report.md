@@ -1,9 +1,12 @@
 # LKIO Stage 4 实施与 Final Gate 验收总报告
 
 > **阶段**：Stage 4 — Agent Coding / Refactoring Feedback Loop & Governance  
-> **状态**：`COMPLETED` (Final Gate Passed)  
-> **依据规范**：[LKIO_持续基础设施演进开发规范.md](../LKIO_持续基础设施演进开发规范.md) Section 6  
-> **验收时间**：`2026-09-27T12:15:00Z`
+> **三层门禁状态**：  
+> - **Gate A (Implementation Complete)**: `PASSED` (100% 架构闭环实现)  
+> - **Gate B (Benchmark Validated)**: `PASSED` (7 步工作流、5 大基础场景与 8 大对抗压力测试全绿通过)  
+> - **Gate C (Production Proven)**: `FRAMEWORK COMPLETE / NOT PRODUCTION-PROVEN` (框架与防御体系完整，但严禁等同于真实市场生产级放行)  
+> **依据规范**：[LKIO_持续基础设施演进开发规范.md](../LKIO_持续基础设施演进开发规范.md) Section 0.3 & Section 6  
+> **验收时间**：`2026-09-27T12:20:00Z`
 
 ---
 
@@ -16,7 +19,10 @@
    - `DecisionGovernanceResult`: 约束结论输出（`choice: ALLOW|REVIEW|BLOCK`、得分、置信度、规则证据链、风险等级、执行策略）；
    - `WorkflowAuditTrail`: 全流程 7 步审计追踪。
 2. **生产级准入决策治理引擎 (`core/agent_loop/governance.py`)**：
-   - **核心安全铁律**：`Confidence != Permission`（高模型置信度绝不等同于高风险动作自动放行）；
+   - **最高安全铁律**：`Confidence != Permission`（高模型置信度绝不等同于高风险动作自动放行）；
+   - **执行路径严格受控**：
+     $$\text{Confidence} \longrightarrow \text{Risk} \longrightarrow \text{Policy} \longrightarrow \text{Permission}$$
+     严禁跳过风险与策略直接由置信度导出权限；
    - **零回归铁律 (`ZERO_REGRESSION_POLICY`)**：测试失败或破坏现有合约一律严苛 `BLOCK`；
    - **作用域收敛控制 (`CRITICAL_SCOPE_STRICT_BLOCK`)**：关键业务组件出现未声明爆炸半径溢出一律 `BLOCK`；
    - **高危强制人工签批 (`MANDATORY_HUMAN_SIGNOFF_FOR_HIGH_RISK`)**：涉及核心支付、权限及底层驱动等高风险修改，强制产出 `REVIEW` 结论并标注 `requires_human_signoff = True`；
@@ -35,30 +41,47 @@
 
 ---
 
-## 2. 真实场景验证与评测结果
+## 2. 真实场景与对抗压力测试结果 (Adversarial Stress Suite)
 
-| 验证用例 | 场景说明 | 预期决策 | 实际输出 | 验证结论 |
+在 [`tests/unit/stage4/test_governance_adversarial_stress.py`](../../tests/unit/stage4/test_governance_adversarial_stress.py) 中，全面测试了 8 大极限对抗场景：
+
+| 验证用例 | 对抗场景说明 | 预期防线 | 实际输出 | 验证结论 |
 |---|---|:---:|:---:|:---:|
-| `TASK-001` | 修改前代码事实探索与依赖定位 | 证据完整 | 引用/依赖/时间线完备 | **PASS** |
-| `TASK-002` | 低风险辅助方法增加日志（测试全绿，作用域吻合） | `ALLOW` | `ALLOW (score=0.95, risk=LOW)` | **PASS** |
-| `TASK-003` | 结算引擎重构引入逻辑回归（测试断言失败） | `BLOCK` | `BLOCK (ZERO_REGRESSION_POLICY)` | **PASS** |
-| `TASK-004` | 核心支付授权逻辑升级（模型置信度高，但风险极高） | `REVIEW` | `REVIEW (MANDATORY_HUMAN_SIGNOFF)` | **PASS** |
-| `TASK-005` | 核心底层驱动重构发生未声明作用域外溢 | `BLOCK` | `BLOCK (CRITICAL_SCOPE_STRICT_BLOCK)` | **PASS** |
+| `STRESS-001` | 高置信度 (0.999) + 高危结算核心修改 | 绝不自动放行 | `REVIEW (MANDATORY_HUMAN_SIGNOFF)` | **PASS** |
+| `STRESS-002` | 低置信度 (0.68) + 低风险日志修改 | 需人工二次审核 | `REVIEW (MODERATE_CONFIDENCE_PEER_REVIEW)` | **PASS** |
+| `STRESS-003` | 模型高置信度误判良性，但测试断言失败 | 严苛拦截回归 | `BLOCK (ZERO_REGRESSION_POLICY)` | **PASS** |
+| `STRESS-004` | 测试绿灯通过，但影响面外溢至核心结算模块 | 阻断越界污染 | `BLOCK (CRITICAL_SCOPE_STRICT_BLOCK)` | **PASS** |
+| `STRESS-OOD` | 未知类型、跨语言二进制插件等分布外 (OOD) 场景 | 路由至人工分流 | `REVIEW (OUT_OF_DISTRIBUTION_HUMAN_TRIAGE)` | **PASS** |
+| `STRESS-006` | 模型输出异常值（NaN、负值、越界置信度） | 异常拦截防御 | `BLOCK (ANOMALOUS_MODEL_OUTPUT_BLOCK)` | **PASS** |
+| `STRESS-007` | 图谱前置证据缺失（无引用、依赖或影响面数据） | 证据不足阻断 | `BLOCK (INSUFFICIENT_EVIDENCE_BLOCK)` | **PASS** |
+| `STRESS-008` | 目标实体未在规范图谱注册（孤儿/未知实体） | 拓扑残缺阻断 | `BLOCK (INCOMPLETE_TOPOLOGY_BLOCK)` | **PASS** |
 
 ---
 
-## 3. Final Gate 逐项核验对照表 (Section 6.10)
+## 3. Docker 部署与环境验证客观定级
 
-| 检验标准 | 验证证据 | 结论 |
-|---|---|:---:|
-| **Agent 能使用 LKIO 完成 repository exploration** | `collect_pre_change_evidence` 精确调用 `references/dependencies/history` | **PASS** |
-| **Agent 能使用 LKIO 做 pre-change impact analysis** | 修改前精确计算直接与间接影响实体 | **PASS** |
-| **Agent 修改后可触发 incremental re-index** | 变更直接流入 `IncrementalIndexingPipeline` 完成候选快照构建 | **PASS** |
-| **Post-change graph 与实际代码一致** | `PostChangeValidation` 捕获准确的 `symbols_changed` 与拓扑边差分 | **PASS** |
-| **能发现至少一类真实 regression** | 自动化测试失败与合约异常被 `ZERO_REGRESSION_POLICY` 拦截 | **PASS** |
-| **Decision 有 evidence chain** | 输出包含 `evidence` 审计明细与清晰判定理由 | **PASS** |
-| **高风险任务不会仅因模型 confidence 高而直接放行** | `test_stage4_high_risk_confidence_does_not_equal_permission` 验证通过 | **PASS** |
-| **Workflow benchmark 可重复** | 5 项端到端工作流用例全部稳定复现 | **PASS** |
-| **生产安全边界明确** | `ALLOW`、`REVIEW` 与 `BLOCK` 三重防御界限清晰分明 | **PASS** |
+- **当前完成度**：[`Dockerfile`](../../Dockerfile)、[`apps/web/Dockerfile`](../../apps/web/Dockerfile)、[`docker-compose.yml`](../../docker-compose.yml)、[`infra/docker-compose.prod.yaml`](../../infra/docker-compose.prod.yaml) 已完成多阶段配置；
+- **配置语法验证**：`docker compose config` 与 `docker compose -f infra/docker-compose.prod.yaml config` 100% 语法校验通过；
+- **生产部署定级**：**配置验证（Configuration Valid）$\ne$ 生产实际部署验证（Production Deployment Verified）**。未来仍需在真实 K8s/物理集群上执行从空库迁移、健康探针轮询、长程数据持久化到自动故障重启的完整流水线实测。
 
-**结论：Stage 4 Final Gate 全部条件 100% 满足，四大演进阶段（Stage 1-4）全线贯通！**
+---
+
+## 4. 全局演进阶段真实状态矩阵（LKIO vNext Audit Matrix）
+
+| 阶段 | 核心任务 | Gate A: 功能实现 | Gate B: 基准验证 | Gate C: 生产级验证 | 当前对外客观状态 |
+|---|---|:---:|:---:|:---:|---|
+| **Stage 0** | 基线冻结与统一标识 | ✅ 100% | ✅ 100% | ✅ 100% | **COMPLETE** |
+| **Stage 1** | 增量索引与状态引擎 | ✅ 100% | ✅ 100% (含G1.8独立预言机) | ⚠️ 待大仓长时压测 | **IMPLEMENTED / BENCHMARK VALIDATED** |
+| **Stage 2** | Multi-Repo 跨仓拓扑 | ✅ 100% | ✅ 100% (含路由歧义探测) | ⚠️ 待百仓级生产拓扑 | **IMPLEMENTED / BENCHMARK VALIDATED** |
+| **Stage 3** | MCP 事实层基础设施 | ✅ 100% | ✅ 100% (含100并发与只读隔离) | ⚠️ 待百万行大仓性能基准 | **IMPLEMENTED / BENCHMARK VALIDATED** |
+| **Stage 4** | Agent 闭环与治理防线 | ✅ 100% | ✅ 100% (含8大对抗压力套件) | ❌ 待真实市场多Agent实测 | **FRAMEWORK COMPLETE / NOT PRODUCTION-PROVEN** |
+| **Docker** | 容器化封装与编排 | ✅ 100% | ✅ 100% (Compose语法通过) | ⚠️ 待集群生产部署运行 | **CONFIGURATION VALIDATED** |
+
+---
+
+## 5. 机器可核验审计凭证存档 (Machine-Verifiable Audit Evidence)
+
+全量测试与门禁执行日志已固化至独立不可篡改的 JSON 凭证文件：  
+[`docs/infrastructure/gate_audit_records.json`](gate_audit_records.json)
+
+该文件记录了测试命令、退出码、精确时间戳、Git Commit SHA-1 及完整标准输出（**243/243 全部通过，0 失败**）。

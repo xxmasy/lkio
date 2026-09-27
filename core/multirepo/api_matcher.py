@@ -6,7 +6,14 @@ producing graded cross-repo API_CALLS edges.
 
 import re
 from typing import Dict, List, Optional, Tuple
-from core.multirepo.models import ApiContract, ApiEndpoint, CrossRepoEdge, EvidenceLevel
+from core.multirepo.models import (
+    ApiContract,
+    ApiEndpoint,
+    CandidateMatch,
+    CrossRepoEdge,
+    EvidenceLevel,
+    RankedApiContract,
+)
 
 
 class ApiContractMatcher:
@@ -140,6 +147,72 @@ class ApiContractMatcher:
                         )
                     )
         return contracts
+
+    @classmethod
+    def match_ranked_contracts(
+        cls,
+        frontend_endpoints: List[ApiEndpoint],
+        backend_endpoints: List[ApiEndpoint],
+    ) -> List[RankedApiContract]:
+        """Matches endpoints with candidate ranking, ambiguity detection, and verifiable rationale."""
+        ranked_contracts = []
+        for fe in frontend_endpoints:
+            candidates: List[CandidateMatch] = []
+            for be in backend_endpoints:
+                level, base_conf = cls._evaluate_match(fe, be)
+                if level != EvidenceLevel.UNKNOWN:
+                    conf = base_conf
+                    rationale = f"Matched path '{be.path}' with method {be.http_method}"
+
+                    # Penalize mock / legacy repos if multiple exist
+                    repo_lower = be.repo_id.lower()
+                    if "mock" in repo_lower:
+                        conf = max(0.1, conf - 0.40)
+                        rationale += " (Penalized: mock repository)"
+                    elif "legacy" in repo_lower:
+                        conf = max(0.1, conf - 0.25)
+                        rationale += " (Penalized: legacy repository)"
+                    else:
+                        rationale += f" (Primary service: {be.repo_id})"
+
+                    candidates.append(
+                        CandidateMatch(
+                            backend_endpoint=be,
+                            confidence=round(conf, 3),
+                            evidence_level=level,
+                            evidence_rationale=rationale,
+                        )
+                    )
+
+            if not candidates:
+                continue
+
+            candidates.sort(key=lambda c: c.confidence, reverse=True)
+            primary = candidates[0]
+
+            # Ambiguity detection: if 2nd candidate is close in confidence (diff <= 0.20)
+            is_ambiguous = False
+            ambiguity_details = None
+            if len(candidates) > 1 and (primary.confidence - candidates[1].confidence) <= 0.20:
+                is_ambiguous = True
+                ambiguity_details = (
+                    f"Ambiguous contract mapping: {len(candidates)} competing backend endpoints detected. "
+                    f"Top 2: [{primary.backend_endpoint.repo_id} ({primary.confidence}) vs "
+                    f"{candidates[1].backend_endpoint.repo_id} ({candidates[1].confidence})]. "
+                    "Requires Decision Layer resolution."
+                )
+
+            ranked_contracts.append(
+                RankedApiContract(
+                    frontend_endpoint=fe,
+                    is_ambiguous=is_ambiguous,
+                    candidates=candidates,
+                    primary_candidate=primary,
+                    ambiguity_details=ambiguity_details,
+                )
+            )
+
+        return ranked_contracts
 
     @classmethod
     def to_cross_repo_edges(cls, contracts: List[ApiContract]) -> List[CrossRepoEdge]:

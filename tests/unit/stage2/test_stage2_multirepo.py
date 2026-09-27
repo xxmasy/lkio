@@ -246,3 +246,47 @@ def test_cross_repo_impact_provenance_and_cycle_safety():
     fe_api_node = result.affected_nodes["repo://repo-fe/src/api/metricApi.ts#fetchMetrics"]
     assert fe_api_node.depth == 2
     assert fe_api_node.impact_level == "INDIRECT"
+
+
+def test_api_contract_ambiguity_detection_and_candidate_ranking():
+    fe_code = "export async function getUser() { return axios.get('/api/user'); }"
+    fe_endpoints = ApiContractMatcher.extract_frontend_endpoints("fe-web", "src/api/user.ts", fe_code)
+
+    # 3 backend services all declaring /api/user:
+    # 1. user-service (primary)
+    # 2. admin-service (competing)
+    # 3. mock-service (penalized)
+    be_user = ApiContractMatcher.extract_backend_endpoints(
+        "user-service",
+        "UserController.java",
+        "@RestController\n@RequestMapping('/api')\npublic class UserController { @GetMapping('/user') public UserDTO get() {} }",
+    )
+    be_admin = ApiContractMatcher.extract_backend_endpoints(
+        "admin-service",
+        "AdminUserController.java",
+        "@RestController\n@RequestMapping('/api')\npublic class AdminUserController { @GetMapping('/user') public UserDTO get() {} }",
+    )
+    be_mock = ApiContractMatcher.extract_backend_endpoints(
+        "mock-service",
+        "MockUserController.java",
+        "@RestController\n@RequestMapping('/api')\npublic class MockUserController { @GetMapping('/user') public UserDTO get() {} }",
+    )
+
+    all_be = be_user + be_admin + be_mock
+    ranked = ApiContractMatcher.match_ranked_contracts(fe_endpoints, all_be)
+
+    assert len(ranked) == 1
+    contract = ranked[0]
+    assert len(contract.candidates) == 3
+
+    # Ambiguity detection triggered due to competing user-service vs admin-service
+    assert contract.is_ambiguous is True
+    assert "Ambiguous contract mapping" in contract.ambiguity_details
+    assert "user-service" in contract.ambiguity_details
+    assert "admin-service" in contract.ambiguity_details
+
+    # Mock service is ranked last due to penalty
+    assert contract.candidates[-1].backend_endpoint.repo_id == "mock-service"
+    assert "Penalized: mock repository" in contract.candidates[-1].evidence_rationale
+    assert contract.candidates[-1].confidence < contract.candidates[0].confidence
+

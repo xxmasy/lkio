@@ -64,6 +64,34 @@ Production Candidate
 
 原因：如果 Repository State 不是稳定、可回滚、可验证的事实层，那么 Agent 只会把错误放大。
 
+## 0.3 三层门禁铁律 (Three-tier Gate Hierarchy)
+
+LKIO 必须严格区分三种通过状态，严禁混淆：
+
+```text
+             ┌─────────────────────────┐
+             │   Gate A: Implementation │
+             │   代码功能与接口是否完成 │
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │   Gate B: Benchmark     │
+             │   在固定基准测试集上正确 │
+             └────────────┬────────────┘
+                          ↓
+             ┌─────────────────────────┐
+             │   Gate C: Production     │
+             │   分布、规模、并发、故障 │
+             │   真实生产条件下仍然可靠 │
+             └─────────────────────────┘
+```
+
+- **Gate A (Implementation Complete)**: 核心算法、数据模型与基础单元测试已实现；
+- **Gate B (Benchmark Validated)**: 在固定的 Golden/Synthetic 测试集与消融主表上满足指标阈值；
+- **Gate C (Production Proven)**: 在百万行级规模、超大跨仓拓扑、高并发读写、故障注入与真实 Agent 市场分布漂移下验证可靠。
+
+**铁律：只有 Gate A ✅ + Gate B ✅ + Gate C ✅ 全部达成，才能宣称“生产级通过（Production Gate Passed）”。否则只能客观标示为“实现完成”或“基准测试通过”。**
+
 ---
 
 # 1. 开发总纪律
