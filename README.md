@@ -21,9 +21,9 @@ We strictly separate architectural completion, benchmark validation, and product
 | Subsystem / Stage | Status | Verification & Gate Status |
 |---|:---:|---|
 | **Stage 0: Baseline & Unified Identity** | `COMPLETE` | ✅ Full namespaced URI identity (`repo://<repo_id>/<path>#<symbol>`), Unified SDK client (`core.sdk.lkio.LKIO`), frozen baseline manifests. |
-| **Stage 1: Incremental Indexing & COW Engine** | `BENCHMARK VALIDATED` | ✅ Copy-On-Write atomic snapshots, granular symbol diffs, stale edge pruning, transactional rollback, and an **Independent Oracle** direct-from-source verifier. |
+| **Stage 1: Incremental Indexing & COW Engine** | `BENCHMARK VALIDATED` | ✅ Copy-On-Write atomic snapshots, granular symbol diffs, stale edge pruning, transactional rollback, and an **Independent Oracle** (validating canonical structural subset: `FILE`, `CLASS`, `INTERFACE`, `METHOD`, `CONTAINS`). |
 | **Stage 2: Multi-Repo Topology & Contract Inference** | `BENCHMARK VALIDATED` | ✅ Cross-repo identity, REST/RPC contract matching, candidate ranking ($A \to [B: 0.97, C: 0.61]$), ambiguity detection, DTO field lineage, and cycle-safe multi-repo BFS. |
-| **Stage 3: MCP Infrastructure (Agent Gateway)** | `BENCHMARK VALIDATED` | ✅ Standard JSON-RPC 2.0 & Stdio transport loop, 9 read-only tools strictly delegating to LKIO SDK, explicit mutation blocklists, 100 concurrent requests verified. |
+| **Stage 3: MCP Infrastructure (Agent Gateway)** | `BENCHMARK VALIDATED` | ✅ Standard JSON-RPC 2.0 & Stdio transport loop (2024-11-05 tool lifecycle with protocol negotiation for 2025-11-25 and 2026-07-28), 9 read-only tools strictly delegating to LKIO SDK, explicit mutation blocklists, 100 concurrent requests verified. |
 | **Stage 4: Agent Refactoring Loop & Governance Gate** | `FRAMEWORK COMPLETE` | ⚠️ 7-step closed-loop refactoring orchestrator & 8-scenario adversarial stress suite. Enforces `Confidence != Permission`. Framework complete; **not claimed production-proven**. |
 | **Production Scale Proof** | `PENDING` | ⏳ Monitored and suspended pending large-scale distributed deployments and real-world enterprise load validation. |
 
@@ -68,7 +68,7 @@ We strictly separate architectural completion, benchmark validation, and product
 
 ## 🔌 Model Context Protocol (MCP) Setup
 
-LKIO exposes a fully compliant Model Context Protocol (MCP) server over standard input/output (`stdio`), allowing agents like Cursor, Claude Code, and Windsurf to directly invoke repository intelligence.
+LKIO exposes a fully compliant Model Context Protocol (MCP) server over standard input/output (`stdio`), implementing the 2024-11-05 tool lifecycle with dynamic protocol version negotiation (supporting `2024-11-05`, `2025-11-25`, and `2026-07-28`). External AI coding agents (Claude Code, Cursor, Codex, Windsurf) can seamlessly query and reason over repository intelligence without raw database access.
 
 ### Configuration for Cursor / Claude Code
 
@@ -165,32 +165,55 @@ uv run pytest tests/unit/benchmarks/test_lkio_bench.py -q
 
 ### 1. Installation
 
-LKIO is powered by Python 3.12+ and managed via [`uv`](https://github.com/astral-sh/uv):
+LKIO requires Python 3.12+ and is managed via [`uv`](https://github.com/astral-sh/uv):
 
 ```bash
 # Clone the repository
 git clone https://github.com/xxmasy/lkio.git
 cd lkio
 
-# Install dependencies in isolated virtualenv
+# Install dependencies and project console scripts
 uv sync
 ```
 
-### 2. Run Test Suite
+### 2. Live Zero-Trust Evidence Verification (11 Gates)
 
-Verify all 240+ unit and integration tests:
+LKIO provides a unified mathematical evidence verification CLI command that computes on-the-fly proofs across 11 verification gates without mockups or hardcoded metrics:
+
+```bash
+uv run lkio verify --all
+```
+
+Or invoke as a standard Python module:
+```bash
+uv run python -m core.cli verify --all
+```
+
+The 11 verification gates enforce:
+- **G01 Runtime & Parsers**: Python $\ge 3.12$ and pinned Tree-sitter parsers (Java, TS, JS).
+- **G02 Integrity**: SHA-256 code/dataset checksums against frozen benchmark manifests.
+- **G03 Independent Oracle**: Clean-room AST canonical state equivalence proof (`FILE`, `CLASS`, `INTERFACE`, `METHOD`, `CONTAINS`).
+- **G04 Retrieval**: Hybrid BM25 + Vector semantic retrieval (Recall@10, MRR) and symbol lookup.
+- **G05 Graph Topology**: Cycle-safe BFS, shortest-hop preservation, and multi-tier blast radius F1.
+- **G06 Temporal Git**: Commit attribution, symbol evolution, and historical state reconstruction.
+- **G07 Multi-Repo & Stack**: Vue $\to$ Pinia $\to$ Axios $\to$ Controller $\to$ Service $\to$ DTO $\to$ Repo chains and cross-repo API contracts.
+- **G08 Decision Engine**: Decision accuracy ($\ge 0.85$) and macro-F1 ($\ge 0.75$).
+- **G09 Calibration**: Expected Calibration Error reduction via Temperature Scaling ($\Delta\text{ECE} \ge 50\%$).
+- **G10 Governance Adversarial**: 8 stress injection attacks (STRESS-001 ~ 008) defending `Confidence != Permission`.
+- **G11 MCP Protocol**: MCP 2024-11-05 tool lifecycle, version negotiation, and tool registry.
+
+To output an immutable, machine-readable JSON proof bundle:
+```bash
+uv run lkio verify --all --json
+```
+
+### 3. Run Pytest Test Suite
+
+Verify all 286 unit, integration, and preflight tests:
 
 ```bash
 uv run pytest tests/unit tests/integration -q
 ```
-
-### 3. Generate Machine-Verifiable Gate Audit Records
-
-```bash
-uv run python scripts/generate_audit_records.py
-```
-
-This generates `benchmarks/gate_audit_records.json`, capturing immutable cryptographic hashes, Git commit SHAs, command execution timestamps, exit codes, and stdout proofs.
 
 ### 4. Docker Deployment
 

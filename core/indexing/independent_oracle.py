@@ -1,10 +1,18 @@
-"""Independent Oracle for State Engine Equivalence (Stage 1 G1.8 Hard Gate).
+"""Independent Oracle for Tested Canonical State Subset (Stage 1 G1.8 Hard Gate).
 
 Architectural Rule:
 The Independent Oracle MUST NOT share code, AST traversal, or delta logic with the
 production Incremental Indexing Engine. It exists solely as an adversarial, independent
 verifier to guarantee that incremental state transitions never reproduce or mask
 engine-internal extraction bugs.
+
+Scope & Boundary Notice:
+This Oracle strictly validates the fundamental structural subset:
+- Canonical Entities: FILE, CLASS, INTERFACE, METHOD
+- Canonical Relations: CONTAINS (lexical container hierarchy)
+It intentionally does NOT assert or attempt full reproduction of complex graph semantics
+(e.g., cross-file IMPORTS, CALLS, EXTENDS, REST API routes, DTO lineage, or Vue template bindings),
+which are validated by dedicated Stage 2 multi-repo contract and graph traversal test suites.
 """
 
 from dataclasses import dataclass, field

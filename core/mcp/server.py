@@ -18,6 +18,10 @@ from core.mcp.tools import McpToolRegistry
 from core.sdk.lkio import LKIO
 
 
+SUPPORTED_PROTOCOL_VERSIONS = ["2024-11-05", "2025-11-25", "2026-07-28"]
+DEFAULT_PROTOCOL_VERSION = "2024-11-05"
+
+
 class LKIO_MCPServer:
     """Production MCP Server delivering structured repository intelligence to agents."""
 
@@ -84,8 +88,10 @@ class LKIO_MCPServer:
                 return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": envelope.model_dump()})
 
             elif method == "initialize":
+                client_ver = params.get("protocolVersion")
+                negotiated_ver = client_ver if client_ver in SUPPORTED_PROTOCOL_VERSIONS else DEFAULT_PROTOCOL_VERSION
                 init_res = {
-                    "protocolVersion": "2024-11-05",
+                    "protocolVersion": negotiated_ver,
                     "serverInfo": {"name": "lkio-mcp-server", "version": "1.0.0"},
                     "capabilities": {"tools": {"listChanged": False}},
                 }

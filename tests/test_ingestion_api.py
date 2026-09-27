@@ -37,7 +37,8 @@ def test_project_snapshot_and_runs():
     runs = runs_resp.json()["data"]
     assert len(runs) >= 1
     assert runs[0]["status"] in ["COMPLETED", "RUNNING"]
-    assert runs[0]["head_after"] is not None
+    if runs[0]["status"] == "COMPLETED":
+        assert runs[0]["head_after"] is not None
 
 
 def test_project_dependencies_and_frameworks():

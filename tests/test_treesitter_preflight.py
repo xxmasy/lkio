@@ -8,6 +8,7 @@ Validates:
 """
 
 from pathlib import Path
+import os
 import subprocess
 import pytest
 from ingestion.code.dto import LanguageType
@@ -192,7 +193,6 @@ def test_readonly_integrity_preflight():
         path_obj = Path(p)
         if not path_obj.exists():
             continue
-        import os
         sample_files = []
         for root_dir, dirs, files in os.walk(path_obj):
             dirs[:] = [d for d in dirs if d not in {".git", "node_modules", ".pnpm", "dist", "target", "build", ".venv"}]
