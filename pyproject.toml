@@ -1,7 +1,7 @@
 [project]
 name = "lkio"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.20.0",
     "fastapi[standard]>=0.141.1",
@@ -21,3 +21,13 @@ dependencies = [
     "tree-sitter-typescript==0.23.2",
     "typer>=0.27.2",
 ]
+
+[project.scripts]
+lkio = "core.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["apps*", "core*", "ingestion*", "retrieval*", "intelligence*", "benchmarks*"]

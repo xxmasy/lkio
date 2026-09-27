@@ -4,6 +4,7 @@ from HELLO_FE, HELLO_BE, and L2C_FE without errors or working-tree mutations.
 """
 
 from pathlib import Path
+import os
 import subprocess
 import pytest
 from core.parsing.parser_factory import ParserFactory
@@ -106,8 +107,6 @@ def test_source_repos_strict_readonly():
     # Perform extensive parsing across the projects
     factory = ParserFactory()
     slicer = SfcBlockSlicer(preserve_physical_lines=True)
-
-    import os
 
     def safe_walk_files(base_path: Path, extensions: tuple[str, ...], limit: int = 10) -> list[Path]:
         found = []

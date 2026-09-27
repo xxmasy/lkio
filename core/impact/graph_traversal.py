@@ -23,7 +23,7 @@ class ImpactGraphTraversal:
     """Cycle-safe multi-hop BFS traversal over knowledge graph relationships."""
 
     def __init__(self, max_depth: int = 3):
-        self.max_depth = min(3, max(1, max_depth))
+        self.max_depth = max(1, max_depth)
 
     def traverse(
         self,
