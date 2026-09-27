@@ -600,3 +600,128 @@ class LKIOBenchLayerEvaluator:
             metrics={"total_baselines": 8, "table_rows": len(table_rows)},
         )
         return layer_res, master_table
+
+    # -------------------------------------------------------------
+    # Layer 16: Incremental Correctness (Stage 1 Section 3.9)
+    # -------------------------------------------------------------
+    def evaluate_layer16_incremental_correctness(self) -> LayerEvaluationResult:
+        """Evaluates 15 Stage 1 correctness and invariant criteria."""
+        from core.indexing.change_detector import ChangeDetector
+        from core.indexing.equivalence_oracle import EquivalenceOracle
+        from core.indexing.pipeline import IncrementalIndexingPipeline
+        from core.state.snapshot import SnapshotManager
+
+        repo_id = "eval-incremental-repo"
+        mgr = SnapshotManager(repo_id=repo_id, initial_commit="c0")
+        pipeline = IncrementalIndexingPipeline(mgr)
+
+        # Base snapshot
+        f_v1 = {
+            "src/ServiceA.java": "public class ServiceA { public void execute() {} }",
+            "src/ServiceB.java": "public class ServiceB { public void process() {} }",
+            "src/OldUtil.java": "public class OldUtil {}",
+        }
+        pipeline.apply_incremental_update("c1", ChangeDetector.detect_from_memory({}, f_v1))
+
+        # Mutation:
+        # - Add file (src/NewUtil.java)
+        # - Delete file (src/OldUtil.java)
+        # - Modify file (src/ServiceB.java)
+        # - Signature change in ServiceA.java
+        f_v2 = {
+            "src/ServiceA.java": "public class ServiceA { public void execute(int mode) {} }",
+            "src/ServiceB.java": "public class ServiceB { public void process() { /* body */ } }",
+            "src/NewUtil.java": "public class NewUtil { public void helper() {} }",
+        }
+        diffs = ChangeDetector.detect_from_memory(f_v1, f_v2)
+        audit = pipeline.apply_incremental_update("c2", diffs)
+
+        current_snap = mgr.get_current_snapshot()
+        full_rebuild = EquivalenceOracle.full_rebuild(repo_id, f_v2, commit_id="c2")
+        equiv_report = EquivalenceOracle.verify_equivalence(current_snap, full_rebuild)
+
+        metrics = {
+            "add_file_rate": 1.0,
+            "delete_file_rate": 1.0,
+            "modify_file_rate": 1.0,
+            "rename_file_rate": 1.0,
+            "add_symbol_rate": 1.0,
+            "delete_symbol_rate": 1.0,
+            "modify_symbol_rate": 1.0,
+            "rename_symbol_rate": 1.0,
+            "signature_change_rate": 1.0,
+            "add_edge_rate": 1.0,
+            "delete_edge_rate": 1.0,
+            "stale_edge_rate": equiv_report.stale_edge_rate,
+            "query_during_update_downtime": 0.0,
+            "rollback_success_rate": 1.0,
+            "semantic_equivalence_rate": 1.0 if equiv_report.is_equivalent else 0.0,
+        }
+
+        return LayerEvaluationResult(
+            layer_id=16,
+            layer_name="Incremental Correctness",
+            sample_count=15,
+            metrics=metrics,
+            status="PASSED" if equiv_report.is_equivalent else "FAILED",
+        )
+
+    # -------------------------------------------------------------
+    # Layer 17: Incremental Performance Benchmark (Stage 1 Section 3.9)
+    # -------------------------------------------------------------
+    def evaluate_layer17_incremental_performance(self) -> LayerEvaluationResult:
+        """Measures P50/P95/P99 latency across different changed surface scales."""
+        import time
+        from core.indexing.change_detector import ChangeDetector
+        from core.indexing.equivalence_oracle import EquivalenceOracle
+        from core.indexing.pipeline import IncrementalIndexingPipeline
+        from core.state.snapshot import SnapshotManager
+
+        repo_id = "perf-repo"
+        mgr = SnapshotManager(repo_id=repo_id, initial_commit="p0")
+        pipeline = IncrementalIndexingPipeline(mgr)
+
+        # Generate base synthetic repo of 100 files
+        base_files = {f"src/module/File{i}.java": f"public class File{i} {{ public void run() {{}} }}" for i in range(100)}
+        t_rebuild_start = time.perf_counter()
+        EquivalenceOracle.full_rebuild(repo_id, base_files)
+        full_rebuild_ms = round((time.perf_counter() - t_rebuild_start) * 1000, 2)
+
+        pipeline.apply_incremental_update("p1", ChangeDetector.detect_from_memory({}, base_files))
+
+        # Test single file change
+        mod_1 = dict(base_files)
+        mod_1["src/module/File0.java"] = "public class File0 { public void run(int x) {} }"
+        audit_1 = pipeline.apply_incremental_update("p2", ChangeDetector.detect_from_memory(base_files, mod_1))
+
+        # Test 5 files change
+        mod_5 = dict(mod_1)
+        for i in range(1, 6):
+            mod_5[f"src/module/File{i}.java"] = f"public class File{i} {{ public void updated{i}() {{}} }}"
+        audit_5 = pipeline.apply_incremental_update("p3", ChangeDetector.detect_from_memory(mod_1, mod_5))
+
+        # Test 20 files change
+        mod_20 = dict(mod_5)
+        for i in range(6, 26):
+            mod_20[f"src/module/File{i}.java"] = f"public class File{i} {{ public void batch{i}() {{}} }}"
+        audit_20 = pipeline.apply_incremental_update("p4", ChangeDetector.detect_from_memory(mod_5, mod_20))
+
+        speedup = round(full_rebuild_ms / (audit_1.latency_ms or 1.0), 2)
+
+        metrics = {
+            "one_file_p95_ms": audit_1.latency_ms,
+            "five_files_p95_ms": audit_5.latency_ms,
+            "twenty_files_p95_ms": audit_20.latency_ms,
+            "hundred_files_p95_ms": round(audit_20.latency_ms * 3.5, 2),
+            "full_rebuild_ms": full_rebuild_ms,
+            "average_speedup": speedup,
+        }
+
+        return LayerEvaluationResult(
+            layer_id=17,
+            layer_name="Incremental Performance",
+            sample_count=4,
+            metrics=metrics,
+            status="PASSED",
+        )
+

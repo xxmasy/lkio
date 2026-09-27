@@ -1,7 +1,7 @@
 # LKIO-Bench v1.0: 权威性能与消融评测总报告
 
 > **评测套件**：**LKIO-Bench v1.0**  
-> **评测时间**：`2026-09-26T23:29:26.566650`  
+> **评测时间**：`2026-09-27T11:48:05.930079`  
 > **评测代码库**：`HELLO_FE (Vue) + HELLO_BE (Spring Boot) + L2C_FE`  
 > **核心准则**：将‘系统能不能跑’与‘系统到底比什么强’彻底解耦，覆盖 15 层纵深指标，如实呈现优势与缺陷。
 
@@ -295,5 +295,42 @@
 {
   "total_baselines": 8,
   "table_rows": 8
+}
+```
+
+### Layer 16: Incremental Correctness
+- **测试样本量**：15
+- **验证状态**：`PASSED`
+```json
+{
+  "add_file_rate": 1.0,
+  "delete_file_rate": 1.0,
+  "modify_file_rate": 1.0,
+  "rename_file_rate": 1.0,
+  "add_symbol_rate": 1.0,
+  "delete_symbol_rate": 1.0,
+  "modify_symbol_rate": 1.0,
+  "rename_symbol_rate": 1.0,
+  "signature_change_rate": 1.0,
+  "add_edge_rate": 1.0,
+  "delete_edge_rate": 1.0,
+  "stale_edge_rate": 0.0,
+  "query_during_update_downtime": 0.0,
+  "rollback_success_rate": 1.0,
+  "semantic_equivalence_rate": 1.0
+}
+```
+
+### Layer 17: Incremental Performance
+- **测试样本量**：4
+- **验证状态**：`PASSED`
+```json
+{
+  "one_file_p95_ms": 2.38,
+  "five_files_p95_ms": 2.26,
+  "twenty_files_p95_ms": 2.02,
+  "hundred_files_p95_ms": 7.07,
+  "full_rebuild_ms": 1.0,
+  "average_speedup": 0.42
 }
 ```

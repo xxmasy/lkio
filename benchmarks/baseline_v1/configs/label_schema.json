@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "tasks": {
+    "CHANGE_IMPACT": {
+      "description": "Evaluates architectural and cross-project impact severity of changes",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "default_metric": "macro_f1"
+    },
+    "EVIDENCE_SUFFICIENCY": {
+      "description": "Determines whether gathered evidence is sufficient to justify decisions",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ],
+      "default_metric": "accuracy"
+    },
+    "QUERY_ROUTE": {
+      "description": "Routes user query to the most appropriate knowledge or human destination",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ],
+      "default_metric": "macro_f1"
+    },
+    "ACTION_GATE": {
+      "description": "Strict authorization gate for read-only vs mutative action execution",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ],
+      "default_metric": "accuracy"
+    }
+  }
+}

@@ -165,6 +165,35 @@ class AblationMasterTable(BaseModel):
     honest_loss_notes: list[str] = Field(default_factory=list)
 
 
+class IncrementalCorrectnessMetrics(BaseModel):
+    """Layer 16: Incremental Correctness (14 metrics, Stage 1 Section 3.9)."""
+    add_file_rate: float
+    delete_file_rate: float
+    modify_file_rate: float
+    rename_file_rate: float
+    add_symbol_rate: float
+    delete_symbol_rate: float
+    modify_symbol_rate: float
+    rename_symbol_rate: float
+    signature_change_rate: float
+    add_edge_rate: float
+    delete_edge_rate: float
+    stale_edge_rate: float
+    query_during_update_downtime: float
+    rollback_success_rate: float
+    semantic_equivalence_rate: float
+
+
+class IncrementalPerformanceMetrics(BaseModel):
+    """Layer 17: Incremental Performance Benchmark (Stage 1 Section 3.9)."""
+    one_file_p95_ms: float
+    five_files_p95_ms: float
+    twenty_files_p95_ms: float
+    hundred_files_p95_ms: float
+    full_rebuild_ms: float
+    average_speedup: float
+
+
 # ---------------------------------------------------------
 # Overall Suite Models
 # ---------------------------------------------------------

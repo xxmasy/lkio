@@ -71,6 +71,12 @@ class LKIOBenchRunner:
         layer15_res, master_table = self.layer_evaluator.evaluate_layer15_ablation_study()
         results.append(layer15_res)
 
+        # Layer 16: Incremental Correctness (Stage 1 Section 3.9)
+        results.append(self.layer_evaluator.evaluate_layer16_incremental_correctness())
+
+        # Layer 17: Incremental Performance Benchmark (Stage 1 Section 3.9)
+        results.append(self.layer_evaluator.evaluate_layer17_incremental_performance())
+
         suite_result = LKIOBenchSuiteResult(
             benchmark_name="LKIO-Bench v1.0",
             repository_snapshot="HELLO_FE (Vue) + HELLO_BE (Spring Boot) + L2C_FE",

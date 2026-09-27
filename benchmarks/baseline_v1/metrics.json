@@ -1,0 +1,116 @@
+{
+  "benchmark_suite": "LKIO-Bench v1.0 Frozen Baseline",
+  "frozen_at": "2026-09-27T11:45:00Z",
+  "status": "FROZEN",
+  "layers": {
+    "layer01_semantic": {
+      "recall_at_1": 0.375,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "mrr": 0.8333,
+      "ndcg_at_10": 0.8927
+    },
+    "layer02_symbol": {
+      "symbol_recall_at_1": 1.0,
+      "symbol_recall_at_5": 1.0,
+      "file_recall_at_5": 1.0,
+      "line_recall": 1.0
+    },
+    "layer03_dependency": {
+      "hop1_recall": 1.0,
+      "hop2_recall": 1.0,
+      "hop3_recall": 1.0,
+      "overall_hop_recall": 1.0
+    },
+    "layer04_cycle_safety": {
+      "termination_rate": 1.0,
+      "duplicate_expansion": 0,
+      "max_depth_violation": 0,
+      "passed_cases_count": 5,
+      "total_cases_count": 5
+    },
+    "layer05_shortest_hop": {
+      "shortest_hop_accuracy": 1.0,
+      "total_cases": 3,
+      "correct_cases": 3
+    },
+    "layer06_depth_boundary": {
+      "depth_violation_count": 0,
+      "tested_boundaries": [1, 2, 3, 5],
+      "passed_all": true
+    },
+    "layer07_temporal_git": {
+      "commit_identification_accuracy": 1.0,
+      "temporal_precision": 1.0,
+      "temporal_recall": 1.0,
+      "change_attribution_accuracy": 1.0
+    },
+    "layer08_historical_state": {
+      "historical_dependency_accuracy": 1.0,
+      "state_reconstruction_fidelity": 1.0
+    },
+    "layer09_impact_analysis": {
+      "direct_f1": 1.0,
+      "indirect_f1": 1.0,
+      "potential_f1": 1.0,
+      "overall_impact_f1": 1.0,
+      "overall_precision": 1.0,
+      "overall_recall": 1.0
+    },
+    "layer10_false_positive_impact": {
+      "impact_precision": 1.0,
+      "impact_recall": 1.0,
+      "impact_f1": 1.0,
+      "over_propagation_rate": 0.0
+    },
+    "layer11_multi_path_evidence": {
+      "evidence_recall": 1.0,
+      "evidence_precision": 1.0,
+      "shortest_hop_accuracy": 1.0
+    },
+    "layer12_cross_stack": {
+      "cross_layer_recall": 1.0,
+      "cross_layer_precision": 1.0,
+      "cross_stack_f1": 1.0
+    },
+    "layer13_decision": {
+      "accuracy": 0.9167,
+      "macro_f1": 0.8,
+      "micro_f1": 0.9167,
+      "precision": 0.9167,
+      "recall": 0.9167,
+      "brier_score": 0.0659,
+      "nll": 0.2417,
+      "ece": 0.1188
+    },
+    "layer14_calibration": {
+      "uncalibrated_ece": 0.1188,
+      "uncalibrated_brier": 0.0659,
+      "calibrated_ece": 0.0469,
+      "calibrated_brier": 0.0583,
+      "ece_reduction_percent": 60.52
+    },
+    "layer15_ablation": {
+      "total_baselines": 8,
+      "table_rows": 8
+    }
+  },
+  "master_table": [
+    {"system_name": "Vector RAG", "recall_at_10": 0.825, "impact_f1": 0.0, "temporal_accuracy": 0.0, "decision_accuracy": 0.65, "macro_f1": 0.52, "ece": 0.215},
+    {"system_name": "BM25", "recall_at_10": 0.875, "impact_f1": 0.0, "temporal_accuracy": 0.0, "decision_accuracy": 0.60, "macro_f1": 0.48, "ece": 0.23},
+    {"system_name": "BM25 + Vector", "recall_at_10": 0.925, "impact_f1": 0.0, "temporal_accuracy": 0.0, "decision_accuracy": 0.70, "macro_f1": 0.59, "ece": 0.185},
+    {"system_name": "Hybrid + Reranker", "recall_at_10": 0.950, "impact_f1": 0.0, "temporal_accuracy": 0.0, "decision_accuracy": 0.75, "macro_f1": 0.64, "ece": 0.162},
+    {"system_name": "Graph only", "recall_at_10": 0.250, "impact_f1": 0.6667, "temporal_accuracy": 0.0, "decision_accuracy": 0.60, "macro_f1": 0.50, "ece": 0.24},
+    {"system_name": "AST + Graph", "recall_at_10": 0.875, "impact_f1": 1.0, "temporal_accuracy": 0.0, "decision_accuracy": 0.78, "macro_f1": 0.68, "ece": 0.155},
+    {"system_name": "AST + Graph + Git", "recall_at_10": 0.900, "impact_f1": 1.0, "temporal_accuracy": 1.0, "decision_accuracy": 0.88, "macro_f1": 0.75, "ece": 0.1188},
+    {"system_name": "Full LKIO", "recall_at_10": 0.925, "impact_f1": 1.0, "temporal_accuracy": 1.0, "decision_accuracy": 0.9167, "macro_f1": 0.80, "ece": 0.0469}
+  ],
+  "invariants": {
+    "I1_Cycle_Safety": true,
+    "I2_Seed_Isolation": true,
+    "I3_Depth_Bound": true,
+    "I4_Shortest_Hop_Preservation": true,
+    "I5_Monotonic_Classification": true,
+    "I6_Evidence_Accumulation": true
+  }
+}
