@@ -45,3 +45,10 @@ temp/
 scratch/
 build/
 *.log
+
+# Internal Local Documentation & Private Knowledge Base Notes
+docs/
+*.local.md
+LKIO_*.md
+MVP.md
+核心冻结结论.md

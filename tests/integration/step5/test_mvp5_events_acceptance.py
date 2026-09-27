@@ -8,6 +8,7 @@ Verifies:
 """
 
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 import subprocess
 import uuid
@@ -24,9 +25,9 @@ from core.models.event import Event, EventType
 from core.models.project import Project
 
 PROJECT_PATHS = {
-    "HELLO_FE": Path("c:/WorkSpace/hello"),
-    "HELLO_BE": Path("c:/WorkSpace/hello-backend"),
-    "L2C_FE": Path("c:/WorkSpace/L2C project"),
+    "HELLO_FE": Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello")),
+    "HELLO_BE": Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend")),
+    "L2C_FE": Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project")),
 }
 
 

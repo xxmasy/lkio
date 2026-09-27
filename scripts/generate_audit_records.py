@@ -104,7 +104,7 @@ def main():
         },
     }
 
-    out_file = root_dir / "docs/infrastructure/gate_audit_records.json"
+    out_file = root_dir / "benchmarks/gate_audit_records.json"
     out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(audit_payload, f, indent=2, ensure_ascii=False)

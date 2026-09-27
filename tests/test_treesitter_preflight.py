@@ -139,7 +139,7 @@ def test_smoke_real_source_projects():
     slicer = SfcBlockSlicer(preserve_physical_lines=True)
 
     # 1. HELLO_FE: Vue and TS/JS
-    hello_vue = Path("C:/WorkSpace/hello/src/views/sales/components/CallDetails.vue")
+    hello_vue = Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello")) / "src/views/sales/components/CallDetails.vue"
     if hello_vue.exists():
         sfc_res = slicer.slice_file(hello_vue)
         assert len(sfc_res.script_blocks) >= 1
@@ -148,14 +148,14 @@ def test_smoke_real_source_projects():
             tree = factory.parse_source(sc.content, l_type)
             assert tree.root_node.type == "program"
 
-    hello_js = Path("C:/WorkSpace/hello/src/main.js")
+    hello_js = Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello")) / "src/main.js"
     if hello_js.exists():
         code = hello_js.read_text(encoding="utf-8", errors="replace")
         tree = factory.parse_source(code, LanguageType.JAVASCRIPT)
         assert tree.root_node.type == "program"
 
     # 2. HELLO_BE: Java
-    backend_java_dir = Path("C:/WorkSpace/hello-backend/src/main/java")
+    backend_java_dir = Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend")) / "src/main/java"
     if backend_java_dir.exists():
         java_files = list(backend_java_dir.rglob("*.java"))
         assert len(java_files) > 0
@@ -166,7 +166,7 @@ def test_smoke_real_source_projects():
         assert not tree.root_node.has_error
 
     # 3. L2C_FE: Vue and TS
-    l2c_dir = Path("C:/WorkSpace/L2C project/apps/web-ele/src")
+    l2c_dir = Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project")) / "apps/web-ele/src"
     if l2c_dir.exists():
         vue_files = list(l2c_dir.rglob("*.vue"))
         if vue_files:
@@ -180,9 +180,9 @@ def test_smoke_real_source_projects():
 def test_readonly_integrity_preflight():
     """Verify that Tree-sitter preflight checks do not touch or alter source projects."""
     paths = [
-        "C:\\WorkSpace\\hello",
-        "C:\\WorkSpace\\hello-backend",
-        "C:\\WorkSpace\\L2C project",
+        os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"),
+        os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"),
+        os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"),
     ]
     status_before = {p: get_git_status_porcelain(p) for p in paths if Path(p).exists()}
 

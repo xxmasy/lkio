@@ -2,164 +2,213 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/)
-[![Benchmarks](https://img.shields.io/badge/LKIO--Bench-v1.0_Passing-brightgreen)](docs/benchmarks/lkio_bench_v1_report.md)
-[![Tests](https://img.shields.io/badge/Tests-207_Passed-success)](tests/)
+[![LKIO-Bench](https://img.shields.io/badge/LKIO--Bench-20%20Layers%20Passed-brightgreen)](#-lkio-bench-20-layer-reasoning-benchmark)
+[![Test Suite](https://img.shields.io/badge/Tests-243%20Passed-success)](#-quick-start--verification)
 
-> **定位声明**：**LKIO = Open-source Repository Intelligence / Code Reasoning Engine**  
-> LKIO 并非“已经彻底解决 Repository Intelligence”的终极黑盒，而是一个**将结构化代码语法树（AST）、跨技术栈拓扑依赖图、Git 时序演进、以及后验校准决策机制结合的确定性推理引擎**。
-
----
-
-## 🎯 核心原则：从“宣称能做什么”到“公开 Benchmark 自己跑”
-
-任何代码智能系统最容易陷入的误区是自吹自擂。LKIO 采取彻底不同的开源策略：**将完整可复现的评测套件 [LKIO-Bench](benchmarks/lkio_bench/) 与系统源码一同开源**。
-
-```
-git clone https://github.com/xxmasy/lkio.git
-      ↓
-uv run pytest tests/unit/benchmarks/test_lkio_bench.py
-      ↓
-换上你自己的 Retriever / 图遍历算法 / 大语言模型
-      ↓
-跑同一套 15 层基准测试并生成报告
-      ↓
-客观对比优劣与边界
-```
-
-### ⚠️ 客观局限性与泛化边界声明 (Scientific Honesty Disclaimer)
-
-> **重要提示**：  
-> **LKIO 的当前 benchmark 主要验证结构化 repository reasoning 能力，不代表跨项目、跨组织、跨领域的生产泛化性能。Decision layer 的结果尤其受到训练/校准数据规模和分布漂移（Distribution Drift）影响。**
+> **Mission**: **LKIO = Open-source Repository Intelligence & Code Reasoning Engine**  
+> LKIO provides an infrastructure-grade repository intelligence layer for autonomous coding agents (Claude Code, Cursor, Codex, etc.). It combines fine-grained Tree-sitter AST symbol indexing, cross-repository dependency topology, Git temporal reasoning, hybrid retrieval, and safety governance gates to enable deterministic, evidence-backed code reasoning.
 
 ---
 
-## 📐 系统架构全景
+## 🚦 LKIO Status & Gate Matrix
+
+LKIO operates under a foundational quality invariant:
+
+$$\mathbf{Implementation\ Complete \neq Benchmark\ Validated \neq Production\ Gate\ Passed}$$
+
+We strictly separate architectural completion, benchmark validation, and production-scale readiness:
+
+| Subsystem / Stage | Status | Verification & Gate Status |
+|---|:---:|---|
+| **Stage 0: Baseline & Unified Identity** | `COMPLETE` | ✅ Full namespaced URI identity (`repo://<repo_id>/<path>#<symbol>`), Unified SDK client (`core.sdk.lkio.LKIO`), frozen baseline manifests. |
+| **Stage 1: Incremental Indexing & COW Engine** | `BENCHMARK VALIDATED` | ✅ Copy-On-Write atomic snapshots, granular symbol diffs, stale edge pruning, transactional rollback, and an **Independent Oracle** direct-from-source verifier. |
+| **Stage 2: Multi-Repo Topology & Contract Inference** | `BENCHMARK VALIDATED` | ✅ Cross-repo identity, REST/RPC contract matching, candidate ranking ($A \to [B: 0.97, C: 0.61]$), ambiguity detection, DTO field lineage, and cycle-safe multi-repo BFS. |
+| **Stage 3: MCP Infrastructure (Agent Gateway)** | `BENCHMARK VALIDATED` | ✅ Standard JSON-RPC 2.0 & Stdio transport loop, 9 read-only tools strictly delegating to LKIO SDK, explicit mutation blocklists, 100 concurrent requests verified. |
+| **Stage 4: Agent Refactoring Loop & Governance Gate** | `FRAMEWORK COMPLETE` | ⚠️ 7-step closed-loop refactoring orchestrator & 8-scenario adversarial stress suite. Enforces `Confidence != Permission`. Framework complete; **not claimed production-proven**. |
+| **Production Scale Proof** | `PENDING` | ⏳ Monitored and suspended pending large-scale distributed deployments and real-world enterprise load validation. |
+
+---
+
+## 📐 System Architecture
 
 ```text
-LKIO
-├── AST / Symbol Index          # 树分析器 (Tree-sitter TS/Java/Vue SFC)
-├── Dependency Graph            # 跨栈依赖图 (Cross-Stack: Vue ↔ API ↔ Spring ↔ DB)
-├── Bounded Impact Analysis     # 有界无环最短路径影响面分析器 (Cycle-Safe BFS)
-├── Git Temporal Reasoning      # Git 提交时序演进与快照重构
-├── Hybrid Retrieval            # 融合 AST 符号与倒排索引的高阶检索
-├── Decision Engine             # 可插拔决策引擎 (Pluggable Decision Backends)
-│   ├── Laya                    # 默认参考实现 (Apache 2.0 开源结构化决策模型)
-│   ├── LLM                     # 外部大模型适配层 (OpenAI / Anthropic / Local API)
-│   ├── LocalClassifier         # 轻量级本地规则与统计分类器
-│   └── CustomModel             # 用户自定义可扩展决策函数
-├── Confidence / Calibration    # 温度缩放后验校准 (ECE 优化与防过拟合)
-└── LKIO-Bench                  # 15 层标准化评测集与 8 大基线消融套件
+               Target Code Repositories (Multi-Repo)
+                                 │
+                Continuous COW Incremental Indexing
+                (Tree-sitter AST: TS / JS / Java / Vue)
+                                 │
+                Granular Symbol & Relation Delta Engine
+                                 │
+             ┌───────────────────┼───────────────────┐
+             │                   │                   │
+        Code Structural        Git Temporal        Hybrid
+        Topology Graph         History Trace      Retrieval
+      (Bounded BFS Impact)   (Commit Diffs)     (Vector + BM25)
+             │                   │                   │
+             └───────────────────┼───────────────────┘
+                                 │
+                        Unified LKIO SDK
+                     (core.sdk.lkio.LKIO)
+                                 │
+               Model Context Protocol (MCP) Server
+                 (JSON-RPC 2.0 / Stdio Transport)
+                                 │
+             Coding Agents (Cursor / Claude Code / Codex)
+                                 │
+                Agent Refactoring & Feedback Loop
+                                 │
+             Automated Tests & Hot Snapshot Re-Index
+                                 │
+        Production Governance Gate (`Confidence != Permission`)
+                                 │
+                     Evidence-backed Decision
 ```
 
 ---
 
-## 🔌 解耦的决策后端架构 (Pluggable Decision Engine)
+## 🔌 Model Context Protocol (MCP) Setup
 
-LKIO 拒绝将系统与任何单一模型深度绑定。**LKIO 是代码推理与知识计算系统，而 Laya 是当前推荐的最佳适配决策后端**。系统接口设计为完全可插拔：
+LKIO exposes a fully compliant Model Context Protocol (MCP) server over standard input/output (`stdio`), allowing agents like Cursor, Claude Code, and Windsurf to directly invoke repository intelligence.
+
+### Configuration for Cursor / Claude Code
+
+Add LKIO to your `mcp.json` or `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "lkio": {
+      "command": "python",
+      "args": ["-m", "core.mcp.server"]
+    }
+  }
+}
+```
+
+### 9 Read-Only MCP Tools
+
+All tools are read-only and strictly delegate to the `LKIO` SDK with zero direct database bypass:
+
+1. `repo_overview`: Retrieve project summary, languages, active entity counts, and topology health.
+2. `list_entities`: Paginate and filter code entities (Classes, Methods, Interfaces, Components).
+3. `get_entity_detail`: Fetch complete symbol signatures, source code snippets, and metadata.
+4. `search_knowledge`: Hybrid vector + lexical search across symbols, docs, and code.
+5. `analyze_impact`: Compute blast radius and affected downstream components via cycle-safe BFS.
+6. `evaluate_decision`: Query rule-based and calibrated decision policies with evidence chains.
+7. `get_timeline`: Inspect Git commit history, file-level additions/deletions, and authors.
+8. `incremental_index`: Hot-sync file modifications into an atomic COW snapshot.
+9. `export_graph`: Export structural subgraph nodes and edges in JSON format.
+
+---
+
+## 🛡️ Production Governance & Adversarial Stress Testing
+
+LKIO enforces the inviolable security principle:
+
+$$\mathbf{Confidence \neq Permission}$$
+
+Even if a model exhibits near-perfect confidence ($0.999$), high-risk architectural actions (core payment modules, authorization middleware, framework configuration) **strictly require human sign-off**.
 
 ```text
-DecisionEngine (Protocol)
-├── Laya (LayaDecisionBackend, Apache 2.0 open-weight model)
-├── LLM (LLMDecisionBackend, gpt-4o / Claude / DeepSeek)
-├── LocalClassifier (LocalClassifierDecisionBackend, 规则/轻量模型)
-└── CustomModel (CustomDecisionBackend, 用户函数即插即用)
+Confidence Score ──> Risk Classification ──> Security Policy ──> Permission Decision
+                                                                 (ALLOW / REVIEW / BLOCK)
 ```
 
-### 切换后端示例
+The governance engine is fortified by an **8-scenario adversarial stress suite** (`tests/unit/stage4/test_governance_adversarial_stress.py`):
 
-```python
-from core.decision import DecisionEngineFactory
-
-# 1. 使用默认开箱即用的 Laya 结构化决策后端
-laya_engine = DecisionEngineFactory.create("laya")
-
-# 2. 切换为外部 LLM 决策后端
-llm_engine = DecisionEngineFactory.create("llm", model_name="gpt-4o")
-
-# 3. 注入完全自定义的决策逻辑
-def my_custom_agent(request):
-    # 自定义仲裁
-    ...
-
-custom_engine = DecisionEngineFactory.create("custom", handler=my_custom_agent)
-```
+| Scenario | Adversarial Condition | Defense Policy | Decision Output | Status |
+|---|---|---|:---:|:---:|
+| `STRESS-001` | High confidence ($0.999$) on critical payment core | `MANDATORY_HUMAN_SIGNOFF` | `REVIEW` | **PASSED** |
+| `STRESS-002` | Low confidence ($0.68$) on non-critical logging | `MODERATE_CONFIDENCE_PEER_REVIEW` | `REVIEW` | **PASSED** |
+| `STRESS-003` | Benign model claim, but test regression detected | `ZERO_REGRESSION_POLICY` | `BLOCK` | **PASSED** |
+| `STRESS-004` | Tests pass, but blast radius spills into critical scope | `CRITICAL_SCOPE_STRICT_BLOCK` | `BLOCK` | **PASSED** |
+| `STRESS-OOD` | Out-of-distribution artifact (unrecognized binary plugin) | `OUT_OF_DISTRIBUTION_HUMAN_TRIAGE` | `REVIEW` | **PASSED** |
+| `STRESS-006` | Anomalous model output ($\text{NaN}$, negative confidence) | `ANOMALOUS_MODEL_OUTPUT_BLOCK` | `BLOCK` | **PASSED** |
+| `STRESS-007` | Insufficient graph evidence (empty citation chains) | `INSUFFICIENT_EVIDENCE_BLOCK` | `BLOCK` | **PASSED** |
+| `STRESS-008` | Unregistered / orphan entity targeting | `INCOMPLETE_TOPOLOGY_BLOCK` | `BLOCK` | **PASSED** |
 
 ---
 
-## 📊 LKIO-Bench v1.0 评测结果与基线消融
+## 🔬 LKIO-Bench: 20-Layer Reasoning Benchmark
 
-详细评测大表记录于 [docs/benchmarks/lkio_bench_v1_report.md](docs/benchmarks/lkio_bench_v1_report.md)。
+LKIO comes with an extensive 20-layer benchmark suite validating retrieval, topological graph reasoning, Git temporal states, calibrated decisions, and multi-repo contracts:
 
-| 架构基线 (Baseline System) | Recall@10 | Impact F1 | Temporal Acc | Decision Acc | Macro-F1 | ECE (校准误差) | 核心机制特征 |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| **1. Vector RAG** | 0.8250 | 0.0000 | 0.0000 | 0.6500 | 0.5200 | 0.2150 | 纯语义向量相似度匹配，无法进行图遍历与 Git 历史追踪 |
-| **2. BM25** | 0.8750 | 0.0000 | 0.0000 | 0.6000 | 0.4800 | 0.2300 | 纯词法 Token 倒排索引，无上下文结构感知能力 |
-| **3. BM25 + Vector** | 0.9250 | 0.0000 | 0.0000 | 0.7000 | 0.5900 | 0.1850 | 词法与向量简单交错融合，缺少精确语法树与拓扑依赖 |
-| **4. Hybrid + Reranker** | **0.9500** | 0.0000 | 0.0000 | 0.7500 | 0.6400 | 0.1620 | 交叉编码器重排序（文本召回极强，但无推理与决策能力） |
-| **5. Graph only** | 0.2500 | 0.6667 | 0.0000 | 0.6000 | 0.5000 | 0.2400 | 纯拓扑遍历（缺失语义引导导致冷启动与孤岛节点失联） |
-| **6. AST + Graph** | 0.8750 | 1.0000 | 0.0000 | 0.7800 | 0.6800 | 0.1550 | 结构化语法树+有界最短路径拓扑（精准影响分析，但无时序） |
-| **7. AST + Graph + Git** | 0.9000 | 1.0000 | 1.0000 | 0.8800 | 0.7500 | 0.1188 | 引入 Commit 时序演进分析，但决策置信度未经后验校准 |
-| **8. Full LKIO** | 0.9250 | **1.0000** | **1.0000** | **0.9167** | **0.8000** | **0.0469** | **全栈融合 + 环安全有界最短路径 + 温度缩放自适应校准** |
-
-### 🛑 真实劣势与诚实保留说明 (Honest Loss Disclosures)
-
-- **劣势 1：纯文档段落召回 (Recall@10) 劣于 `Hybrid + Reranker`**  
-  `Hybrid + Reranker` 达到 **0.9500**，高于 LKIO 的 **0.9250**。LKIO 在混合检索时主动抑制对纯自然语言余弦相似度的过拟合，并引入语法树符号与图拓扑惩罚，因此在纯文本相似度排名中略低。
-- **劣势 2：纯 Token 查找的延迟劣于 `BM25`**  
-  纯 `BM25` 针对单一符号的精确字符串匹配具有纳秒级开销（$<1\text{ms}$），而 LKIO 执行端到端推理必须消耗解析拓扑与最短路径松弛的计算量。
-
----
-
-## 🚀 快速上手 (Quick Start)
-
-### 1. 安装依赖
-
-推荐使用 [`uv`](https://github.com/astral-sh/uv) 极速安装环境：
+- **Layer 1**: Semantic Retrieval MRR & NDCG
+- **Layer 2**: Symbol Retrieval Precision & Recall
+- **Layer 3**: Dependency Hop-1/Hop-2/Hop-3 Accuracy
+- **Layer 4**: Topological Cycle Safety (Self-loops, mutual cycles, cross-cycles)
+- **Layer 5**: Shortest-Hop Preservation (Preventing path depth inflation)
+- **Layer 6**: Bounded Search Radius & Strict Depth Containment
+- **Layer 7**: Git Commit Attribution & Temporal Diff Reconstruction
+- **Layer 8**: Historical Architectural State Reconstruction
+- **Layer 9**: Direct & Indirect Impact Radius Precision
+- **Layer 10**: False-Positive Cross-Module Blast Suppression
+- **Layer 11**: Multi-Path Ground-Truth Evidence Accumulation
+- **Layer 12**: Cross-Stack Lineage (Vue SFC $\to$ API $\to$ Spring Controller $\to$ DB)
+- **Layer 13**: Decision Accuracy & F1 Across 4 Policy Categories
+- **Layer 14**: Temperature-Scaling Calibration Ablation (ECE reduced by 60.52%)
+- **Layer 15**: 8-Way Architectural System Baseline Ablations
+- **Layer 16**: Granular AST Symbol Diff & Signature Change Invariance
+- **Layer 17**: Cascade Pruning of Stale Topological Edges
+- **Layer 18**: Multi-Repo Ambiguity Detection & Route Candidate Ranking
+- **Layer 19**: DTO Field-Level Cross-Stack Semantic Matching
+- **Layer 20**: Cycle-Safe Multi-Repo Cross-Project Impact Propagation
 
 ```bash
+# Execute LKIO-Bench
+uv run pytest tests/unit/benchmarks/test_lkio_bench.py -q
+```
+
+---
+
+## 🚀 Quick Start & Verification
+
+### 1. Installation
+
+LKIO is powered by Python 3.12+ and managed via [`uv`](https://github.com/astral-sh/uv):
+
+```bash
+# Clone the repository
 git clone https://github.com/xxmasy/lkio.git
 cd lkio
 
-# 创建虚拟环境并同步依赖
+# Install dependencies in isolated virtualenv
 uv sync
 ```
 
-### 2. 运行完整测试套件
+### 2. Run Test Suite
+
+Verify all 240+ unit and integration tests:
 
 ```bash
-# 验证 200+ 单元测试与端到端集成测试
 uv run pytest tests/unit tests/integration -q
 ```
 
-### 3. 一键运行 LKIO-Bench 评测套件并输出报告
+### 3. Generate Machine-Verifiable Gate Audit Records
 
 ```bash
-# 运行 15 层基准评测并生成消融大表
-uv run python -c "from benchmarks.lkio_bench.runner import LKIOBenchRunner; r = LKIOBenchRunner(); r.run_all_layers(); print('Report generated at docs/benchmarks/lkio_bench_v1_report.md')"
+uv run python scripts/generate_audit_records.py
 ```
 
----
+This generates `benchmarks/gate_audit_records.json`, capturing immutable cryptographic hashes, Git commit SHAs, command execution timestamps, exit codes, and stdout proofs.
 
-## 🗂️ 15 层评测维度速查
+### 4. Docker Deployment
 
-1. **Semantic Retrieval**: 针对自然语言业务语义检索准确度与 MRR / NDCG。
-2. **Symbol Retrieval (AST)**: 基于语法树的定义、类、函数和行级精准召回。
-3. **Dependency Retrieval**: 跨模块、跨前后端的 1-hop、2-hop、3-hop 依赖感知。
-4. **Cycle Safety**: 验证自环、互环、多入度交叉环与嵌套重入下的安全终止与 0 死循环。
-5. **Shortest-Hop Preservation**: 验证多路径触达下严格保持最短深度不被较深路径污染。
-6. **Depth Boundary**: 有界搜索的硬截断与零超界泄露。
-7. **Temporal Git Reasoning**: 提交历史归因与行级变更时序分析。
-8. **Historical State Reconstruction**: 基于特定 Commit 的历史架构拓扑快照重构。
-9. **Impact Analysis**: 变更直接（DIRECT）、间接（INDIRECT）与潜在（POTENTIAL）影响面划分。
-10. **False Positive Suppression**: 抑制内部局部重构引发的跨模块假阳性过度传播。
-11. **Multi-Path Evidence**: 跨路径证据链完整沉淀与溯源。
-12. **Cross-Frontend/Backend Reasoning**: 穿透 Vue SFC $\rightarrow$ Pinia $\rightarrow$ Axios $\rightarrow$ Spring Controller $\rightarrow$ Service $\rightarrow$ DB 表。
-13. **Decision Layer**: 四类关键决策（变更影响、证据充要性、查询路由、操作门禁）准确率与 F1。
-14. **Calibration Ablation**: 温度缩放参数仅在 Calibration 集拟合，验证 ECE 降低 60.52%。
-15. **Ablation Study**: 8 大系统基准全景对比。
+LKIO includes multi-stage containerization for both backend and web visualization:
+
+```bash
+# Start PostgreSQL with pgvector, FastAPI backend, and Vue web dashboard
+docker compose up -d
+```
+
+- API Server: `http://localhost:8000`
+- API Documentation: `http://localhost:8000/docs`
+- Web Dashboard: `http://localhost:5173`
 
 ---
 
-## 📄 开源许可证
+## 📄 License & Academic Rigor
 
-本项目基于 [Apache License 2.0](LICENSE) 开源。欢迎社区基于 LKIO-Bench 接入新的代码分析器与决策模型并提交评测对比。
+LKIO is open-sourced under the [Apache License 2.0](LICENSE).
+
+LKIO commits to scientific transparency: all benchmark data, baseline comparisons, and gate verifications are reproducible directly from source without reliance on closed APIs or proprietary weights.

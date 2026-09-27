@@ -3,7 +3,7 @@
   "name": "L2C project",
   "kind": "frontend",
   "role": "future_frontend",
-  "local_path": "C:\\WorkSpace\\L2C project",
+  "local_path": "/repos/l2c-project",
   "git": {
     "is_git": true,
     "branch": "main"

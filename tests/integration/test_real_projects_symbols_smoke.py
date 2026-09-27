@@ -45,7 +45,7 @@ def safe_walk_files(base_path: Path, extensions: tuple[str, ...], limit: int = 1
 
 
 def test_hello_fe_real_symbols():
-    repo = Path("C:/WorkSpace/hello")
+    repo = Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"))
     if not repo.exists():
         pytest.skip("HELLO_FE not found")
 
@@ -71,7 +71,7 @@ def test_hello_fe_real_symbols():
 
 
 def test_hello_be_real_symbols():
-    repo = Path("C:/WorkSpace/hello-backend")
+    repo = Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"))
     if not repo.exists():
         pytest.skip("HELLO_BE not found")
 
@@ -98,7 +98,7 @@ def test_hello_be_real_symbols():
 
 
 def test_l2c_fe_real_symbols():
-    repo = Path("C:/WorkSpace/L2C project")
+    repo = Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"))
     if not repo.exists():
         pytest.skip("L2C_FE not found")
 
@@ -124,9 +124,9 @@ def test_l2c_fe_real_symbols():
 def test_source_repositories_strict_readonly_after_symbols():
     """Verify that scanning real project files for symbol extraction causes 0 modifications."""
     paths = [
-        "C:\\WorkSpace\\hello",
-        "C:\\WorkSpace\\hello-backend",
-        "C:\\WorkSpace\\L2C project",
+        os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"),
+        os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"),
+        os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"),
     ]
     status_before = {p: get_git_status_porcelain(p) for p in paths if Path(p).exists()}
 
