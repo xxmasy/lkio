@@ -70,7 +70,7 @@ def test_projects_endpoints():
             "name": "hello",
             "kind": "frontend",
             "role": "primary_frontend",
-            "local_path": "C:\\WorkSpace\\hello",
+            "local_path": "/workspace/hello",
         },
     )
     assert dup_resp.status_code == 409

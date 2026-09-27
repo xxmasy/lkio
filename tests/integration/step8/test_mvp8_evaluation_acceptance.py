@@ -8,8 +8,9 @@ Strictly verifies all requirements from LKIO Baseline Section 35, 36, and line 3
 - Gate 6: Source Repositories 100% Read-Only Guarantee
 """
 
-import subprocess
+import os
 from pathlib import Path
+import subprocess
 import pytest
 from core.decision.engine import LayaDecisionEngine
 from core.decision.models import ActionGateDecision, DecisionTask
@@ -196,9 +197,9 @@ def test_gate5_outcome_learning_feedback_loop(tmp_path: Path):
 def test_gate6_source_repos_readonly_guarantee():
     """Gate 6: Absolute verification that HELLO_FE, HELLO_BE, L2C_FE are 100% read-only."""
     repos = [
-        ("HELLO_FE", Path(r"C:\WorkSpace\hello")),
-        ("HELLO_BE", Path(r"C:\WorkSpace\hello-backend")),
-        ("L2C_FE", Path(r"C:\WorkSpace\L2C project")),
+        ("HELLO_FE", Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"))),
+        ("HELLO_BE", Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"))),
+        ("L2C_FE", Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"))),
     ]
 
     status_before = {}

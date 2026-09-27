@@ -30,8 +30,9 @@ def get_git_status_porcelain(repo_path: str) -> str:
 
 def test_hello_fe_smoke():
     """Smoke test on HELLO_FE real Vue and JS files."""
-    repo_path = Path("C:/WorkSpace/hello")
-    assert repo_path.exists(), f"Path not found: {repo_path}"
+    repo_path = Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"))
+    if not repo_path.exists():
+        pytest.skip("HELLO_FE repo not present")
 
     factory = ParserFactory()
     slicer = SfcBlockSlicer(preserve_physical_lines=True)
@@ -56,8 +57,9 @@ def test_hello_fe_smoke():
 
 def test_hello_be_smoke():
     """Smoke test on HELLO_BE real Java files."""
-    repo_path = Path("C:/WorkSpace/hello-backend")
-    assert repo_path.exists(), f"Path not found: {repo_path}"
+    repo_path = Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"))
+    if not repo_path.exists():
+        pytest.skip("HELLO_BE repo not present")
 
     factory = ParserFactory()
     java_files = list((repo_path / "src" / "main" / "java").rglob("*.java"))
@@ -73,8 +75,9 @@ def test_hello_be_smoke():
 
 def test_l2c_fe_smoke():
     """Smoke test on L2C_FE real Vue 3 and TypeScript files."""
-    repo_path = Path("C:/WorkSpace/L2C project")
-    assert repo_path.exists(), f"Path not found: {repo_path}"
+    repo_path = Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"))
+    if not repo_path.exists():
+        pytest.skip("L2C_FE repo not present")
 
     factory = ParserFactory()
     slicer = SfcBlockSlicer(preserve_physical_lines=True)
@@ -94,9 +97,9 @@ def test_l2c_fe_smoke():
 def test_source_repos_strict_readonly():
     """Verify that parsing source files causes 0 changes to working tree status."""
     paths = [
-        "C:\\WorkSpace\\hello",
-        "C:\\WorkSpace\\hello-backend",
-        "C:\\WorkSpace\\L2C project",
+        os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello"),
+        os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend"),
+        os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project"),
     ]
     status_before = {p: get_git_status_porcelain(p) for p in paths if Path(p).exists()}
 

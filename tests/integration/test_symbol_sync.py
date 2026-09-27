@@ -119,7 +119,7 @@ export interface Config { timeout: number; }
             )
         ).first()
         assert deleted_sym is not None
-        assert deleted_sym.status == "deleted"
+        assert deleted_sym.status.upper() == "DELETED"
 
     finally:
         # Cleanup mock entities and relations

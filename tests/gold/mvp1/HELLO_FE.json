@@ -3,7 +3,7 @@
   "name": "hello",
   "kind": "frontend",
   "role": "primary_frontend",
-  "local_path": "C:\\WorkSpace\\hello",
+  "local_path": "/repos/hello",
   "git": {
     "is_git": true,
     "branch": "prod"

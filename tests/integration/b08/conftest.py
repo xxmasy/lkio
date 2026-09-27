@@ -21,9 +21,9 @@ from core.models.relation import Relation
 from core.models.source import Source
 
 REPOS = {
-    "HELLO_FE": Path("C:/WorkSpace/hello"),
-    "HELLO_BE": Path("C:/WorkSpace/hello-backend"),
-    "L2C_FE": Path("C:/WorkSpace/L2C project"),
+    "HELLO_FE": Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello")),
+    "HELLO_BE": Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend")),
+    "L2C_FE": Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project")),
 }
 
 SUPPORTED_EXTS = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".java", ".vue"}

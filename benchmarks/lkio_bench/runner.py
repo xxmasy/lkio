@@ -71,6 +71,21 @@ class LKIOBenchRunner:
         layer15_res, master_table = self.layer_evaluator.evaluate_layer15_ablation_study()
         results.append(layer15_res)
 
+        # Layer 16: Incremental Correctness (Stage 1 Section 3.9)
+        results.append(self.layer_evaluator.evaluate_layer16_incremental_correctness())
+
+        # Layer 17: Incremental Performance Benchmark (Stage 1 Section 3.9)
+        results.append(self.layer_evaluator.evaluate_layer17_incremental_performance())
+
+        # Layer 18: Cross-Repo Retrieval (Stage 2 Section 4.9)
+        results.append(self.layer_evaluator.evaluate_layer18_cross_repo_retrieval())
+
+        # Layer 19: Cross-Repo Impact (Stage 2 Section 4.9)
+        results.append(self.layer_evaluator.evaluate_layer19_cross_repo_impact())
+
+        # Layer 20: Cross-Repo False Positive (Stage 2 Section 4.9)
+        results.append(self.layer_evaluator.evaluate_layer20_cross_repo_false_positive())
+
         suite_result = LKIOBenchSuiteResult(
             benchmark_name="LKIO-Bench v1.0",
             repository_snapshot="HELLO_FE (Vue) + HELLO_BE (Spring Boot) + L2C_FE",
@@ -99,7 +114,7 @@ class LKIOBenchRunner:
             "> **评测套件**：**LKIO-Bench v1.0**  ",
             f"> **评测时间**：`{suite.timestamp}`  ",
             f"> **评测代码库**：`{suite.repository_snapshot}`  ",
-            "> **核心准则**：将‘系统能不能跑’与‘系统到底比什么强’彻底解耦，覆盖 15 层纵深指标，如实呈现优势与缺陷。",
+            "> **核心准则**：将‘系统能不能跑’与‘系统到底比什么强’彻底解耦，覆盖 20 层纵深指标，如实呈现优势与缺陷。",
             "",
             "---",
             "",
@@ -126,7 +141,7 @@ class LKIOBenchRunner:
             "",
             "---",
             "",
-            "## 二、15 层基准评测详细结果统计 (Layers 1 ~ 15)",
+            "## 二、20 层基准评测详细结果统计 (Layers 1 ~ 20)",
             "",
         ])
 

@@ -1,51 +1,83 @@
-# LKIO 系统架构与治理规范 (ARCHITECTURE.md)
+# LKIO System Architecture & Governance Specification (ARCHITECTURE.md)
 
-> **版本**：v0.1  
-> **基线准则**：[LKIO_本地知识智能操作系统_MVP实施基线_v0.1.md](file:///C:/WorkSpace/lkio/LKIO_%E6%9C%AC%E5%9C%B0%E7%9F%A5%E8%AF%86%E6%99%BA%E8%83%BD%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F_MVP%E5%AE%9E%E6%96%BD%E5%9F%BA%E7%BA%BF_v0.1.md)
+> **Role**: Open-source Repository Intelligence & Code Reasoning Engine  
+> **Core Quality Invariant**: `Implementation Complete ≠ Benchmark Validated ≠ Production Gate Passed`
 
 ---
 
-## 1. 架构总览
+## 1. Architectural Overview
+
+LKIO provides a continuous repository intelligence and code reasoning layer for autonomous coding agents (Claude Code, Cursor, Codex, etc.). It continuously parses codebases into fine-grained AST symbols, resolves call and dependency relations, tracks historical Git diffs, and enforces safety governance gates.
 
 ```text
-                Local Knowledge Intelligence OS (LKIO)
-                               │
-           ┌───────────────────┼───────────────────┐
-           │                   │                   │
-     Knowledge Core       Decision Core       Experience
-           │                   │                   │
-     ┌─────┼─────┐         ┌───┴────┐        ┌─────┼─────┐
-     │     │     │         │ Laya   │        │ Wiki│Graph│
-    Entity Relation Event  │ Policy │        │Dash │Chat │
-     │     │     │         └────────┘        └─────┴─────┘
-     └─────┼─────┘
-           │
-       RAG / Search
-           │
-       Code / Docs / Git
+       Target Code Repositories (Multi-Repo)
+                         │
+        Continuous COW Incremental Indexing
+        (Tree-sitter AST: TS / JS / Java / Vue)
+                         │
+        Granular Symbol & Relation Delta Engine
+                         │
+     ┌───────────────────┼───────────────────┐
+     │                   │                   │
+Code Structural Graph  Git Temporal History  Hybrid Retrieval
+ (Bounded Impact BFS)   (Commit / Diffs)    (Vector + Lexical)
+     │                   │                   │
+     └───────────────────┼───────────────────┘
+                         │
+                  Unified LKIO SDK
+                         │
+          Model Context Protocol (MCP) Server
+          (Stdio / JSON-RPC 2.0 Transport)
+                         │
+       Coding Agents (Cursor / Claude Code / Codex)
+                         │
+          Agent Refactoring & Feedback Loop
+                         │
+          Safety & Governance Gate (`Confidence != Permission`)
 ```
 
 ---
 
-## 2. 核心技术栈锁定
+## 2. Core Subsystems
 
-- **后端应用**：Python 3.12.10 + uv + FastAPI + SQLAlchemy 2.x + Alembic + `psycopg[binary]`
-- **数据底座**：PostgreSQL 18.6 + pgvector 0.8.6 (Docker 镜像 `pgvector/pgvector:0.8.6-pg18`)，端口 `127.0.0.1:54329`
-- **前端系统**：Node 24 LTS + Vue 3 + TypeScript + Vite + Element Plus + Pinia + Cytoscape.js
-- **解析层 (MVP2)**：Tree-sitter（统一 CodeSymbol 实体）
-- **向量检索 (MVP3)**：BAAI/bge-m3 + pgvector
-- **决策引擎 (MVP6)**：Laya Adapter (`convaiinnovations/laya-typed-decisions` ModernBERT-large 421M)
+### 2.1 Incremental Indexing & COW Snapshot Engine (`core/state/`, `core/indexing/`)
+- **Copy-On-Write (COW) Snapshots**: Atomic state versioning guarantees that read-only queries are never blocked during indexing.
+- **Granular Symbol Diffing**: AST-level symbol signatures and hashes are compared per file change, pruning stale edges automatically.
+- **Independent Oracle (`core/indexing/independent_oracle.py`)**: Ground-truth validation independently extracts canonical AST symbols directly from source text without relying on delta pipelines.
+
+### 2.2 Multi-Repo Topology & Ambiguity Detection (`core/multirepo/`)
+- **Namespaced URI Identity**: All symbols adhere to `repo://<repo_id>/<relative_path>#<symbol_name>`.
+- **Contract & Route Matching**: Automatically maps REST/RPC endpoints across frontend and backend boundaries.
+- **Ambiguity Detection**: Ranks competing service candidates with confidence scoring and penalizes legacy/mock endpoints.
+- **Bounded Impact Analysis**: Cycle-safe BFS traverses dependency and call chains up to configurable max depths.
+
+### 2.3 Model Context Protocol (MCP) Infrastructure (`core/mcp/`)
+- **JSON-RPC 2.0 & Stdio Transport**: Standard MCP compliance for direct integration into Cursor, Claude Code, and terminal agents.
+- **9 Read-Only Intelligence Tools**: `repo_overview`, `list_entities`, `get_entity_detail`, `search_knowledge`, `analyze_impact`, `evaluate_decision`, `get_timeline`, `incremental_index`, `export_graph`.
+- **Mutation Safety**: Explicit blocklists prevent unauthorized write operations through the MCP channel.
+
+### 2.4 Agent Closed Loop & Safety Governance (`core/agent_loop/`)
+- **7-Stage Refactoring Lifecycle**:
+  `1. Explore -> 2. Pre-change Impact -> 3. Diff Detection -> 4. Automated Tests -> 5. Hot Re-index -> 6. Topology Validation -> 7. Governance Gate`
+- **Governance Invariant**: `Confidence != Permission`. High model confidence never overrides human review requirements on high-risk, critical-scope components.
+- **Adversarial Hardening**: Defends against zero regressions, out-of-distribution code, corrupted ASTs, and NaN model outputs.
 
 ---
 
-## 3. 治理宪法与核心冻结红线（后续任何 Agent 均严禁擅自变更）
+## 3. Technology Stack
 
-1. **三个源项目只读**：`HELLO_FE`, `HELLO_BE`, `L2C_FE` 绝对只读，禁止写回或修改任何文件。
-2. **MVP1 不引入 Tree-sitter**：代码 AST 解析保留给 MVP2，MVP1 严禁提前引入。
-3. **Git 一律通过 subprocess 调用 Git CLI**：统一使用标准 Git 命令行工具，保证跨平台一致性与透明度。
-4. **严禁解析 .git 内部结构**：禁止任何针对 `.git/objects`、`refs`、`index` 等内部二进制文件的直接读取和反序列化。
-5. **敏感文件永不进入 Knowledge Core**：`.env`, 密钥 (`*.pem`, `*.key`), Token, 私钥, 证书等敏感资产严禁扫描入库。
-6. **唯一激活 MVP 纪律**：任何时候最多只有一个 ACTIVE MVP，必须对照验收门逐项通过方可流转。
-7. **真相与投影分离**：Git、DB、代码为真实事实（Source of Truth）；Wiki 与 LLM 推理仅为投影（Projection）。
-8. **置信度可解释性**：`Confidence ≠ Truth`，所有关系与决策标注 `source_type`, `extraction_method` 与 `confidence`。
-9. **禁用过早组件**：严禁在前期引入 Neo4j、Qdrant、Milvus、Kafka、Redis、LangChain、CrewAI 等多余框架。
+- **Runtime**: Python 3.12+ (managed via `uv`), FastAPI, SQLAlchemy 2.x, Alembic, `psycopg[binary]`
+- **Storage Layer**: PostgreSQL 18+ with `pgvector` (vector similarity search)
+- **Syntax Parsing**: Multi-language Tree-sitter (`tree-sitter`, TS, JS, Java) & SFC Block Slicer (Vue 3)
+- **Embedding & Decision**: ModernBERT & BAAI/bge-m3 compatible vector pipelines
+- **Testing & Benchmarks**: Pytest suite (240+ tests) & LKIO-Bench (20 validation layers)
+
+---
+
+## 4. Fundamental Invariants & Safety Constraints
+
+1. **Source Repository Read-Only Invariance**: Target repositories inspected by LKIO are strictly read-only. Zero working-tree modifications occur during indexing or analysis.
+2. **Git Subprocess Standard**: Git operations invoke the standard `git` CLI via subprocess. Direct deserialization of `.git` binary objects is prohibited.
+3. **Sensitive File Quarantine**: Secrets, credentials, private keys (`*.pem`, `*.key`), `.env` files, and authentication tokens are quarantined and never indexed.
+4. **Identity Determinism**: Symbols and relations must have reproducible identifiers across re-indexing cycles.
+5. **Separation of Proof**: `Implementation Complete` must not be equated with `Benchmark Validated`, and benchmark passing must not be equated with `Production Gate Passed`.

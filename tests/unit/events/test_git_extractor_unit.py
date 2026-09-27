@@ -75,13 +75,12 @@ D\tdeleted.txt
 
 
 def test_real_repo_smoke_read_only():
-    """Validates real extraction on local repository without writing any files."""
+    """Validates real extraction on repository without writing any files."""
     extractor = GitChangeExtractor()
-    repo_path = Path("c:/WorkSpace/hello")
-    if repo_path.exists():
-        commits = extractor.extract_commits(repo_path, max_commits=3)
-        assert len(commits) > 0
-        for c in commits:
-            assert len(c.sha) == 40
-            assert len(c.author_email) > 0
-            assert isinstance(c.authored_at, datetime)
+    repo_path = Path.cwd()
+    commits = extractor.extract_commits(repo_path, max_commits=3)
+    assert len(commits) > 0
+    for c in commits:
+        assert len(c.sha) == 40
+        assert len(c.author_email) > 0
+        assert isinstance(c.authored_at, datetime)

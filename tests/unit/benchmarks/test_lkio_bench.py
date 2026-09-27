@@ -120,7 +120,7 @@ def test_runner_and_master_table_generation(tmp_path: Path):
     suite = runner.run_all_layers()
 
     assert suite.benchmark_name == "LKIO-Bench v1.0"
-    assert len(suite.layer_results) == 15
+    assert len(suite.layer_results) == 20
     assert len(suite.master_table.rows) == 8
 
     # Verify honest loss is recorded

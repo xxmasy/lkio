@@ -10,6 +10,7 @@ Validates:
 
 import ast
 from decimal import Decimal
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -41,9 +42,9 @@ from ingestion.symbols import (
 
 GOLD_DIR = Path(__file__).resolve().parents[2] / "gold" / "mvp2" / "symbols" / "orchestrator" / "valid_multi_lang"
 EXTERNAL_REPOS = [
-    Path("C:/WorkSpace/hello"),
-    Path("C:/WorkSpace/hello-backend"),
-    Path("C:/WorkSpace/L2C project"),
+    Path(os.environ.get("LKIO_TEST_HELLO_FE", "C:/WorkSpace/hello")),
+    Path(os.environ.get("LKIO_TEST_HELLO_BE", "C:/WorkSpace/hello-backend")),
+    Path(os.environ.get("LKIO_TEST_L2C_FE", "C:/WorkSpace/L2C project")),
 ]
 
 
@@ -70,7 +71,7 @@ def project(db_session: Session) -> Project:
         name="Test Ingestion Project",
         kind="test",
         role="fullstack",
-        local_path="C:/WorkSpace/test_proj",
+        local_path="/workspace/test_proj",
         status="ACTIVE",
     )
     db_session.add(proj)

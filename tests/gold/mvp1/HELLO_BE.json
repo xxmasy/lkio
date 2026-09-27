@@ -3,7 +3,7 @@
   "name": "hello-backend",
   "kind": "backend",
   "role": "paired_backend",
-  "local_path": "C:\\WorkSpace\\hello-backend",
+  "local_path": "/repos/hello-backend",
   "git": {
     "is_git": true,
     "branch": "feat/sales-dashboard-eu-menu"

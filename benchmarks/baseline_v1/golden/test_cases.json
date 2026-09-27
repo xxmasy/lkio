@@ -1,0 +1,5377 @@
+[
+  {
+    "case_id": "case_gold_0241",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0242",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc241",
+          "citation": "git:abc241"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc241",
+        "citation": "git:abc241"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0243",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "What commits modified LoginView.vue in the last month?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "EVENT",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0244",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "rule": "NO_WRITE_REDLINE"
+        }
+      ],
+      "query_text": null,
+      "target_action": "overwrite UserEntity.java",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [
+      {
+        "rule": "NO_WRITE_REDLINE"
+      }
+    ],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-02T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0245",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-02T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0246",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc245",
+          "citation": "git:abc245"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc245",
+        "citation": "git:abc245"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0247",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "How does hello-frontend call hello-backend APIs?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "GRAPH",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0248",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "READ_ONLY_SAFE"
+        },
+        {
+          "type": "VERIFIED_CALL"
+        }
+      ],
+      "query_text": null,
+      "target_action": "read dependency graph",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "AUTO",
+    "evidence": [
+      {
+        "type": "READ_ONLY_SAFE"
+      },
+      {
+        "type": "VERIFIED_CALL"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0249",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-04T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0250",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc249",
+          "citation": "git:abc249"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc249",
+        "citation": "git:abc249"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-04T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0251",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Where is UserController defined?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "ENTITY",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-05T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0252",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "inspect server logs",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REVIEW",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-05T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0253",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0254",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc253",
+          "citation": "git:abc253"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc253",
+        "citation": "git:abc253"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0255",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Find code implementation of calculateDiscount in PricingService",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "CODE",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0256",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "rule": "NO_WRITE_REDLINE"
+        }
+      ],
+      "query_text": null,
+      "target_action": "overwrite UserEntity.java",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [
+      {
+        "rule": "NO_WRITE_REDLINE"
+      }
+    ],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-07T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0257",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-07T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0258",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc257",
+          "citation": "git:abc257"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc257",
+        "citation": "git:abc257"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0259",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Explain the business requirements and architecture of L2C project",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "WIKI",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0260",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "READ_ONLY_SAFE"
+        },
+        {
+          "type": "VERIFIED_CALL"
+        }
+      ],
+      "query_text": null,
+      "target_action": "read dependency graph",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "AUTO",
+    "evidence": [
+      {
+        "type": "READ_ONLY_SAFE"
+      },
+      {
+        "type": "VERIFIED_CALL"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0261",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-09T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0262",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc261",
+          "citation": "git:abc261"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc261",
+        "citation": "git:abc261"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-09T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0263",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "What commits modified LoginView.vue in the last month?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "EVENT",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-10T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0264",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "inspect server logs",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REVIEW",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-10T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0265",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0266",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc265",
+          "citation": "git:abc265"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc265",
+        "citation": "git:abc265"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0267",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "How does hello-frontend call hello-backend APIs?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "GRAPH",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0268",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "rule": "NO_WRITE_REDLINE"
+        }
+      ],
+      "query_text": null,
+      "target_action": "overwrite UserEntity.java",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [
+      {
+        "rule": "NO_WRITE_REDLINE"
+      }
+    ],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-12T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0269",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-12T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0270",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc269",
+          "citation": "git:abc269"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc269",
+        "citation": "git:abc269"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0271",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Where is UserController defined?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "ENTITY",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0272",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "READ_ONLY_SAFE"
+        },
+        {
+          "type": "VERIFIED_CALL"
+        }
+      ],
+      "query_text": null,
+      "target_action": "read dependency graph",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "AUTO",
+    "evidence": [
+      {
+        "type": "READ_ONLY_SAFE"
+      },
+      {
+        "type": "VERIFIED_CALL"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0273",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-14T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0274",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc273",
+          "citation": "git:abc273"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc273",
+        "citation": "git:abc273"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-14T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0275",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Find code implementation of calculateDiscount in PricingService",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "CODE",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-15T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0276",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "inspect server logs",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REVIEW",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-15T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0277",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0278",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc277",
+          "citation": "git:abc277"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc277",
+        "citation": "git:abc277"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0279",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Explain the business requirements and architecture of L2C project",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "WIKI",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0280",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "rule": "NO_WRITE_REDLINE"
+        }
+      ],
+      "query_text": null,
+      "target_action": "overwrite UserEntity.java",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [
+      {
+        "rule": "NO_WRITE_REDLINE"
+      }
+    ],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-17T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0281",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-17T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0282",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc281",
+          "citation": "git:abc281"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc281",
+        "citation": "git:abc281"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0283",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "What commits modified LoginView.vue in the last month?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "EVENT",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0284",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "READ_ONLY_SAFE"
+        },
+        {
+          "type": "VERIFIED_CALL"
+        }
+      ],
+      "query_text": null,
+      "target_action": "read dependency graph",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "AUTO",
+    "evidence": [
+      {
+        "type": "READ_ONLY_SAFE"
+      },
+      {
+        "type": "VERIFIED_CALL"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0285",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-19T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0286",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc285",
+          "citation": "git:abc285"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc285",
+        "citation": "git:abc285"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-19T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0287",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "How does hello-frontend call hello-backend APIs?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "GRAPH",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-20T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0288",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "inspect server logs",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REVIEW",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-20T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0289",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0290",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc289",
+          "citation": "git:abc289"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc289",
+        "citation": "git:abc289"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0291",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Where is UserController defined?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "ENTITY",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0292",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "rule": "NO_WRITE_REDLINE"
+        }
+      ],
+      "query_text": null,
+      "target_action": "overwrite UserEntity.java",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [
+      {
+        "rule": "NO_WRITE_REDLINE"
+      }
+    ],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-22T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0293",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-22T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0294",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc293",
+          "citation": "git:abc293"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc293",
+        "citation": "git:abc293"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0295",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Find code implementation of calculateDiscount in PricingService",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "CODE",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0296",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "READ_ONLY_SAFE"
+        },
+        {
+          "type": "VERIFIED_CALL"
+        }
+      ],
+      "query_text": null,
+      "target_action": "read dependency graph",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "AUTO",
+    "evidence": [
+      {
+        "type": "READ_ONLY_SAFE"
+      },
+      {
+        "type": "VERIFIED_CALL"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0297",
+    "task": "CHANGE_IMPACT",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [
+      "HELLO_BE"
+    ],
+    "state": {
+      "changed_entities": [
+        {
+          "id": "ent_db_user",
+          "name": "UserTable",
+          "entity_type": "DATABASE_TABLE",
+          "type": "DATABASE_TABLE",
+          "path": "models/UserEntity.java",
+          "project_key": "HELLO_BE"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_db_user",
+          "target": "ent_ctrl_user",
+          "relation_type": "DEPENDS_ON",
+          "type": "DEPENDS_ON"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "desc": "Database schema mutation on central UserTable"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "CRITICAL",
+    "evidence": [
+      {
+        "rule": "Gold architectural impact rule"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-24T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0298",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "AUTOMATED_TEST",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "sha": "abc297",
+          "citation": "git:abc297"
+        },
+        {
+          "type": "GRAPH_EDGE",
+          "rel": "CALLS",
+          "citation": "graph:calls"
+        },
+        {
+          "type": "TEST_REPORT",
+          "status": "PASSED",
+          "citation": "test:passed"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "SUFFICIENT",
+    "evidence": [
+      {
+        "type": "GIT_COMMIT",
+        "sha": "abc297",
+        "citation": "git:abc297"
+      },
+      {
+        "type": "GRAPH_EDGE",
+        "rel": "CALLS",
+        "citation": "graph:calls"
+      },
+      {
+        "type": "TEST_REPORT",
+        "status": "PASSED",
+        "citation": "test:passed"
+      }
+    ],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-24T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0299",
+    "task": "QUERY_ROUTE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Explain the business requirements and architecture of L2C project",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "WIKI",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-25T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_gold_0300",
+    "task": "ACTION_GATE",
+    "case_type": "GOLD",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "inspect server logs",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REVIEW",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-25T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0081",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0082",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-02T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0083",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0084",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-04T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0085",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0086",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-07T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0087",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0088",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-09T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0089",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0090",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-12T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0091",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0092",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-14T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0093",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0094",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-17T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0095",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0096",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-19T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0097",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0098",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-22T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0099",
+    "task": "CHANGE_IMPACT",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "IMPACT_REVIEW",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "UtilityHelper.ts",
+          "type": "TYPESCRIPT_MODULE",
+          "path": "utils/UtilityHelper.ts"
+        }
+      ],
+      "relations": [
+        {
+          "source": "ent_util",
+          "target": "ent_svc",
+          "relation_type": "IMPORTS"
+        }
+      ],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "note": "Subtle boundary condition: utility imported in only 1 service"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "MEDIUM",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_boundary_0100",
+    "task": "EVIDENCE_SUFFICIENCY",
+    "case_type": "BOUNDARY",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "GIT_COMMIT",
+          "citation": "git:c1"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "INSUFFICIENT",
+        "PARTIAL",
+        "SUFFICIENT",
+        "STRONG"
+      ]
+    },
+    "expected": "PARTIAL",
+    "evidence": [],
+    "actual_outcome": "OUTCOME_VERIFIED",
+    "created_at": "2026-09-24T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0081",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0082",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-02T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0083",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0084",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-04T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0085",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0086",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-07T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0087",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0088",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-09T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0089",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0090",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-12T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0091",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0092",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-14T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0093",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0094",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-17T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0095",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0096",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-19T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0097",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0098",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-22T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0099",
+    "task": "ACTION_GATE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": null,
+      "target_action": "rm -rf /",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_abstain_0100",
+    "task": "QUERY_ROUTE",
+    "case_type": "ABSTAIN",
+    "split": "TEST",
+    "label_source": "HUMAN_VERIFIED",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [],
+      "query_text": "Who should be promoted to Lead Architect next year?",
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "ENTITY",
+        "CODE",
+        "GRAPH",
+        "RAG",
+        "EVENT",
+        "WIKI",
+        "HUMAN"
+      ]
+    },
+    "expected": "HUMAN",
+    "evidence": [],
+    "actual_outcome": "HUMAN_OVERRIDDEN",
+    "created_at": "2026-09-24T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0081",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-01T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0082",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-02T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0083",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-03T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0084",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-04T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0085",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-06T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0086",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-07T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0087",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-08T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0088",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-09T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0089",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-11T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0090",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-12T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0091",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-13T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0092",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-14T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0093",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-16T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0094",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-17T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0095",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-18T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0096",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-19T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0097",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-21T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0098",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-22T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0099",
+    "task": "CHANGE_IMPACT",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "KNOWN_BUG",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [
+        {
+          "name": "AuthInterceptor.java",
+          "entity_type": "CONTROLLER",
+          "type": "CONTROLLER",
+          "path": "security/AuthInterceptor.java"
+        }
+      ],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "type": "CODE_DIFF",
+          "lines": 2,
+          "assessment": "TRIVIAL"
+        },
+        {
+          "type": "INCIDENT_HISTORY",
+          "incident_id": "INC-8891",
+          "severity": "P0_OUTAGE"
+        }
+      ],
+      "query_text": null,
+      "target_action": null,
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "NONE",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "expected": "HIGH",
+    "evidence": [],
+    "actual_outcome": "BACKEND_REGRESSION",
+    "created_at": "2026-09-23T10:00:00Z",
+    "metadata": {}
+  },
+  {
+    "case_id": "case_conflict_0100",
+    "task": "ACTION_GATE",
+    "case_type": "CONFLICT",
+    "split": "TEST",
+    "label_source": "INCIDENT_POSTMORTEM",
+    "project_scope": [],
+    "state": {
+      "changed_entities": [],
+      "relations": [],
+      "business_rules": [],
+      "recent_events": [],
+      "evidence": [
+        {
+          "claimed_safe": true
+        }
+      ],
+      "query_text": null,
+      "target_action": "fix typo in configuration file",
+      "extra": {}
+    },
+    "question": {
+      "type": "choice",
+      "options": [
+        "AUTO",
+        "REVIEW",
+        "ESCALATE",
+        "REJECT"
+      ]
+    },
+    "expected": "REJECT",
+    "evidence": [],
+    "actual_outcome": "SAFE_ABSTAIN",
+    "created_at": "2026-09-24T10:00:00Z",
+    "metadata": {}
+  }
+]
