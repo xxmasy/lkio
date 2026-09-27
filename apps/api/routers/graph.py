@@ -35,8 +35,25 @@ def get_project_graph(
             detail=f"Project '{project_id}' not found",
         )
 
-    # 1. Fetch all entities belonging to this project
-    entities = db.scalars(select(Entity).where(Entity.project_id == project.id)).all()
+    # 1. Fetch key structural entities belonging to this project (cap to maintain 60 FPS in Cytoscape)
+    key_types = [
+        "PROJECT", "REPOSITORY", "FRONTEND", "BACKEND", "FRAMEWORK", "BRANCH",
+        "MANIFEST", "DEPENDENCY", "CLASS", "MODULE", "CONTROLLER", "SERVICE"
+    ]
+    key_entities = db.scalars(
+        select(Entity).where(
+            Entity.project_id == project.id,
+            Entity.entity_type.in_(key_types)
+        )
+    ).all()
+    remaining_limit = max(100 - len(key_entities), 20)
+    extra_entities = db.scalars(
+        select(Entity).where(
+            Entity.project_id == project.id,
+            ~Entity.entity_type.in_(key_types)
+        ).limit(remaining_limit)
+    ).all()
+    entities = list(key_entities) + list(extra_entities)
     entity_map: dict[uuid.UUID, Entity] = {e.id: e for e in entities}
     entity_ids = list(entity_map.keys())
 
@@ -174,13 +191,35 @@ def get_entity_neighbors(
     return success_response(GraphData(nodes=nodes, edges=edges).model_dump())
 
 
+OVERVIEW_TYPES = [
+    "PROJECT",
+    "REPOSITORY",
+    "FRONTEND",
+    "BACKEND",
+    "FRAMEWORK",
+    "BRANCH",
+    "MODULE",
+]
+
+
 @router.get("/overview", status_code=status.HTTP_200_OK)
 def get_global_overview_graph(
     db: Session = Depends(get_db),
 ):
-    """Retrieve the global multi-project overview graph."""
-    entities = db.scalars(select(Entity)).all()
-    relations = db.scalars(select(Relation)).all()
+    """Retrieve the global multi-project overview graph (architectural level)."""
+    entities = db.scalars(
+        select(Entity).where(Entity.entity_type.in_(OVERVIEW_TYPES))
+    ).all()
+    if not entities:
+        entities = db.scalars(select(Entity).limit(50)).all()
+
+    entity_ids = {e.id for e in entities}
+    relations = db.scalars(
+        select(Relation).where(
+            Relation.subject_entity_id.in_(entity_ids),
+            Relation.object_entity_id.in_(entity_ids),
+        )
+    ).all()
 
     nodes = [
         GraphNode(
@@ -215,3 +254,4 @@ def get_global_overview_graph(
     ]
 
     return success_response(GraphData(nodes=nodes, edges=edges).model_dump())
+
