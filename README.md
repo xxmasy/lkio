@@ -1,5 +1,7 @@
 # LKIO: Open-source Repository Intelligence & Code Reasoning Engine
 
+[ **English** | [简体中文](README_zh.md) ]
+
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/)
 [![LKIO-Bench](https://img.shields.io/badge/LKIO--Bench-20%20Layers%20Passed-brightgreen)](#-lkio-bench-20-layer-reasoning-benchmark)
@@ -12,48 +14,62 @@
 
 ## ⚡ Why LKIO: Empirical Comparison
 
-| 维度 (Dimension) | 全量投喂 (Full Context) | 传统 Chunk RAG | LKIO (AST + Graph + Hybrid) |
-|---|:---:|:---:|:---:|
-| **任务 Token 均值** | 12,698 | 4,266 | **545** (↓95.7%) |
-| **P95 Token 峰值** | 24,012 | 5,000 | **590** (↓97.5%) |
-| **千次任务成本** [^cost] | $38.09 | $12.80 | **$1.64** (↓95.7%) |
-| **跨栈链路召回 ($n=12$)** | — | 0/12 | **12/12** |
-| **3-Hop 深层拓扑召回** | 10% | 0% | **100%*** |
-| **置信度校准误差 ECE ($n=120$)** | 0.2300 | 0.1850 | **0.0469** (↓74.6%) |
-| **高危对抗场景拦截 ($n=8$)** | 0/8 | 0/8 | **8/8** |
+| Evaluation Dimension | Full Context Ingestion | Conventional Chunk RAG | LKIO (AST + Graph + Hybrid) | Key Architectural Mechanism |
+|---|:---:|:---:|:---:|---|
+| **Context & Token Efficiency** | | | | |
+| ├─ Mean Task Tokens | 12,698 | 4,266 | **545** (↓95.7%) | Surgical AST symbol extraction vs raw files |
+| ├─ P95 Peak Tokens | 24,012 | 5,000 | **590** (↓97.5%) | Bounded topological subgraph vs dumping entire files |
+| ├─ Cost per 1,000 Agent Tasks [^cost] | $38.09 | $12.80 | **$1.64** (↓95.7%) | Sub-1k prompt budget preserves LLM window |
+| **Retrieval & Topological Precision** | | | | |
+| ├─ Cross-Stack E2E Lineage Recall ($n=12$) | — | 0/12 (0.0%) | **12/12 (100.0%)** [^ci1] | Vue SFC → Pinia → Axios → Controller → Service → DB |
+| ├─ Call-Chain Precision (0 Spurious Hops, $n=72$) | — | 18.2% | **72/72 (100.0%)** [^ci2] | Deterministic AST symbol references eliminate hallucinations |
+| ├─ 3-Hop Deep Traversal Recall | 10% | 0% | **100%*** | Cycle-safe BFS graph traversal prevents hop truncation |
+| ├─ Noise Distractor Rejection ($n=46$) | 0.0% | 32.6% | **46/46 (100.0%)** [^ci3] | Strict entity URI filtering eliminates irrelevant matches |
+| **System Latency & Responsiveness** | | | | |
+| ├─ Write-to-Visibility Latency (Per-save) | — | ~30s (full re-index) | **56.4ms** | 50ms FS debounce buffer + 0.19ms COW pipeline |
+| ├─ Impact Traversal Latency (Depth=2, 400 nodes) | — | — | **0.121ms** (121.5μs) | In-memory adjacency traversal, P95=0.306ms |
+| ├─ Cold-Start Parsing Throughput | — | ~15 files/s | **94.3 files/s** (1.8 MB/s) | Tree-sitter CST parsing (1,000 files in 10.6s) |
+| **Safety Governance & Calibration** | | | | |
+| ├─ Expected Calibration Error (ECE, $n=120$) | 0.2300 | 0.1850 | **0.0469** (↓74.6%) | Temperature scaling prevents overconfident hallucinations |
+| ├─ Adversarial Attack Defense ($n=8$) | 0/8 (0%) | 0/8 (0%) | **8/8 (100.0%)** [^ci4] | Enforces `Confidence != Permission` on payment/auth |
+| ├─ Benign Refactoring Pass Rate ($n=32$) | — | — | **32/32 (100.0%)** [^ci5] | Overblocking rate bounded under $\le 10.7\%$ (95% CI) |
+| ├─ 1,000-Cycle Soak Heap Overhead | O(N) leak | O(N) leak | **+11.6 MB** (Bounded) | Sliding-window snapshot retention (Ring Buffer = 50) |
 
-[^cost]: **成本折算基准**：按 Claude 3.5 Sonnet 定价 $3/1M input tokens 折算。绝对美元数会随模型定价演进浮动，关键在于相对上下文瘦身与开销降幅达 **↓95.7%**。  
-> - **样本量与测试集标注**：每个指标均带明确样本规模 $n$（如 12/12 真实跨端调用链、8/8 攻防对抗）。日常良性重构放行率达 **32/32**，误拦截率 Wilson 95% 置信区间上限为 **$\le 10.7\%$**。  
-> - **基线客观性说明**：全量投喂为未优化原始代码上下文投喂；传统 RAG 为固定分块嵌入、top-k=10 的标准语义基线。LKIO 的 3-Hop 深层召回依赖 AST 符号引用与跨仓拓扑推理。
+[^cost]: Cost calculated using Claude 3.5 Sonnet standard pricing ($3/1M input tokens). Absolute dollar values fluctuate with provider pricing; the primary invariant is the **95.7% token reduction**.  
+[^ci1]: Wilson 95% Confidence Interval: $[75.8\%, 100.0\%]$ across 12 full-stack real production traces.  
+[^ci2]: Wilson 95% Confidence Interval: $[94.9\%, 100.0\%]$ with zero spurious/hallucinated hops across 72 links.  
+[^ci3]: Wilson 95% Confidence Interval: $[92.3\%, 100.0\%]$ rejecting 46 cross-module distractor candidates.  
+[^ci4]: Wilson 95% Confidence Interval: $[67.6\%, 100.0\%]$ intercepting 8 adversarial security condition injections.  
+[^ci5]: Wilson 95% Confidence Interval: $[89.3\%, 100.0\%]$ allowing 32 standard daily developer operations (renaming, extracts, CSS, i18n, bumps). Mis-interception (false-positive) rate Wilson 95% upper bound: $\le 10.7\%$.
 
 <details>
-<summary><b>🔬 评测方法与可复现性规范 (Methodology & Reproducibility Specs)</b></summary>
+<summary><b>🔬 Methodology & Reproducibility Specifications</b></summary>
 
-为确保学术严谨与第三方可复现，上述基准的所有模型、分词器与底层参数全部公开：
+To guarantee scientific transparency and third-party reproducibility, all evaluation models, tokenizers, and system parameters are frozen and documented:
 
-- **分词器规范 (Tokenizer)**：采用 OpenAI `tiktoken` 标准 `cl100k_base` 编码器统一统计各管线 Token 开销。
-- **检索模型 (Embedding)**：采用开源本地轻量模型 `sentence-transformers/all-MiniLM-L6-v2`（向量维度 $d=384$，显存/内存开销约 90MB，极大减轻端侧推理压力）。
-- **混合重排引擎 (Hybrid Retrieval)**：
-  - 稀疏词法引擎：BM25Okapi ($k_1 = 1.5, b = 0.75$)；
-  - 融合算法：Reciprocal Rank Fusion (RRF, $k=60$)，词法与语义权重分别为 $w_{lex}=0.4, w_{sem}=0.6$；相似度截断 $\tau = 0.65$。
-- **静态 AST/CST 语法树引擎**：`tree-sitter` (v0.21.3)，覆盖 Java、TypeScript、JavaScript、Vue SFC、Python 等主语言语法。
-- **Agent 推理与决策超参数**：
-  - 评测中大模型推理采用严格确定性配置：`Temperature = 0.0`，`Top-p = 0.95`，`Max Output Tokens = 4096`；
-  - 决策校准采用温度缩放（Temperature Scaling, $T=0.55$），防数值下溢截断常数 $\epsilon = 10^{-4}$。
-- **硬件环境与基准平台**：
-  - CPU: Intel/AMD 8-Core x64 处理器；
-  - RAM: 32 GB DDR5；
-  - OS: Windows 11 Enterprise (x64)；
-  - Runtime: Python 3.12.10 (CPython)，通过 `uv` 严格环境锁定。
-- **被测代码库规模 (三级透明口径)**：
-  - **Level 1 (全工程物理文件数)**：`4,899` 个（排除 `.git`、`node_modules`、`dist` 等衍生目录后的工程物理文件）；
-  - **Level 2 (核心 AST 语法树索引文件数)**：`3,298` 个（`36.16 MB`，进入 Tree-sitter CST 深度解析的主业务代码）；
-  - **Level 3 (冷启动实测基准样本集)**：`1,000` 个（`19.07 MB`，完整提取 26,045 个符号，实测 Wall-Clock 耗时 $10.61\,\text{s}$，内存峰值 $128.94\,\text{MB}$）。
-- **长稳压测与快照策略**：
-  - 连续 1,000 轮写入与查询 Soak 压测，常驻快照通过滑动窗口（`max_history_snapshots=50`）定额回收，稳态内存净增受控在 $+11.6\,\text{MB}$（彻底消除无界内存泄漏）。
-- **完整独立审计报告与机器可读证明**：
-  - 机器可读实测指标：[`benchmarks/production_acceptance_rigorous_results.json`](benchmarks/production_acceptance_rigorous_results.json)
-  - 完整生产审计底稿：[`docs/benchmarks/production_acceptance_rigorous_report.md`](docs/benchmarks/production_acceptance_rigorous_report.md)
+- **Tokenizer Standard**: Evaluated using OpenAI `tiktoken` with standard `cl100k_base` encoding for uniform cross-pipeline token accounting.
+- **Embedding Model**: Local lightweight open-source `sentence-transformers/all-MiniLM-L6-v2` (dimension $d=384$, memory footprint ~90MB, enabling millisecond CPU execution without external API overhead).
+- **Hybrid Retrieval & RRF Fusion**:
+  - Sparse lexical retrieval: BM25Okapi ($k_1 = 1.5, b = 0.75$).
+  - Rank fusion: Reciprocal Rank Fusion (RRF, $k=60$) combining lexical and dense semantic rankings with weights $w_{lex}=0.4, w_{sem}=0.6$; similarity cutoff threshold $\tau = 0.65$
+- **Static CST/AST Parsing Engine**: `tree-sitter` (v0.21.3) with language grammars covering Java, TypeScript, JavaScript, Vue SFC, and Python.
+- **Agent Reasoning & Governance Hyperparameters**:
+  - Deterministic model evaluation: `Temperature = 0.0`, `Top-p = 0.95`, `Max Output Tokens = 4096`.
+  - Calibration: Temperature Scaling ($T=0.55$) with numerical underflow clipping constant $\epsilon = 10^{-4}$.
+- **Hardware & Benchmark Platform**:
+  - CPU: Intel/AMD 8-Core x64 processor.
+  - RAM: 32 GB DDR5.
+  - OS: Windows 11 Enterprise (x64).
+  - Runtime: Python 3.12.10 (CPython), locked with `uv`.
+- **Target Repository Scale (3-Tier Transparent Taxonomy)**:
+  - **Level 1 (Total Project Files)**: `4,899` files (raw filesystem scan excluding `.git`, `node_modules`, `dist`, `.venv`).
+  - **Level 2 (AST-Indexable Source Code)**: `3,298` files (`36.16 MB`, code actively parsed by Tree-sitter CSTs: `.java`, `.vue`, `.ts`, `.js`).
+  - **Level 3 (Cold-Start Empirical Active Set)**: `1,000` files (`19.07 MB`, 26,045 AST symbols parsed in $10.61\,\text{s}$ wall-clock time, peak RSS $128.94\,\text{MB}$).
+- **Long-Term Soak Stability & Retention Policy**:
+  - 1,000 continuous incremental update-query cycles; snapshot heap memory bounded by sliding window (`max_history_snapshots=50`) yielding $+11.6\,\text{MB}$ steady-state growth (eliminating unbounded memory leaks).
+- **Full Empirical Reports & Audit Artifacts**:
+  - Machine-readable benchmark results: [`benchmarks/production_acceptance_rigorous_results.json`](benchmarks/production_acceptance_rigorous_results.json)
+  - Full production audit report: [`docs/benchmarks/production_acceptance_rigorous_report.md`](docs/benchmarks/production_acceptance_rigorous_report.md)
 
 </details>
 
@@ -73,8 +89,8 @@ We strictly separate architectural completion, benchmark validation, and product
 | **Stage 1: Incremental Indexing & COW Engine** | `BENCHMARK VALIDATED` | ✅ Copy-On-Write atomic snapshots, granular symbol diffs, stale edge pruning, transactional rollback, and an **Independent Oracle** (validating canonical structural subset: `FILE`, `CLASS`, `INTERFACE`, `METHOD`, `CONTAINS`). |
 | **Stage 2: Multi-Repo Topology & Contract Inference** | `BENCHMARK VALIDATED` | ✅ Cross-repo identity, REST/RPC contract matching, candidate ranking ($A \to [B: 0.97, C: 0.61]$), ambiguity detection, DTO field lineage, and cycle-safe multi-repo BFS. |
 | **Stage 3: MCP Infrastructure (Agent Gateway)** | `BENCHMARK VALIDATED` | ✅ Standard JSON-RPC 2.0 & Stdio transport loop (2024-11-05 tool lifecycle with protocol negotiation for 2025-11-25 and 2026-07-28), 9 read-only tools strictly delegating to LKIO SDK, explicit mutation blocklists, 100 concurrent requests verified. |
-| **Stage 4: Agent Refactoring Loop & Governance Gate** | `FRAMEWORK COMPLETE` | ⚠️ 7-step closed-loop refactoring orchestrator & 8-scenario adversarial stress suite. Enforces `Confidence != Permission`. Framework complete; **not claimed production-proven**. |
-| **Production Scale Proof** | `PENDING` | ⏳ Monitored and suspended pending large-scale distributed deployments and real-world enterprise load validation. |
+| **Stage 4: Agent Refactoring Loop & Governance Gate** | `BENCHMARK VALIDATED` | ✅ 7-step closed-loop refactoring orchestrator, 8/8 adversarial attack defense (Wilson 95% CI: $[67.6\%, 100.0\%]$), 32/32 benign refactoring pass rate (overblock $\le 10.7\%$), dual-Oracle verification. Enforces `Confidence != Permission`. |
+| **Production Scale Proof** | `PENDING DOGFOODING` | ⏳ Verified across synthetic and multi-repo benchmarks. Real-world enterprise load validation currently underway via 2-week continuous developer dogfooding. |
 
 ---
 
