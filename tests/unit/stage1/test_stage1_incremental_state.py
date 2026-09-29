@@ -176,3 +176,28 @@ def test_stage1_concurrency_zero_downtime():
     assert len(read_results) > 10
     # Current snapshot must be c5
     assert mgr.get_current_snapshot().metadata.commit_id == "c5"
+
+
+def test_stage1_snapshot_retention_policy():
+    mgr = SnapshotManager(repo_id="retention-repo", initial_commit="c0", max_history_snapshots=5)
+    pipeline = IncrementalIndexingPipeline(mgr)
+
+    files_curr = {"src/Main.java": "public class Main {}"}
+    base_snap_id = mgr.get_current_snapshot().metadata.snapshot_id
+
+    # Apply 20 consecutive commits
+    for i in range(1, 21):
+        files_next = {"src/Main.java": f"public class Main {{ int v = {i}; }}"}
+        diffs = ChangeDetector.detect_from_memory(files_curr, files_next)
+        pipeline.apply_incremental_update(f"c{i}", diffs)
+        files_curr = files_next
+
+    # History count should be capped at max_history_snapshots + 1 (base snapshot)
+    assert mgr.history_count == 6
+    # Base snapshot must always be preserved
+    assert mgr.get_snapshot(base_snap_id) is not None
+    # Latest snapshot must be current
+    assert mgr.get_current_snapshot().metadata.commit_id == "c20"
+    # Older intermediate snapshots (e.g. c1) must have been safely pruned
+    assert mgr.get_snapshot("snap_c1") is None
+
