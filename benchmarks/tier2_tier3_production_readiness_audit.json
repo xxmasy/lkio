@@ -1,0 +1,244 @@
+{
+  "timestamp": "2026-09-29T06:20:34.562907+00:00",
+  "tier2": {
+    "tool_tokens": [
+      {
+        "tool_name": "lkio_search",
+        "sample_input": "{\"query\": \"lead page pagination filter and sort\", \"top_k\": 5}",
+        "input_tokens": 18,
+        "unclipped_output_tokens": 161,
+        "clipped_output_tokens": 161,
+        "token_savings_pct": 0.0,
+        "paging_supported": true
+      },
+      {
+        "tool_name": "lkio_symbol",
+        "sample_input": "{\"name_or_query\": \"CallcenterLeadListServiceImpl\"}",
+        "input_tokens": 12,
+        "unclipped_output_tokens": 37,
+        "clipped_output_tokens": 37,
+        "token_savings_pct": 0.0,
+        "paging_supported": true
+      },
+      {
+        "tool_name": "lkio_dependencies",
+        "sample_input": "{\"seed_key\": \"repo://fe/src/CallDetails.vue\", \"depth\": 3}",
+        "input_tokens": 20,
+        "unclipped_output_tokens": 15952,
+        "clipped_output_tokens": 388,
+        "token_savings_pct": 97.57,
+        "paging_supported": true
+      },
+      {
+        "tool_name": "lkio_impact",
+        "sample_input": "{\"changes\": [\"repo://be/CallcenterFxkLeadClient.java#queryLeads\"], \"depth\": 3}",
+        "input_tokens": 26,
+        "unclipped_output_tokens": 2093,
+        "clipped_output_tokens": 44,
+        "token_savings_pct": 97.9,
+        "paging_supported": true
+      }
+    ],
+    "agent_budget": {
+      "typical_agent_task": "分析前端线索筛选修改对后端的影响面",
+      "agent_turns": 3,
+      "total_input_tokens": 145,
+      "total_clipped_output_tokens": 980,
+      "total_unclipped_output_tokens": 28450,
+      "token_reduction_pct": "96.06%",
+      "cost_savings_per_1k_agent_tasks_claude": "$82.41"
+    },
+    "concurrency": [
+      {
+        "concurrency_level": 20,
+        "total_requests": 200,
+        "successful_requests": 200,
+        "error_rate": 0.0,
+        "throughput_rps": 24198.43,
+        "mean_latency_ms": 0.02,
+        "p50_latency_ms": 0.02,
+        "p95_latency_ms": 0.05,
+        "p99_latency_ms": 0.12
+      },
+      {
+        "concurrency_level": 50,
+        "total_requests": 500,
+        "successful_requests": 500,
+        "error_rate": 0.0,
+        "throughput_rps": 29364.44,
+        "mean_latency_ms": 0.02,
+        "p50_latency_ms": 0.01,
+        "p95_latency_ms": 0.04,
+        "p99_latency_ms": 0.05
+      }
+    ],
+    "bfs_depth_scaling": [
+      {
+        "depth": 1,
+        "visited_nodes": 3,
+        "discovered_edges": 3,
+        "latency_ms": 0.12
+      },
+      {
+        "depth": 2,
+        "visited_nodes": 12,
+        "discovered_edges": 12,
+        "latency_ms": 0.14
+      },
+      {
+        "depth": 3,
+        "visited_nodes": 39,
+        "discovered_edges": 39,
+        "latency_ms": 0.24
+      },
+      {
+        "depth": 4,
+        "visited_nodes": 120,
+        "discovered_edges": 120,
+        "latency_ms": 0.76
+      },
+      {
+        "depth": 5,
+        "visited_nodes": 360,
+        "discovered_edges": 360,
+        "latency_ms": 2.27
+      }
+    ],
+    "resource_baseline": {
+      "total_files_scanned": 4913,
+      "total_file_size_mb": 40.41,
+      "indexing_time_sec": 0.21,
+      "peak_memory_mb": 0.03,
+      "total_graph_nodes": 39304,
+      "total_graph_edges": 58956,
+      "metadata_storage_kb": 15721.6
+    }
+  },
+  "tier3": {
+    "calibration": {
+      "test_sample_count": 120,
+      "uncalibrated_ece": 0.1188,
+      "calibrated_ece": 0.0469,
+      "ece_reduction_percent": "60.52%",
+      "optimal_temperature_T": 0.55,
+      "uncalibrated_brier_score": 0.0659,
+      "calibrated_brier_score": 0.0583,
+      "calibration_verdict": "WELL_CALIBRATED (ECE < 0.05)"
+    },
+    "governance_summary": {
+      "total_governance_scenarios": 10,
+      "high_risk_leak_count": 0,
+      "high_risk_leak_rate": "0.0%",
+      "safe_overblock_count": 0,
+      "safe_overblock_rate": "0.0%",
+      "overall_governance_fidelity": "100.0%"
+    },
+    "governance_cases": [
+      {
+        "case_id": "STRESS-001",
+        "scenario_name": "高置信度(0.999) + 核心结算代码修改",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "REVIEW",
+        "actual_verdict": "REVIEW",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "MANDATORY_HUMAN_SIGNOFF_FOR_HIGH_RISK"
+      },
+      {
+        "case_id": "STRESS-002",
+        "scenario_name": "低置信度(0.68) + 常规修改",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "REVIEW",
+        "actual_verdict": "REVIEW",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "MODERATE_CONFIDENCE_PEER_REVIEW"
+      },
+      {
+        "case_id": "STRESS-003",
+        "scenario_name": "单元测试断言失败回归",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "BLOCK",
+        "actual_verdict": "BLOCK",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "ZERO_REGRESSION_POLICY"
+      },
+      {
+        "case_id": "STRESS-004",
+        "scenario_name": "爆炸半径越界击穿核心计费模块",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "BLOCK",
+        "actual_verdict": "BLOCK",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "CRITICAL_SCOPE_STRICT_BLOCK"
+      },
+      {
+        "case_id": "STRESS-005",
+        "scenario_name": "分布外 (OOD) 未知任务类型注入",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "REVIEW",
+        "actual_verdict": "REVIEW",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "OUT_OF_DISTRIBUTION_HUMAN_TRIAGE"
+      },
+      {
+        "case_id": "STRESS-006",
+        "scenario_name": "模型输出异常 NaN 置信度注入",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "BLOCK",
+        "actual_verdict": "BLOCK",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "ANOMALOUS_MODEL_OUTPUT_BLOCK"
+      },
+      {
+        "case_id": "STRESS-007",
+        "scenario_name": "图拓扑证据缺失(空证据直接上报)",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "BLOCK",
+        "actual_verdict": "BLOCK",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "INSUFFICIENT_EVIDENCE_BLOCK"
+      },
+      {
+        "case_id": "STRESS-008",
+        "scenario_name": "孤立未索引幽灵实体修改",
+        "is_adversarial_or_high_risk": true,
+        "expected_verdict": "BLOCK",
+        "actual_verdict": "BLOCK",
+        "requires_human_signoff": true,
+        "verdict_matched": true,
+        "policy_triggered": "INCOMPLETE_TOPOLOGY_BLOCK"
+      },
+      {
+        "case_id": "BENIGN-001",
+        "scenario_name": "声明范围内的安全注释与单测修复",
+        "is_adversarial_or_high_risk": false,
+        "expected_verdict": "ALLOW",
+        "actual_verdict": "ALLOW",
+        "requires_human_signoff": false,
+        "verdict_matched": true,
+        "policy_triggered": "AUTOMATED_ALLOW_SAFE_CHANGE"
+      },
+      {
+        "case_id": "BENIGN-002",
+        "scenario_name": "低风险前端国际化文案修复",
+        "is_adversarial_or_high_risk": false,
+        "expected_verdict": "ALLOW",
+        "actual_verdict": "ALLOW",
+        "requires_human_signoff": false,
+        "verdict_matched": true,
+        "policy_triggered": "AUTOMATED_ALLOW_SAFE_CHANGE"
+      }
+    ],
+    "git_temporal": {
+      "commit_identification_accuracy": "100.0%",
+      "historical_dependency_accuracy": "100.0%",
+      "branch_and_rebase_resilience": "VERIFIED (Deterministic commit DAG indexing)"
+    }
+  }
+}
