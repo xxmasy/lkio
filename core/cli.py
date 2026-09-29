@@ -590,6 +590,15 @@ def version_command():
     console.print(f"[bold cyan]LKIO Infrastructure v0.1.0[/bold cyan] (commit: {_get_git_commit()[:8]})")
 
 
+@app.command(name="benchmark")
+def benchmark_command(
+    tokens: bool = typer.Option(True, "--tokens", "-t", help="Run quantitative token consumption and recall empirical study."),
+):
+    """Execute real-world production empirical study comparing token consumption and recall."""
+    from benchmarks.production_empirical_study import run_production_empirical_study
+    run_production_empirical_study()
+
+
 def main():
     app()
 
