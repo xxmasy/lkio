@@ -9,6 +9,10 @@
 
 > **Mission**: **LKIO = Open-source Repository Intelligence & Code Reasoning Engine**  
 > LKIO provides an infrastructure-grade repository intelligence layer for autonomous coding agents (Claude Code, Cursor, Codex, etc.). It combines fine-grained Tree-sitter AST symbol indexing, cross-repository dependency topology, Git temporal reasoning, hybrid retrieval, and safety governance gates to enable deterministic, evidence-backed code reasoning.
+> 
+> **Origin & Provenance (AI-Native Production Heritage)**:  
+> LKIO was not conceived in an academic vacuum or benchmarked against toy codebases. The target evaluation testbed is a **complete, full-scale production software system** (spanning Vue 3 SFC frontend, Pinia, Axios, Spring Boot microservices, DTO data lineage, and multi-repo RPC contracts). **Continuously developed since October 2025, 100% of this production codebase was written entirely by AI.**  
+> It was precisely in this pure AI-driven software engineering environment that the foundational limits of coding agents were uncovered: context explosion, hallucinated cross-stack linkages, silent downstream breaks, and lack of repository topology awareness. **LKIO was forged directly out of the real-world operational necessities of maintaining and scaling a 100% AI-written production codebase.**
 
 ---
 
