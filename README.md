@@ -10,6 +10,55 @@
 
 ---
 
+## ⚡ Why LKIO: Empirical Comparison
+
+| 维度 (Dimension) | 全量投喂 (Full Context) | 传统 Chunk RAG | LKIO (AST + Graph + Hybrid) |
+|---|:---:|:---:|:---:|
+| **任务 Token 均值** | 12,698 | 4,266 | **545** (↓95.7%) |
+| **P95 Token 峰值** | 24,012 | 5,000 | **590** (↓97.5%) |
+| **千次任务成本** [^cost] | $38.09 | $12.80 | **$1.64** (↓95.7%) |
+| **跨栈链路召回 ($n=12$)** | — | 0/12 | **12/12** |
+| **3-Hop 深层拓扑召回** | 10% | 0% | **100%*** |
+| **置信度校准误差 ECE ($n=120$)** | 0.2300 | 0.1850 | **0.0469** (↓74.6%) |
+| **高危对抗场景拦截 ($n=8$)** | 0/8 | 0/8 | **8/8** |
+
+[^cost]: **成本折算基准**：按 Claude 3.5 Sonnet 定价 $3/1M input tokens 折算。绝对美元数会随模型定价演进浮动，关键在于相对上下文瘦身与开销降幅达 **↓95.7%**。  
+> - **样本量与测试集标注**：每个指标均带明确样本规模 $n$（如 12/12 真实跨端调用链、8/8 攻防对抗）。日常良性重构放行率达 **32/32**，误拦截率 Wilson 95% 置信区间上限为 **$\le 10.7\%$**。  
+> - **基线客观性说明**：全量投喂为未优化原始代码上下文投喂；传统 RAG 为固定分块嵌入、top-k=10 的标准语义基线。LKIO 的 3-Hop 深层召回依赖 AST 符号引用与跨仓拓扑推理。
+
+<details>
+<summary><b>🔬 评测方法与可复现性规范 (Methodology & Reproducibility Specs)</b></summary>
+
+为确保学术严谨与第三方可复现，上述基准的所有模型、分词器与底层参数全部公开：
+
+- **分词器规范 (Tokenizer)**：采用 OpenAI `tiktoken` 标准 `cl100k_base` 编码器统一统计各管线 Token 开销。
+- **检索模型 (Embedding)**：采用开源本地轻量模型 `sentence-transformers/all-MiniLM-L6-v2`（向量维度 $d=384$，显存/内存开销约 90MB，极大减轻端侧推理压力）。
+- **混合重排引擎 (Hybrid Retrieval)**：
+  - 稀疏词法引擎：BM25Okapi ($k_1 = 1.5, b = 0.75$)；
+  - 融合算法：Reciprocal Rank Fusion (RRF, $k=60$)，词法与语义权重分别为 $w_{lex}=0.4, w_{sem}=0.6$；相似度截断 $\tau = 0.65$。
+- **静态 AST/CST 语法树引擎**：`tree-sitter` (v0.21.3)，覆盖 Java、TypeScript、JavaScript、Vue SFC、Python 等主语言语法。
+- **Agent 推理与决策超参数**：
+  - 评测中大模型推理采用严格确定性配置：`Temperature = 0.0`，`Top-p = 0.95`，`Max Output Tokens = 4096`；
+  - 决策校准采用温度缩放（Temperature Scaling, $T=0.55$），防数值下溢截断常数 $\epsilon = 10^{-4}$。
+- **硬件环境与基准平台**：
+  - CPU: Intel/AMD 8-Core x64 处理器；
+  - RAM: 32 GB DDR5；
+  - OS: Windows 11 Enterprise (x64)；
+  - Runtime: Python 3.12.10 (CPython)，通过 `uv` 严格环境锁定。
+- **被测代码库规模 (三级透明口径)**：
+  - **Level 1 (全工程物理文件数)**：`4,899` 个（排除 `.git`、`node_modules`、`dist` 等衍生目录后的工程物理文件）；
+  - **Level 2 (核心 AST 语法树索引文件数)**：`3,298` 个（`36.16 MB`，进入 Tree-sitter CST 深度解析的主业务代码）；
+  - **Level 3 (冷启动实测基准样本集)**：`1,000` 个（`19.07 MB`，完整提取 26,045 个符号，实测 Wall-Clock 耗时 $10.61\,\text{s}$，内存峰值 $128.94\,\text{MB}$）。
+- **长稳压测与快照策略**：
+  - 连续 1,000 轮写入与查询 Soak 压测，常驻快照通过滑动窗口（`max_history_snapshots=50`）定额回收，稳态内存净增受控在 $+11.6\,\text{MB}$（彻底消除无界内存泄漏）。
+- **完整独立审计报告与机器可读证明**：
+  - 机器可读实测指标：[`benchmarks/production_acceptance_rigorous_results.json`](benchmarks/production_acceptance_rigorous_results.json)
+  - 完整生产审计底稿：[`docs/benchmarks/production_acceptance_rigorous_report.md`](docs/benchmarks/production_acceptance_rigorous_report.md)
+
+</details>
+
+---
+
 ## 🚦 LKIO Status & Gate Matrix
 
 LKIO operates under a foundational quality invariant:
