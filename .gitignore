@@ -48,7 +48,10 @@ build/
 *.log
 
 # Internal Local Documentation & Private Knowledge Base Notes
-docs/
+docs/*
+!docs/benchmarks/
+docs/benchmarks/*
+!docs/benchmarks/production_acceptance_rigorous_report.md
 *.local.md
 LKIO_*.md
 MVP.md
