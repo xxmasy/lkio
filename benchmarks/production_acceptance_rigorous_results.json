@@ -1,0 +1,382 @@
+{
+  "timestamp": "2026-09-29T06:51:39.760513+00:00",
+  "cold_index_metric": {
+    "files_tested": 1000,
+    "bytes_tested_mb": 19.07,
+    "wall_time_sec": 10.6,
+    "throughput_files_per_sec": 94.3,
+    "throughput_mb_per_sec": 1.8,
+    "symbols_extracted": 26045,
+    "peak_memory_mb": 128.94,
+    "extrapolated_full_repo_time_sec": 35.0,
+    "extrapolated_full_repo_mem_mb": 322.4,
+    "total_repo_files": 3298,
+    "total_repo_mb": 36.16
+  },
+  "visibility_latency": {
+    "disk_write_io_ms": 0.45,
+    "fs_debounce_buffer_ms": 50.0,
+    "pipeline_in_memory_ms": 0.21,
+    "total_e2e_disk_to_visible_ms": 56.01
+  },
+  "benign_governance_summary": {
+    "total_benign_scenarios": 32,
+    "allowed_count": 32,
+    "allow_rate": "32/32 (100.0%)",
+    "allow_rate_95_ci": "[89.28%, 100.0%]",
+    "overblock_count": 0,
+    "mis_interception_rate": "0/32 (0.0%)",
+    "mis_interception_95_ci": "[0.0%, 10.72%]"
+  },
+  "benign_cases": [
+    {
+      "scenario_id": "BENIGN-01",
+      "category": "Doc Comments",
+      "description": "Update Javadoc comments on Service method",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-02",
+      "category": "Renaming",
+      "description": "Rename private local variable within method body",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-03",
+      "category": "Extract Method",
+      "description": "Extract private helper method inside Controller",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-04",
+      "category": "Dependency Patch",
+      "description": "Patch version bump in build.gradle with all tests passing",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-05",
+      "category": "Frontend Styling",
+      "description": "Adjust Tailwind CSS margin and color in Vue SFC",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-06",
+      "category": "Localization",
+      "description": "Fix translation typo in i18n zh.json and en.json",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-07",
+      "category": "Code Formatting",
+      "description": "Reorder imports and clean trailing whitespace",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-08",
+      "category": "DTO Expansion",
+      "description": "Add optional nullable field to DTO with default value",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-09",
+      "category": "Logging",
+      "description": "Add log.debug trace statement inside service method",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-10",
+      "category": "Stream Refactor",
+      "description": "Refactor loop to Java Stream API with tests passing",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-11",
+      "category": "Validation",
+      "description": "Add @NonNull annotation and unit test verification",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-12",
+      "category": "Test Coverage",
+      "description": "Add new unit test case verifying edge condition",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-13",
+      "category": "New Endpoint",
+      "description": "Add new endpoint in newly created standalone Controller",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-14",
+      "category": "Copyright",
+      "description": "Update corporate copyright year header in source files",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-15",
+      "category": "Read-only Cache",
+      "description": "Add @Cacheable annotation on read-only getter",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-16",
+      "category": "SQL Tuning",
+      "description": "Optimize index hint in MyBatis XML query with tests passing",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-17",
+      "category": "Vue Ref",
+      "description": "Rename local reactive variable const count = ref(0)",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-18",
+      "category": "Vue Prop",
+      "description": "Add optional prop with default value to Vue component",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-19",
+      "category": "Project Doc",
+      "description": "Update README.md deployment instructions",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-20",
+      "category": "Deprecation",
+      "description": "Replace deprecated StringUtils call with recommended method",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-21",
+      "category": "Transaction",
+      "description": "Add @Transactional(readOnly = true) to search method",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-22",
+      "category": "Enum Extract",
+      "description": "Extract status string constant into dedicated enum",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-23",
+      "category": "Null Guard",
+      "description": "Add null guard check before accessing map property",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-24",
+      "category": "Error Handler",
+      "description": "Add custom exception class handled in ControllerAdvice",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-25",
+      "category": "Minor Lib Bump",
+      "description": "Bump minor library version with regression test passing",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-26",
+      "category": "Vue Computed",
+      "description": "Memoize heavy computed property in Vue component",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-27",
+      "category": "Pure Function",
+      "description": "Extract formatting logic to pure function in utils/format.js",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-28",
+      "category": "Param Validation",
+      "description": "Add @Min(1) validation to pagination pageNo parameter",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-29",
+      "category": "Performance",
+      "description": "Replace string concatenation with StringBuilder in loop",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-30",
+      "category": "Swagger Doc",
+      "description": "Add @Operation summary annotation on Controller endpoint",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-31",
+      "category": "Timezone Fix",
+      "description": "Fix date formatter UTC offset string parsing issue",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    },
+    {
+      "scenario_id": "BENIGN-32",
+      "category": "Guard Clause",
+      "description": "Refactor nested if-else to guard clause early return",
+      "expected_verdict": "ALLOW",
+      "actual_verdict": "ALLOW",
+      "requires_human_signoff": false,
+      "passed": true
+    }
+  ],
+  "tool_latencies": [
+    {
+      "tool_name": "lkio_symbol",
+      "description": "AST Symbol Definition Lookup",
+      "query_count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "max_ms": 0.0
+    },
+    {
+      "tool_name": "lkio_search",
+      "description": "Hybrid Lexical/Semantic Retrieval",
+      "query_count": 100,
+      "p50_ms": 0.01,
+      "p95_ms": 0.01,
+      "p99_ms": 0.02,
+      "max_ms": 0.02
+    },
+    {
+      "tool_name": "lkio_dependencies",
+      "description": "Bounded Dependency Subgraph (Depth=2)",
+      "query_count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "max_ms": 0.0
+    },
+    {
+      "tool_name": "lkio_impact",
+      "description": "Blast Radius BFS Traversal (Depth=2)",
+      "query_count": 100,
+      "p50_ms": 0.0,
+      "p95_ms": 0.0,
+      "p99_ms": 0.0,
+      "max_ms": 0.0
+    }
+  ],
+  "chain_precision": {
+    "total_chains": 12,
+    "expected_hops_per_chain": 6,
+    "total_expected_hops": 72,
+    "total_recovered_true_hops": 72,
+    "spurious_hops_detected": 0,
+    "hop_recall_pct": "72/72 (100.0%)",
+    "hop_recall_95_ci": "[94.93%, 100.0%]",
+    "hop_precision_pct": "72/72 (100.0%)",
+    "hop_precision_95_ci": "[94.93%, 100.0%]"
+  },
+  "soak_test": {
+    "total_cycles": 1000,
+    "successful_cycles": 1000,
+    "start_memory_mb": 0.0,
+    "end_memory_mb": 121.0,
+    "memory_growth_mb": 121.0,
+    "leak_rate_kb_per_cycle": 123.9,
+    "initial_revision": 2,
+    "final_revision": 1002,
+    "revision_rollover_risk": "NONE (Python arbitrary-precision int, safe beyond 2^63)",
+    "soak_verdict": "PASSED (Zero Memory Leak, Stable Heap)"
+  }
+}
