@@ -599,6 +599,14 @@ def benchmark_command(
     run_production_empirical_study()
 
 
+@app.command(name="audit")
+def audit_command():
+    """Execute Tier 1 production readiness audit (latency, rapid saves, COW concurrency, cross-stack recall, blast radius FPR)."""
+    from benchmarks.tier1_production_readiness_audit import run_tier1_audit
+    run_tier1_audit()
+
+
+
 def main():
     app()
 
