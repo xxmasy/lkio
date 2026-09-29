@@ -118,10 +118,11 @@ class Snapshot:
 
 
 class SnapshotManager:
-    """Thread-safe manager enforcing Atomic Publish, Zero-Downtime SWMR and Rollback."""
+    """Thread-safe manager enforcing Atomic Publish, Zero-Downtime SWMR, Rollback and Bounded Retention."""
 
-    def __init__(self, repo_id: str, initial_commit: str = "init"):
+    def __init__(self, repo_id: str, initial_commit: str = "init", max_history_snapshots: int = 50):
         self.repo_id = repo_id
+        self.max_history_snapshots = max_history_snapshots
         initial_meta = SnapshotMetadata(
             snapshot_id=f"snap_{uuid.uuid4().hex[:8]}",
             repo_id=repo_id,
@@ -129,9 +130,16 @@ class SnapshotManager:
             status=SnapshotStatus.PUBLISHED,
         )
         self._current_snapshot = Snapshot(initial_meta)
-        self._history: Dict[str, Snapshot] = {self._current_snapshot.metadata.snapshot_id: self._current_snapshot}
+        self._base_snapshot_id = self._current_snapshot.metadata.snapshot_id
+        self._history: Dict[str, Snapshot] = {self._base_snapshot_id: self._current_snapshot}
+        self._history_order: List[str] = [self._base_snapshot_id]
         self._lock = threading.RLock()
         self._active_candidate: Optional[Snapshot] = None
+
+    @property
+    def history_count(self) -> int:
+        with self._lock:
+            return len(self._history)
 
     def get_current_snapshot(self) -> Snapshot:
         """Lock-free atomic read of published snapshot (readers never block on writers)."""
@@ -172,7 +180,7 @@ class SnapshotManager:
             return True
 
     def publish_atomic(self, candidate: Snapshot) -> None:
-        """Atomically switches the current published snapshot pointer."""
+        """Atomically switches the current published snapshot pointer and applies retention bounds."""
         with self._lock:
             if candidate.metadata.status != SnapshotStatus.VALIDATING:
                 raise RuntimeError("Candidate snapshot must be VALIDATING before atomic publish.")
@@ -180,7 +188,31 @@ class SnapshotManager:
             candidate.metadata.status = SnapshotStatus.PUBLISHED
             self._current_snapshot = candidate
             self._history[candidate.metadata.snapshot_id] = candidate
+            self._history_order.append(candidate.metadata.snapshot_id)
             self._active_candidate = None
+            self._apply_retention_policy()
+
+    def _apply_retention_policy(self) -> int:
+        """Enforces sliding-window retention policy to prevent unbounded memory growth."""
+        if self.max_history_snapshots <= 0:
+            return 0
+        pruned_count = 0
+        # Retain base snapshot (at index 0) + up to max_history_snapshots recent snapshots
+        while len(self._history_order) > self.max_history_snapshots + 1:
+            # Evict the oldest non-base snapshot (index 1)
+            oldest_id = self._history_order.pop(1)
+            self._history.pop(oldest_id, None)
+            pruned_count += 1
+        return pruned_count
+
+    def prune_history(self, keep_last_n: int = 10) -> int:
+        """Explicitly prunes snapshot history, preserving the baseline snapshot and recent N snapshots."""
+        with self._lock:
+            old_limit = self.max_history_snapshots
+            self.max_history_snapshots = max(1, keep_last_n)
+            pruned = self._apply_retention_policy()
+            self.max_history_snapshots = old_limit
+            return pruned
 
     def rollback(self, candidate: Optional[Snapshot] = None) -> None:
         """Discards active candidate snapshot; current snapshot remains 100% untouched."""
