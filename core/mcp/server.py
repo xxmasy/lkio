@@ -65,7 +65,24 @@ class LKIO_MCPServer:
             method = req.get("method")
             params = req.get("params", {})
 
-            if method == "tools/list":
+            # Notifications in JSON-RPC 2.0 (no id) must NOT return a response
+            if req_id is None:
+                return ""
+
+            if method == "initialize":
+                client_ver = params.get("protocolVersion")
+                negotiated_ver = client_ver if client_ver in SUPPORTED_PROTOCOL_VERSIONS else DEFAULT_PROTOCOL_VERSION
+                init_res = {
+                    "protocolVersion": negotiated_ver,
+                    "serverInfo": {"name": "lkio-mcp-server", "version": "1.0.0"},
+                    "capabilities": {"tools": {"listChanged": False}},
+                }
+                return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": init_res})
+
+            elif method == "ping":
+                return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": {}})
+
+            elif method == "tools/list":
                 res = {"tools": self.list_tools()}
                 return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": res})
 
@@ -78,24 +95,43 @@ class LKIO_MCPServer:
                         {
                             "jsonrpc": "2.0",
                             "id": req_id,
-                            "error": {
-                                "code": -32000,
-                                "message": err.message,
-                                "data": err.model_dump(),
+                            "result": {
+                                "content": [{"type": "text", "text": f"Error: {err.message}"}],
+                                "isError": True,
+                                "error": err.model_dump(),
                             },
-                        }
+                        },
+                        ensure_ascii=False,
                     )
-                return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": envelope.model_dump()})
 
-            elif method == "initialize":
-                client_ver = params.get("protocolVersion")
-                negotiated_ver = client_ver if client_ver in SUPPORTED_PROTOCOL_VERSIONS else DEFAULT_PROTOCOL_VERSION
-                init_res = {
-                    "protocolVersion": negotiated_ver,
-                    "serverInfo": {"name": "lkio-mcp-server", "version": "1.0.0"},
-                    "capabilities": {"tools": {"listChanged": False}},
-                }
-                return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": init_res})
+                env_dump = envelope.model_dump()
+                res_obj = env_dump.get("result")
+
+                # Prioritize pre-distilled local subagent briefing to dramatically compress Cloud LLM tokens
+                if isinstance(res_obj, dict) and any(
+                    isinstance(v, dict) and "distilled_briefing" in v for v in res_obj.values()
+                ):
+                    brief_sections = []
+                    for rid, rdata in res_obj.items():
+                        if isinstance(rdata, dict) and "distilled_briefing" in rdata:
+                            ratio = rdata.get("token_compressed_ratio", "")
+                            behind = rdata.get("behind_count", 0)
+                            branch = rdata.get("tracking_branch", "")
+                            header = f"### 📦 仓库 [{rid}] (分支: {branch} | 落后 {behind} 提交 | 本地压缩: {ratio})"
+                            brief_sections.append(f"{header}\n\n{rdata['distilled_briefing']}")
+                    text_content = "\n\n---\n\n".join(brief_sections)
+                else:
+                    text_content = (
+                        json.dumps(res_obj, ensure_ascii=False, indent=2)
+                        if isinstance(res_obj, (dict, list))
+                        else str(res_obj)
+                    )
+
+                response_payload = dict(env_dump)
+                response_payload["content"] = [{"type": "text", "text": text_content}]
+                response_payload["isError"] = False
+
+                return json.dumps({"jsonrpc": "2.0", "id": req_id, "result": response_payload}, ensure_ascii=False)
 
             else:
                 return json.dumps(
@@ -125,13 +161,25 @@ class LKIO_MCPServer:
         """Standard IO JSON-RPC loop for MCP clients."""
         import sys
 
+        if hasattr(sys.stdin, "reconfigure"):
+            try:
+                sys.stdin.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+        if hasattr(sys.stdout, "reconfigure"):
+            try:
+                sys.stdout.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+
         for line in sys.stdin:
             line = line.strip()
             if not line:
                 continue
             res = self.process_json_rpc(line)
-            sys.stdout.write(res + "\n")
-            sys.stdout.flush()
+            if res:
+                sys.stdout.write(res + "\n")
+                sys.stdout.flush()
 
 
 if __name__ == "__main__":

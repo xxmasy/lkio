@@ -169,6 +169,33 @@ class McpToolRegistry:
                 },
                 output_schema={"type": "object"},
             ),
+            McpToolDefinition(
+                name="lkio_remote_commits",
+                description="Monitors team commits from remote GitLab repositories, detects divergence against local branches, and evaluates cross-repo impact radius.",
+                read_only=True,
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "repo_id": {
+                            "type": "string",
+                            "enum": ["all", "frontend", "backend"],
+                            "default": "all",
+                            "description": "Repository to inspect: 'frontend', 'backend', or 'all'",
+                        },
+                        "fetch": {
+                            "type": "boolean",
+                            "default": True,
+                            "description": "Whether to run read-only git fetch to query the latest GitLab remote state",
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "description": "Max new remote commits to inspect per repo",
+                        },
+                    },
+                },
+                output_schema={"type": "object"},
+            ),
         ]
 
     def execute_tool(
@@ -184,7 +211,7 @@ class McpToolRegistry:
         param_hash = sha256(json.dumps(arguments, sort_keys=True).encode()).hexdigest()[:12]
 
         # 1. Enforce read-only constraint (Section 5.6)
-        if tool_name in FORBIDDEN_MUTATION_TOOLS or "write" in tool_name or "delete" in tool_name or "commit" in tool_name:
+        if tool_name in FORBIDDEN_MUTATION_TOOLS or "write" in tool_name or "delete" in tool_name or tool_name in ("commit", "push", "merge", "rebase"):
             err = McpErrorEnvelope(
                 is_error=True,
                 error_code="PERMISSION_DENIED",
@@ -324,6 +351,43 @@ class McpToolRegistry:
                 evidence=res.evidence,
                 confidence=res.confidence,
                 warnings=res.warnings,
+            )
+
+        elif tool_name == "lkio_remote_commits":
+            repo_id = args.get("repo_id", "all")
+            fetch = args.get("fetch", True)
+            limit = args.get("limit", 10)
+            from dataclasses import asdict
+            from core.events.remote_monitor import GitRemoteMonitor
+            from core.subagent.local_agent import LocalLLMSubagent
+
+            monitor = GitRemoteMonitor()
+            if repo_id == "all":
+                data = monitor.check_all(fetch=fetch, limit_commits=limit)
+                res_obj = {k: asdict(v) for k, v in data.items()}
+            else:
+                target_path = monitor.repos.get(repo_id)
+                if not target_path:
+                    raise KeyError(f"Unknown repo_id '{repo_id}'. Available: {list(monitor.repos.keys())}")
+                status = monitor.inspect_repo(repo_id, target_path, fetch=fetch, limit_commits=limit)
+                res_obj = {repo_id: asdict(status)}
+
+            # Synthesize edge briefing via Local LLM Subagent to compress Cloud LLM tokens
+            subagent = LocalLLMSubagent()
+            briefings = {}
+            for rid, sdata in res_obj.items():
+                if sdata.get("behind_count", 0) > 0:
+                    brief_res = subagent.synthesize_repo_briefing(rid, sdata, trigger_source="CURSOR_MCP")
+                    briefings[rid] = brief_res.briefing_markdown
+                    sdata["distilled_briefing"] = brief_res.briefing_markdown
+                    sdata["token_compressed_ratio"] = f"{brief_res.token_compressed_ratio}%"
+
+            return McpToolEnvelope(
+                result=res_obj,
+                snapshot_id=snap_id,
+                evidence=[{"type": "REMOTE_GITLAB_MONITOR", "repo_id": repo_id, "fetch": fetch, "briefings": briefings}],
+                confidence=1.0,
+                warnings=[],
             )
 
         else:

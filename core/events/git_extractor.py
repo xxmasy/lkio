@@ -53,6 +53,7 @@ class GitChangeExtractor:
         repo_path: Path,
         max_commits: int = 100,
         since_sha: str | None = None,
+        until_ref: str = "HEAD",
     ) -> list[CommitEventDTO]:
         """Extracts chronological commits and file change metadata from repository."""
         if not repo_path.exists():
@@ -61,7 +62,9 @@ class GitChangeExtractor:
         # 1. Fetch commit headers and file change status
         base_args = ["log", f"-n{max_commits}", "--date=iso-strict"]
         if since_sha:
-            base_args.append(f"{since_sha}..HEAD")
+            base_args.append(f"{since_sha}..{until_ref}")
+        elif until_ref != "HEAD":
+            base_args.append(until_ref)
 
         status_format = "COMMIT_RECORD%x1f%H%x1f%P%x1f%an%x1f%ae%x1f%ad%x1f%s"
         status_output = self._run_git(

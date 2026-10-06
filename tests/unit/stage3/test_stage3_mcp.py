@@ -22,7 +22,7 @@ def mcp_server():
 
 def test_mcp_tool_definitions_and_schema_freeze(mcp_server):
     tools = mcp_server.list_tools()
-    assert len(tools) == 9
+    assert len(tools) == 10
 
     names = {t["name"] for t in tools}
     expected_names = {
@@ -35,6 +35,7 @@ def test_mcp_tool_definitions_and_schema_freeze(mcp_server):
         "lkio_snapshot",
         "lkio_explain",
         "lkio_decision",
+        "lkio_remote_commits",
     }
     assert names == expected_names
 
@@ -95,6 +96,12 @@ def test_mcp_all_nine_tools_structured_execution(mcp_server):
     res = mcp_server.call_tool("lkio_decision", {"task": "CHANGE_IMPACT", "payload": payload})
     assert res["result"]["decision"] in ("NONE", "LOW", "MEDIUM", "HIGH", "CRITICAL")
 
+    # 10. lkio_remote_commits
+    res = mcp_server.call_tool("lkio_remote_commits", {"repo_id": "backend", "fetch": False, "limit": 5})
+    assert "result" in res
+    assert "backend" in res["result"]
+    assert "behind_count" in res["result"]["backend"]
+
 
 def test_mcp_read_only_safety_enforcement(mcp_server):
     for bad_tool in ["write_file", "delete_file", "commit", "push", "merge"]:
@@ -120,7 +127,7 @@ def test_mcp_json_rpc_protocol(mcp_server):
     # Test tools/list
     list_req = json.dumps({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
     list_res = json.loads(mcp_server.process_json_rpc(list_req))
-    assert len(list_res["result"]["tools"]) == 9
+    assert len(list_res["result"]["tools"]) == 10
 
     # Test tools/call
     call_req = json.dumps(
